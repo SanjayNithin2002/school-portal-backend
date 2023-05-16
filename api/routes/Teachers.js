@@ -133,8 +133,7 @@ router.post("/signup", (req, res, next) => {
                             console.log(error);
                         } else {
                             res.status(201).json({
-                                message: "OTP Sent Successfully",
-                                id: doc._id
+                                message: "User Created and Mail Sent Successfully"
                             });
                         }
                     });
