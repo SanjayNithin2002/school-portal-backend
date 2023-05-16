@@ -1,9 +1,15 @@
 const fs = require('fs');
 module.exports = (folder) => {
     fs.readdir(folder, (err, files) => {
-        if (err) throw err;
-        for (const file of files) {
-            fs.unlinkSync(folder+file);
+        if (err) {
+            console.log(err);
         }
-      });
+        files.forEach(file => {
+            const fileDir = folder + '/' + file;
+    
+            if (file !== 'specialfile.txt') {
+                fs.unlinkSync(fileDir);
+            }
+        });
+    });
 }
