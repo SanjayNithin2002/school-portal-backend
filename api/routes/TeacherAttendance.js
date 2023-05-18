@@ -37,20 +37,11 @@ router.get("/:id", checkAuth, (req, res) => {
 router.get("/teachers/:teacherID", checkAuth, (req, res) => {
     TeacherAttendance.find({ teacher: req.params.teacherID }).exec()
         .then(docs => {
-            var present = 0;
-            var absent = 0;
-            docs.forEach(doc => {
-                if (doc.status == "present") {
-                    present++;
-                } else {
-                    absent++;
-                }
-            }
-            );
             res.status(200).json({
                 docs: docs,
-                present: present / 2,
-                absent: absent / 2
+                present: docs.filter(doc => doc.status == "Present").length / 2,
+                absent: docs.filter(doc => doc.status == "Absent").length / 2,
+                total: docs.length / 2
             })
         }
         ).catch(err => {

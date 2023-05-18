@@ -57,11 +57,12 @@ admin.initializeApp({
 var bucket = admin.storage().bucket();
 
 router.get("/", checkAuth, (req, res) => {
-    Bonafides.find().exec()
+    Bonafides.find().populate("student").exec()
         .then(docs => {
             var bonafides = docs.map(doc => {
                 return {
                     _id: doc._id,
+                    student: doc.student,
                     service: doc.service,
                     description: doc.description,
                     requestedFile: doc.requestedFile !== null ? "http://localhost:3000/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
@@ -78,11 +79,12 @@ router.get("/", checkAuth, (req, res) => {
 });
 
 router.get("/:id", checkAuth, (req, res) => {
-    Bonafides.findById(req.params.id).exec()
+    Bonafides.findById(req.params.id).populate("student").exec()
         .then(doc => {
             res.status(200).json({
                 bonafide: {
                     _id: doc._id,
+                    student: doc.student,
                     service: doc.service,
                     description: doc.description,
                     requestedFile: req.body.requestedFile !== null ? "http://localhost:3000/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
@@ -96,11 +98,12 @@ router.get("/:id", checkAuth, (req, res) => {
 });
 
 router.get("/students/:studentID", checkAuth, (req, res) => {
-    Bonafides.find({ student: req.params.studentID }).exec()
+    Bonafides.find({ student: req.params.studentID }).populate("student").exec()
         .then(docs => {
             var bonafides = docs.map(doc => {
                 return {
                     _id: doc._id,
+                    student : doc.student,
                     service: doc.service,
                     description: doc.description,
                     requestedFile: doc.requestedFile !== null ? "http://localhost:3000/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
@@ -177,8 +180,7 @@ router.delete("/:id", checkAuth, (req, res) => {
     Bonafides.findByIdAndDelete(req.params.id).exec()
         .then(doc => {
             res.status(200).json({
-                message: "Bonafide Request Deleted Successfully",
-                bonafide: doc
+                message: "Bonafide Request Deleted Successfully"
             })
         })
         .catch(err => {

@@ -1,11 +1,11 @@
 var mongoose = require('mongoose');
 var express = require('express');
 var router = express.Router();
-var TeacherAttendance = require('../models/TeacherAttendance');
+var StudentAttendance = require('../models/StudentAttendance');
 var checkAuth = require('../middleware/checkAuth');
 
 router.get("/", checkAuth, (req, res) => {
-    TeacherAttendance.find().populate("teacher").exec()
+    StudentAttendance.find().populate("student").exec()
         .then(docs => {
             res.status(200).json({
                 docs: docs
@@ -20,7 +20,7 @@ router.get("/", checkAuth, (req, res) => {
 });
 
 router.get("/:id", checkAuth, (req, res) => {
-    TeacherAttendance.findById(req.params.id).populate("teacher").exec()
+    StudentAttendance.findById(req.params.id).populate("student").exec()
         .then(docs => {
             res.status(200).json({
                 docs: docs
@@ -34,23 +34,14 @@ router.get("/:id", checkAuth, (req, res) => {
         )
 });
 
-router.get("/teachers/:teacherID", checkAuth, (req, res) => {
-    TeacherAttendance.find({ teacher: req.params.teacherID }).exec()
+router.get("/students/:studentID", checkAuth, (req, res) => {
+    StudentAttendance.find({ student: req.params.studentID }).populate("student").exec()
         .then(docs => {
-            var present = 0;
-            var absent = 0;
-            docs.forEach(doc => {
-                if (doc.status == "present") {
-                    present++;
-                } else {
-                    absent++;
-                }
-            }
-            );
             res.status(200).json({
                 docs: docs,
-                present: present / 2,
-                absent: absent / 2
+                present: docs.filter(doc => doc.status == "Present").length / 2,
+                absent: docs.filter(doc => doc.status == "Absent").length / 2,
+                total: docs.length / 2
             })
         }
         ).catch(err => {
@@ -62,44 +53,45 @@ router.get("/teachers/:teacherID", checkAuth, (req, res) => {
 });
 
 router.post("/", checkAuth, (req, res) => {
-    const teacherAttendance = new TeacherAttendance({
+    const studentAttendance = new StudentAttendance({
         _id: new mongoose.Types.ObjectId(),
-        teacher: req.body.teacher,
+        student: req.body.student,
         date: req.body.date,
         time: req.body.time,
         status: req.body.status
     });
-    teacherAttendance.save().then(result => {
+    studentAttendance.save().then(result => {
         res.status(200).json({
-            message: "Teacher Attendance Created Successfully",
-            createdTeacherAttendance: result
+            message: "StudentAttendance Created Successfully",
+            createdStudentAttendance: result
         })
-    }).catch(err => {
+    }
+    ).catch(err => {
         res.status(500).json({
             error: err
         })
-    })
-
+    }
+    )
 });
 
 router.post("/postmany", checkAuth, (req, res) => {
     var date = req.body.date;
     var time = req.body.time;
     var attendances = req.body.attendances;
-    var teacherAttendances = attendances.map(attendance => {
-        return new TeacherAttendance({
+    var studentAttendances = attendances.map(attendance => {
+        return new StudentAttendance({
             _id: new mongoose.Types.ObjectId(),
-            teacher: attendance.teacher,
+            student: attendance.student,
             date: date,
             time: time,
             status: attendance.status
         })
     }
     );
-    TeacherAttendance.insertMany(teacherAttendances).then(result => {
+    StudentAttendance.insertMany(studentAttendances).then(result => {
         res.status(200).json({
-            message: "TeacherAttendances Created Successfully",
-            createdTeacherAttendances: result
+            message: "Student Attendances Created Successfully",
+            createdStudentAttendances: result
         })
     }
     ).catch(err => {    
@@ -111,10 +103,10 @@ router.post("/postmany", checkAuth, (req, res) => {
 });
 
 router.delete("/:id", checkAuth, (req, res) => {
-    TeacherAttendance.findByIdAndDelete(req.params.id).exec()
+    StudentAttendance.findByIdAndDelete(req.params.id).exec()
         .then(docs => {
             res.status(200).json({
-                message: "TeacherAttendance Deleted Successfully",
+                message: "Student Attendance Deleted Successfully",
                 docs: docs
             })
         }

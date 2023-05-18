@@ -185,7 +185,7 @@ router.post("/login", (req, res, next) => {
                         });
                         res.status(200).json({
                             message: "Auth Successful",
-                            _id: docs[0]._id,
+                            docs: docs[0],
                             token: token
                         });
                     } else {

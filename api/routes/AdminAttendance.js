@@ -37,28 +37,18 @@ router.get("/:id", checkAuth, (req, res) => {
 router.get("/admins/:adminID", checkAuth, (req, res) => {
     AdminAttendance.find({ admin: req.params.adminID }).exec()
         .then(docs => {
-            var present = 0;
-            var absent = 0;
-            docs.forEach(doc => {
-                if (doc.status == "present") {
-                    present++;
-                } else {
-                    absent++;
-                }
-            }
-            );
             res.status(200).json({
                 docs: docs,
-                present: present / 2,
-                absent: absent / 2
+                present: docs.filter(doc => doc.status == "Present").length / 2,
+                absent: docs.filter(doc => doc.status == "Absent").length / 2,
+                total: docs.length / 2
             })
         }
         ).catch(err => {
             res.status(500).json({
                 error: err
             })
-        }
-        )
+        })
 });
 
 router.post("/",checkAuth,  (req, res) => {
@@ -97,7 +87,7 @@ router.post("/postmany", checkAuth, (req, res) => {
     }
     );
     AdminAttendance.insertMany(adminAttendances).then(result => {
-        res.status(200).json({
+        res.status(201).json({
             message: "AdminAttendances Created Successfully",
             createdAdminAttendances: result
         })
@@ -114,8 +104,7 @@ router.delete("/:id", checkAuth, (req, res) => {
     AdminAttendance.findByIdAndDelete(req.params.id).exec()
         .then(docs => {
             res.status(200).json({
-                message: "AdminAttendance Deleted Successfully",
-                docs: docs
+                message: "AdminAttendance Deleted Successfully"
             })
         }
         ).catch(err => {

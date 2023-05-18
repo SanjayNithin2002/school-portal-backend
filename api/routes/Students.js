@@ -8,6 +8,7 @@ var fs = require('fs');
 var path = require('path');
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 var Students = require('../models/Students');
+var Classes = require('../models/Classes');
 const checkAuth = require('../middleware/checkAuth');
 
 router.post("/sendotp", (req, res, next) => {
@@ -213,7 +214,7 @@ router.post("/login", (req, res, next) => {
                         });
                         res.status(200).json({
                             message: "Auth Successful",
-                            _id: docs[0]._id,
+                            docs: docs[0],
                             token: token
                         });
                     } else {
@@ -257,6 +258,23 @@ router.get("/:id", checkAuth, (req, res, next) => {
                 error: err
             })
         })
+});
+
+router.get("/class/:classID", checkAuth, (req, res, next) => {
+    Classes.findById(req.params.classID).exec()
+    .then(docs => {
+        Students.find({standard: docs.standard, section: docs.section}).exec()
+        .then(docs => {
+            res.status(200).json({
+                docs: docs
+            })
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        })
+    })
 });
 
 router.get("/generatecsv/:standard/:section", checkAuth, (req, res, next) => {
