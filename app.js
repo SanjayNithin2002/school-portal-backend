@@ -76,6 +76,11 @@ app.use('/adminattendances', adminAttendanceRoutes);
 app.use('/teacherattendances', teacherAttendanceRoutes);
 app.use('/studentattendances', studentAttendanceRoutes);
 app.use('/downloadfile', downloadFileRoutes);
+app.get('/', (req, res) => {
+    res.status(200).json({
+        message: "Welcome to School Management API"
+    });
+});
 
 // handling "Not Found" errors
 app.use((req, res, next) => {
