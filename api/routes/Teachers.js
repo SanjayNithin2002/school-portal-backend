@@ -113,6 +113,7 @@ router.post("/signup", (req, res, next) => {
                 phoneNumber: req.body.phoneNumber,
                 qualification: req.body.qualification,
                 experience: req.body.experience,
+                subjects: req.body.subjects,
                 salaryDetails: {
                     basic: req.body.salaryDetails.basic,
                     hra: req.body.salaryDetails.hra,

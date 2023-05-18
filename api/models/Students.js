@@ -16,6 +16,11 @@ var studentSchema = mongoose.Schema({
         required : true,
         unique : true
     },
+    applicationNumber : {
+        type : String,
+        required : true,
+        unique : true
+    },
     standard : Number,
     section : String,
     firstName : String,
