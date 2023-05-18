@@ -259,7 +259,7 @@ router.get("/:id", checkAuth, (req, res, next) => {
         })
 });
 
-router.get("/generatecsv/:standard/:section", (req, res, next) => {
+router.get("/generatecsv/:standard/:section", checkAuth, (req, res, next) => {
     const filePath = "public/csv/" + req.params.standard + req.params.section + ".csv";
     fs.access(filePath, fs.constants.F_OK, (error) => {
         if (error) {
@@ -275,7 +275,7 @@ router.get("/generatecsv/:standard/:section", (req, res, next) => {
                             header: [
                                 { id: '_id', title: 'id' },
                                 { id: 'name', title: 'Name' },
-                                { id: "scoredMarks", title: "Scored Marks" },
+                                { id: "scoredMarks", title: "scoredMarks" },
                                 { id: "remarks", title: "Remarks" }
                             ]
                         });
@@ -289,9 +289,8 @@ router.get("/generatecsv/:standard/:section", (req, res, next) => {
                         });
                         csvWriter
                             .writeRecords(studentArray)
-                            .then(() => console.log('CSV file has been written successfully'))
+                            .then(() => res.sendFile(path.join(__dirname, "../../public/csv/" + req.params.standard + req.params.section + ".csv")))
                             .catch((error) => console.error(error));
-                        res.status(200).sendFile(path.join(__dirname, "../../public/csv/" + req.params.standard + req.params.section + ".csv"));
                     }
                 })
                 .catch(err => {
