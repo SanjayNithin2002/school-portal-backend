@@ -54,6 +54,8 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use('/public', express.static('public'));
+
 //Mongo DB connection
 mongoose.connect("mongodb+srv://sanjaynithin2002:" + process.env.MONGODB_PASSWORD + "@cluster0.kgz6ota.mongodb.net/?retryWrites=true&w=majority")
 console.log("Connected to MongoDB Atlas");

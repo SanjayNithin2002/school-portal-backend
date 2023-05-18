@@ -1,10 +1,13 @@
 var mongoose = require('mongoose');
-var Students = require('../models/Students');
 var express = require('express');
 var router = express.Router();
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+var fs = require('fs');
+var path = require('path');
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+var Students = require('../models/Students');
 const checkAuth = require('../middleware/checkAuth');
 
 router.post("/sendotp", (req, res, next) => {
@@ -44,7 +47,7 @@ router.post("/forgotpassword", (req, res, next) => {
                             error: err
                         });
                     } else {
-                        Students.findByIdAndUpdate(docs[0]._id, { $set: { password: hash} }).exec()
+                        Students.findByIdAndUpdate(docs[0]._id, { $set: { password: hash } }).exec()
                             .then(docs => {
                                 res.status(201).json({
                                     message: "Password Updated Successfully"
@@ -98,7 +101,7 @@ router.post("/signup", (req, res, next) => {
                         password: hash,
                         email: req.body.email,
                         userID: userID,
-                        applicationNumber : req.body.applicationNumber,
+                        applicationNumber: req.body.applicationNumber,
                         firstName: req.body.firstName,
                         lastName: req.body.lastName,
                         standard: req.body.standard,
@@ -255,6 +258,54 @@ router.get("/:id", checkAuth, (req, res, next) => {
             })
         })
 });
+
+router.get("/generatecsv/:standard/:section", (req, res, next) => {
+    const filePath = "public/csv/" + req.params.standard + req.params.section + ".csv";
+    fs.access(filePath, fs.constants.F_OK, (error) => {
+        if (error) {
+            Students.find({ standard: req.params.standard, section: req.params.section }).exec()
+                .then(docs => {
+                    if (docs.length < 1) {
+                        res.status(404).json({
+                            message: "No Students Found"
+                        })
+                    } else {
+                        const csvWriter = createCsvWriter({
+                            path: "public/csv/" + req.params.standard + req.params.section + ".csv",
+                            header: [
+                                { id: '_id', title: 'id' },
+                                { id: 'name', title: 'Name' },
+                                { id: "scoredMarks", title: "Scored Marks" },
+                                { id: "remarks", title: "Remarks" }
+                            ]
+                        });
+                        var studentArray = docs.map((student) => {
+                            return {
+                                _id: student._id,
+                                name: student.firstName + " " + student.lastName,
+                                scoredMarks: null,
+                                remarks: null
+                            }
+                        });
+                        csvWriter
+                            .writeRecords(studentArray)
+                            .then(() => console.log('CSV file has been written successfully'))
+                            .catch((error) => console.error(error));
+                        res.status(200).sendFile(path.join(__dirname, "../../public/csv/" + req.params.standard + req.params.section + ".csv"));
+                    }
+                })
+                .catch(err => {
+                    res.status(500).json({
+                        error: err
+                    })
+                });
+        } else {
+            res.sendFile(path.join(__dirname, "../../public/csv/" + req.params.standard + req.params.section + ".csv"));
+        }
+    });
+
+});
+
 
 router.patch("/userID", checkAuth, (req, res, next) => {
     var id = req.body.id;
