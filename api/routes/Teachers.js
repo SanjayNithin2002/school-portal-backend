@@ -35,6 +35,41 @@ router.post("/sendotp", (req, res, next) => {
         });
 });
 
+router.post("/forgotpassword", (req, res, next) => {
+    Teachers.find({ email: req.body.email }).exec()
+        .then(docs => {
+            if (docs.length > 0) {
+                bcrypt.hash(req.body.password, 10, (err, hash) => {
+                    if (err) {
+                        res.status(500).json({
+                            error: err
+                        });
+                    } else {
+                        Teachers.findByIdAndUpdate(docs[0]._id, { $set: { password: hash} }).exec()
+                            .then(docs => {
+                                res.status(201).json({
+                                    message: "Password Updated Successfully"
+                                });
+                            })
+                            .catch(err => {
+                                res.status(500).json({
+                                    error: err
+                                });
+                            });
+                    }
+                })
+            } else {
+                res.status(404).json({
+                    message: "Email not found"
+                });
+            }
+        }).catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+});
+
 router.post("/signup", (req, res, next) => {
     var email = req.body.email;
     var firstName = req.body.firstName;
