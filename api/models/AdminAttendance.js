@@ -7,7 +7,6 @@ var adminAttendanceSchema = mongoose.Schema({
         required : true
     },
     date : Date,
-    time : String,
     status : String
 });
 

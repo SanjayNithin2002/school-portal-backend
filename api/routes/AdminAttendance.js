@@ -4,11 +4,12 @@ var router = express.Router();
 var AdminAttendance = require('../models/AdminAttendance');
 var checkAuth = require('../middleware/checkAuth');
 
+
 router.get("/", checkAuth, (req, res) => {
-    AdminAttendance.find().populate("admin").exec()
+    AdminAttendance.find().exec()
         .then(docs => {
             res.status(200).json({
-                docs: docs
+                AdminAttendances: docs
             })
         }
         ).catch(err => {
@@ -18,12 +19,11 @@ router.get("/", checkAuth, (req, res) => {
         }
         )
 });
-
 router.get("/:id", checkAuth, (req, res) => {
-    AdminAttendance.findById(req.params.id).populate("admin").exec()
+    AdminAttendance.findById(req.params.id).exec()
         .then(docs => {
             res.status(200).json({
-                docs: docs
+                AdminAttendance: docs
             })
         }
         ).catch(err => {
@@ -33,25 +33,22 @@ router.get("/:id", checkAuth, (req, res) => {
         }
         )
 });
-
-router.get("/admins/:adminID", checkAuth, (req, res) => {
+router.get("/admin/:adminID", checkAuth, (req, res) => {
     AdminAttendance.find({ admin: req.params.adminID }).exec()
         .then(docs => {
             res.status(200).json({
-                docs: docs,
-                present: docs.filter(doc => doc.status == "Present").length / 2,
-                absent: docs.filter(doc => doc.status == "Absent").length / 2,
-                total: docs.length / 2
+                AdminAttendances: docs
             })
         }
         ).catch(err => {
             res.status(500).json({
                 error: err
             })
-        })
+        }
+        )
 });
 
-router.post("/",checkAuth,  (req, res) => {
+router.post("/", checkAuth, (req, res) => {
     const adminAttendance = new AdminAttendance({
         _id: new mongoose.Types.ObjectId(),
         admin: req.body.admin,
@@ -92,7 +89,7 @@ router.post("/postmany", checkAuth, (req, res) => {
             createdAdminAttendances: result
         })
     }
-    ).catch(err => {    
+    ).catch(err => {
         res.status(500).json({
             error: err
         })

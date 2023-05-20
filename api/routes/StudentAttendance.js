@@ -4,11 +4,55 @@ var router = express.Router();
 var StudentAttendance = require('../models/StudentAttendance');
 var checkAuth = require('../middleware/checkAuth');
 
-router.get("/", checkAuth, (req, res) => {
-    StudentAttendance.find().populate("student").exec()
+router.get("/", (req, res) => {
+    (async () => {
+        try {
+            const results = await StudentAttendance.aggregate([
+                {
+                    $group: {
+                        _id: {
+                            student : '$student',
+                            date: '$date'
+                        },
+                        count: {
+                            $sum: {
+                                $cond: [
+                                    {
+                                        $or: [
+                                            { $eq: ['$status', 'Present'] }
+                                        ]
+                                    },
+                                    1,
+                                    0
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]);
+            res.status(200).json({
+                results: results.map(result => {
+                    return {
+                        student: result._id.student,
+                        date: new Date(result._id.date).toISOString().split('T')[0],
+                        count: result.count
+                    }
+                })
+            })
+        } catch (err) {
+            res.status(500).json({
+                error: err
+            })
+        }
+    })();
+
+});
+
+router.get("/:id", (req, res) => {
+    StudentAttendance.findById(req.params.id).exec()
         .then(docs => {
             res.status(200).json({
-                docs: docs
+                StudentAttendance: docs
             })
         }
         ).catch(err => {
@@ -19,38 +63,50 @@ router.get("/", checkAuth, (req, res) => {
         )
 });
 
-router.get("/:id", checkAuth, (req, res) => {
-    StudentAttendance.findById(req.params.id).populate("student").exec()
-        .then(docs => {
+router.get("/students/:studentID", (req, res) => {
+    (async () => {
+        try {
+            const results = await StudentAttendance.aggregate([
+                {
+                    $group: {
+                        _id: {
+                            student : '$student',
+                            date: '$date'
+                        },
+                        count: {
+                            $sum: {
+                                $cond: [
+                                    {
+                                        $or: [
+                                            { $eq: ['$status', 'Present'] }
+                                        ]
+                                    },
+                                    1,
+                                    0
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]);
+            var docs = results.filter(result => result._id.student == req.params.studentID);
             res.status(200).json({
-                docs: docs
+                results: docs.map(doc => {
+                    return {
+                        student: doc._id.student,
+                        date: new Date(doc._id.date).toISOString().split('T')[0],
+                        count: doc.count
+                    }
+                })
             })
-        }
-        ).catch(err => {
+        } catch (err) {
             res.status(500).json({
                 error: err
             })
         }
-        )
+    })();
 });
 
-router.get("/students/:studentID", checkAuth, (req, res) => {
-    StudentAttendance.find({ student: req.params.studentID }).populate("student").exec()
-        .then(docs => {
-            res.status(200).json({
-                docs: docs,
-                present: docs.filter(doc => doc.status == "Present").length / 2,
-                absent: docs.filter(doc => doc.status == "Absent").length / 2,
-                total: docs.length / 2
-            })
-        }
-        ).catch(err => {
-            res.status(500).json({
-                error: err
-            })
-        }
-        )
-});
 
 router.post("/", checkAuth, (req, res) => {
     const studentAttendance = new StudentAttendance({

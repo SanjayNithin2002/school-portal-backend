@@ -38,10 +38,7 @@ router.get("/teachers/:teacherID", checkAuth, (req, res) => {
     TeacherAttendance.find({ teacher: req.params.teacherID }).exec()
         .then(docs => {
             res.status(200).json({
-                docs: docs,
-                present: docs.filter(doc => doc.status == "Present").length / 2,
-                absent: docs.filter(doc => doc.status == "Absent").length / 2,
-                total: docs.length / 2
+                docs: docs
             })
         }
         ).catch(err => {
