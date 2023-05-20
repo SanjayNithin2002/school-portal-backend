@@ -111,12 +111,12 @@ router.post("/signup", (req, res, next) => {
                 },
                 phoneNumber: req.body.phoneNumber,
                 salaryDetails: {
-                    basic: (req.body.salaryDetails.basic !== undefined ? req.body.salaryDetails.basic : 0),
-                    hra: (req.body.salaryDetails.hra !== undefined ? req.body.salaryDetails.hra : 0),
-                    conveyance: (req.body.salaryDetails.conveyance !== undefined ? req.body.salaryDetails.conveyance : 0),
-                    pa: (req.body.salaryDetails.pa !== undefined ? req.body.salaryDetails.pa : 0),
-                    pf: (req.body.salaryDetails.pf !== undefined ? req.body.salaryDetails.pf : 0),
-                    pt: (req.body.salaryDetails.pt !== undefined ? req.body.salaryDetails.pt : 0),
+                    basic: (req.body.salaryDetails !== undefined ? req.body.salaryDetails.basic : 0),
+                    hra: (req.body.salaryDetails !== undefined ? req.body.salaryDetails.hra : 0),
+                    conveyance: (req.body.salaryDetails !== undefined ? req.body.salaryDetails.conveyance : 0),
+                    pa: (req.body.salaryDetails !== undefined ? req.body.salaryDetails.pa : 0),
+                    pf: (req.body.salaryDetails !== undefined ? req.body.salaryDetails.pf : 0),
+                    pt: (req.body.salaryDetails !== undefined ? req.body.salaryDetails.pt : 0),
                 },
                 busDetails: {
                     isNeeded: (req.body.busDetails !== undefined ? req.body.busDetails.isNeeded : false),
