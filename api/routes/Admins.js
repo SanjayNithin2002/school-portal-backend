@@ -107,7 +107,7 @@ router.post("/signup", (req, res, next) => {
                     line2: (req.body.address !== undefined ? req.body.address.line2 : "NA"),
                     city: (req.body.address !== undefined ? req.body.address.city : "NA"),
                     state: (req.body.address !== undefined ? req.body.address.state : "NA"),
-                    pincode: (req.body.address !== undefined ? req.body.address.pincode : "NA")
+                    pincode: (req.body.address !== undefined ? req.body.address.pincode : 0)
                 },
                 phoneNumber: req.body.phoneNumber,
                 salaryDetails: {
