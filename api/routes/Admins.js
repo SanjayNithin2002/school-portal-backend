@@ -103,20 +103,20 @@ router.post("/signup", (req, res, next) => {
                 aadharNumber: req.body.aadharNumber,
                 motherTongue: req.body.motherTongue,
                 address: {
-                    line1: req.body.address.line1,
-                    line2: req.body.address.line2,
-                    city: req.body.address.city,
-                    state: req.body.address.state,
-                    pincode: req.body.address.pincode
+                    line1: (req.body.address !== undefined ? req.body.address.line1 : "NA"),
+                    line2: (req.body.address !== undefined ? req.body.address.line2 : "NA"),
+                    city: (req.body.address !== undefined ? req.body.address.city : "NA"),
+                    state: (req.body.address !== undefined ? req.body.address.state : "NA"),
+                    pincode: (req.body.address !== undefined ? req.body.address.pincode : "NA")
                 },
                 phoneNumber: req.body.phoneNumber,
                 salaryDetails: {
-                    basic: req.body.salaryDetails.basic,
-                    hra: req.body.salaryDetails.hra,
-                    conveyance: req.body.salaryDetails.conveyance,
-                    pa: req.body.salaryDetails.pa,
-                    pf: req.body.salaryDetails.pf,
-                    pt: req.body.salaryDetails.pt,
+                    basic: (req.body.salaryDetails.basic !== undefined ? req.body.salaryDetails.basic : 0),
+                    hra: (req.body.salaryDetails.hra !== undefined ? req.body.salaryDetails.hra : 0),
+                    conveyance: (req.body.salaryDetails.conveyance !== undefined ? req.body.salaryDetails.conveyance : 0),
+                    pa: (req.body.salaryDetails.pa !== undefined ? req.body.salaryDetails.pa : 0),
+                    pf: (req.body.salaryDetails.pf !== undefined ? req.body.salaryDetails.pf : 0),
+                    pt: (req.body.salaryDetails.pt !== undefined ? req.body.salaryDetails.pt : 0),
                 },
                 busDetails: {
                     isNeeded: (req.body.busDetails !== undefined ? req.body.busDetails.isNeeded : false),
