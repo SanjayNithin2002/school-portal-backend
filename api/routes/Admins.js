@@ -140,7 +140,9 @@ router.post("/signup", (req, res, next) => {
                         }
                     }).sendMail(mailOptions, function (error, info) {
                         if (error) {
-                            console.log(error);
+                            res.status(500).json({
+                                error: error
+                            });
                         } else {
                             res.status(201).json({
                                 message: "User Created and Mail Sent Successfully"
