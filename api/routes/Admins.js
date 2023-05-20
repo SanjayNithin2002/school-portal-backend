@@ -161,7 +161,7 @@ router.post("/signup", (req, res, next) => {
 });
 
 router.post("/login", (req, res, next) => {
-    Admins.find({ email: req.body.email }).exec()
+    Admins.find({ userID : req.body.userID}).exec()
         .then(docs => {
             if (docs.length < 1) {
                 res.status(401).json({
