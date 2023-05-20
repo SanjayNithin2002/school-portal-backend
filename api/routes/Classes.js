@@ -19,6 +19,20 @@ router.get("/", checkAuth, (req, res, next) => {
         });
 });
 
+router.get("/:id", checkAuth, (req, res, next) => {
+    Classes.findById(req.params.id).populate('teacher').exec()
+        .then(docs => {
+            res.status(200).json({
+                docs: docs
+            })
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+});
+
 router.get("students/:studentID", checkAuth, (req, res, next) => {
     Students.findById(req.params.studentID).exec()
         .then(studDoc => {
@@ -36,6 +50,20 @@ router.get("students/:studentID", checkAuth, (req, res, next) => {
                         error: err
                     })
                 });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+});
+
+router.get("teachers/:teacherID", checkAuth, (req, res, next) => {
+    Classes.find({ teacher: req.params.teacherID }).populate('teacher').exec()
+        .then(docs => {
+            res.status(200).json({
+                classes: docs
+            })
         })
         .catch(err => {
             res.status(500).json({

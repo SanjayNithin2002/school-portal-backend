@@ -73,7 +73,7 @@ router.post("/forgotpassword", (req, res, next) => {
         });
 });
 
-router.post("/signup", (req, res, next) => {
+router.post("/signup",checkAuth, (req, res, next) => {
     var firstName = req.body.firstName;
     var lastName = req.body.lastName;
     var dob = new Date(req.body.dob);

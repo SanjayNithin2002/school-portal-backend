@@ -37,16 +37,16 @@ const upload = multer({
 
 const serviceAccount = {
     type: process.env.type,
-    project_id : process.env.project_id,
+    project_id: process.env.project_id,
     private_key_id: process.env.private_key_id,
-    private_key : process.env.private_key.replace(/\\n/g, '\n'),
+    private_key: process.env.private_key.replace(/\\n/g, '\n'),
     client_email: process.env.client_email,
-    client_id : process.env.client_id,
-    auth_uri : process.env.auth_uri,
-    token_uri : process.env.token_uri,
-    auth_provider_x509_cert_url : process.env.auth_provider_x509_cert_url,
-    client_x509_cert_url : process.env.client_x509_cert_url,
-    universe_domain : process.env.universe_domain
+    client_id: process.env.client_id,
+    auth_uri: process.env.auth_uri,
+    token_uri: process.env.token_uri,
+    auth_provider_x509_cert_url: process.env.auth_provider_x509_cert_url,
+    client_x509_cert_url: process.env.client_x509_cert_url,
+    universe_domain: process.env.universe_domain
 }
 
 admin.initializeApp({
@@ -57,15 +57,15 @@ admin.initializeApp({
 var bucket = admin.storage().bucket();
 
 router.get("/", checkAuth, (req, res) => {
-    Bonafides.find().populate("student").exec()
+    Bonafides.find().exec()
         .then(docs => {
             var bonafides = docs.map(doc => {
                 return {
                     _id: doc._id,
                     student: doc.student,
                     service: doc.service,
-                    description: doc.description,
-                    requestedFile: doc.requestedFile !== null ? "http://localhost:3000/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
+                    [doc.service]: doc[doc.service],
+                    requestedFile: doc.requestedFile !== null ? "https://schoolportalbackend.onrender.com/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
                 }
             });
             res.status(200).json({
@@ -86,8 +86,8 @@ router.get("/:id", checkAuth, (req, res) => {
                     _id: doc._id,
                     student: doc.student,
                     service: doc.service,
-                    description: doc.description,
-                    requestedFile: req.body.requestedFile !== null ? "http://localhost:3000/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
+                    [doc.service]: doc[doc.service],
+                    requestedFile: doc.requestedFile !== null ? "https://schoolportalbackend.onrender.com/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
                 }
             })
         }).catch(err => {
@@ -103,10 +103,10 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
             var bonafides = docs.map(doc => {
                 return {
                     _id: doc._id,
-                    student : doc.student,
+                    student: doc.student,
                     service: doc.service,
-                    description: doc.description,
-                    requestedFile: doc.requestedFile !== null ? "http://localhost:3000/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
+                    [doc.service]: doc[doc.service],
+                    requestedFile: doc.requestedFile !== null ? "https://schoolportalbackend.onrender.com/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
                 }
             });
             res.status(200).json({
@@ -120,13 +120,35 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
         });
 });
 
-router.post("/",checkAuth,  (req, res) => {
+router.post("/", checkAuth, (req, res) => {
     var bonafide = new Bonafides({
         _id: new mongoose.Types.ObjectId(),
         service: req.body.service,
-        description: req.body.description,
+        // check bonafide models 
         student: req.body.student,
-        requestedFile: req.body.requestedFile ? req.body.requestedFile : null,
+        passport: {
+            description: (req.body.passport !== undefined) ? req.body.passport.description : "NA"
+        },
+        visa: {
+            fromDate: (req.body.visa !== undefined) ? req.body.visa.fromDate : "NA",
+            toDate: (req.body.visa !== undefined) ? req.body.visa.toDate : "NA",
+            place: (req.body.visa !== undefined) ? req.body.visa.place :  "NA",
+            description: (req.body.visa !== undefined) ? req.body.visa.description : "NA"
+        },
+        buspass: {
+            description: (req.body.buspass !== undefined) ? req.body.buspass.description : "NA"
+        },
+        incomeTax: {
+            description: (req.body.incomeTax !== undefined) ? req.body.incomeTax.description : "NA",
+            employee: (req.body.incomeTax !== undefined) ? req.body.incomeTax.employee : "NA"
+        },
+        NCCBonafide: {
+            description: (req.body.NCCBonafide !== undefined) ? req.body.NCCBonafide.description : "NA"
+        },
+        tc: {
+            description: (req.body.tc !== undefined) ? req.body.TC.description : "NA"
+        },
+        requestedFile: null
     });
     bonafide.save()
         .then(doc => {
@@ -134,13 +156,13 @@ router.post("/",checkAuth,  (req, res) => {
                 message: "Bonafide Requested Successfully",
                 bonafide: doc
             })
-        })
-        .catch(err => {
+        }).catch(err => {
             res.status(500).json({
                 error: err
             })
         });
 });
+
 
 
 router.patch("/:id", checkAuth, upload.single("bonafide"), (req, res) => {
