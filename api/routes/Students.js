@@ -120,42 +120,42 @@ router.post("/signup",checkAuth, (req, res, next) => {
                             pincode: req.body.address.pincode
                         },
                         father: {
-                            name: (req.body.father !== undefined ? req.body.father.name : "NA"),
-                            age: (req.body.father !== undefined ? req.body.father.age : 0),
-                            qualification: (req.body.father !== undefined ? req.body.father.qualification : "NA"),
-                            occupation: (req.body.father !== undefined ? req.body.father.occupation : "NA"),
-                            annualIncome: (req.body.father !== undefined ? req.body.father.annualIncome : 0),
-                            phoneNumber: (req.body.father !== undefined ? req.body.father.phoneNumber : "NA"),
-                            email: (req.body.father !== undefined ? req.body.father.email : "NA")
+                            name: (req.body.father ? req.body.father.name : "NA"),
+                            age: (req.body.father ? req.body.father.age : 0),
+                            qualification: (req.body.father ? req.body.father.qualification : "NA"),
+                            occupation: (req.body.father ? req.body.father.occupation : "NA"),
+                            annualIncome: (req.body.father  ? req.body.father.annualIncome : 0),
+                            phoneNumber: (req.body.father ? req.body.father.phoneNumber : "NA"),
+                            email: (req.body.father ? req.body.father.email : "NA")
                         },
                         mother: {
-                            name: (req.body.mother !== undefined ? req.body.mother.name : "NA"),
-                            age: (req.body.mother !== undefined ? req.body.mother.age : 0),
-                            qualification: (req.body.mother !== undefined ? req.body.mother.qualification : "NA"),
-                            occupation: (req.body.mother !== undefined ? req.body.mother.occupation : "NA"),
-                            annualIncome: (req.body.mother !== undefined ? req.body.mother.annualIncome : 0),
-                            phoneNumber: (req.body.mother !== undefined ? req.body.mother.phoneNumber : "NA"),
-                            email: (req.body.mother !== undefined ? req.body.mother.email : "NA")
+                            name: (req.body.mother  ? req.body.mother.name : "NA"),
+                            age: (req.body.mother ? req.body.mother.age : 0),
+                            qualification: (req.body.mother ? req.body.mother.qualification : "NA"),
+                            occupation: (req.body.mother ? req.body.mother.occupation : "NA"),
+                            annualIncome: (req.body.mother ? req.body.mother.annualIncome : 0),
+                            phoneNumber: (req.body.mother ? req.body.mother.phoneNumber : "NA"),
+                            email: (req.body.mother ? req.body.mother.email : "NA")
                         },
                         guardian: {
-                            name: (req.body.guardian !== undefined ? req.body.guardian.name : "NA"),
-                            age: (req.body.guardian !== undefined ? req.body.guardian.age : 0),
-                            qualification: (req.body.guardian !== undefined ? req.body.guardian.qualification : "NA"),
-                            occupation: (req.body.guardian !== undefined ? req.body.guardian.occupation : "NA"),
-                            annualIncome: (req.body.guardian !== undefined ? req.body.guardian.annualIncome : 0),
-                            phoneNumber: (req.body.guardian !== undefined ? req.body.guardian.phoneNumber : "NA"),
-                            email: (req.body.guardian !== undefined ? req.body.guardian.email : "NA")
+                            name: (req.body.guardian ? req.body.guardian.name : "NA"),
+                            age: (req.body.guardian  ? req.body.guardian.age : 0),
+                            qualification: (req.body.guardian ? req.body.guardian.qualification : "NA"),
+                            occupation: (req.body.guardian  ? req.body.guardian.occupation : "NA"),
+                            annualIncome: (req.body.guardian ? req.body.guardian.annualIncome : 0),
+                            phoneNumber: (req.body.guardian ? req.body.guardian.phoneNumber : "NA"),
+                            email: (req.body.guardian ? req.body.guardian.email : "NA")
                         },
                         busDetails: {
-                            isNeeded: (req.body.busDetails !== undefined ? req.body.busDetails.isNeeded : false),
-                            busStopArea: (req.body.busDetails !== undefined ? req.body.busDetails.busStopArea : "NA"),
-                            busStop: (req.body.busDetails !== undefined ? req.body.busDetails.busStop : "NA"),
-                            availableBus: (req.body.busDetails !== undefined ? req.body.busDetails.availableBus : "NA")
+                            isNeeded: (req.body.busDetails  ? req.body.busDetails.isNeeded : false),
+                            busStopArea: (req.body.busDetails ? req.body.busDetails.busStopArea : "NA"),
+                            busStop: (req.body.busDetails ? req.body.busDetails.busStop : "NA"),
+                            availableBus: (req.body.busDetails ? req.body.busDetails.availableBus : "NA")
                         },
                         hostelDetails: {
-                            isNeeded: (req.body.hostelDetails !== undefined ? req.body.hostelDetails.isNeeded : false),
-                            roomType: (req.body.hostelDetails !== undefined ? req.body.hostelDetails.roomType : "NA"),
-                            foodType: (req.body.hostelDetails !== undefined ? req.body.hostelDetails.foodType : "NA"),
+                            isNeeded: (req.body.hostelDetails  ? req.body.hostelDetails.isNeeded : false),
+                            roomType: (req.body.hostelDetails  ? req.body.hostelDetails.roomType : "NA"),
+                            foodType: (req.body.hostelDetails ? req.body.hostelDetails.foodType : "NA"),
                         }
                     });
                     student.save()
