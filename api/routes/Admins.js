@@ -105,31 +105,31 @@ router.post("/signup", checkAuth, (req, res, next) => {
                 qualification : req.body.qualification,
                 experience: req.body.experience,
                 address: {
-                    line1: (req.body.address !== undefined ? req.body.address.line1 : "NA"),
-                    line2: (req.body.address !== undefined ? req.body.address.line2 : "NA"),
-                    city: (req.body.address !== undefined ? req.body.address.city : "NA"),
-                    state: (req.body.address !== undefined ? req.body.address.state : "NA"),
-                    pincode: (req.body.address !== undefined ? req.body.address.pincode : 0)
+                    line1: (req.body.address ? req.body.address.line1 : "NA"),
+                    line2: (req.body.address  ? req.body.address.line2 : "NA"),
+                    city: (req.body.address ? req.body.address.city : "NA"),
+                    state: (req.body.address  ? req.body.address.state : "NA"),
+                    pincode: (req.body.address ? req.body.address.pincode : 0)
                 },
                 phoneNumber: req.body.phoneNumber,
                 salaryDetails: {
-                    basic: (req.body.salaryDetails !== undefined ? req.body.salaryDetails.basic : 0),
-                    hra: (req.body.salaryDetails !== undefined ? req.body.salaryDetails.hra : 0),
-                    conveyance: (req.body.salaryDetails !== undefined ? req.body.salaryDetails.conveyance : 0),
-                    pa: (req.body.salaryDetails !== undefined ? req.body.salaryDetails.pa : 0),
-                    pf: (req.body.salaryDetails !== undefined ? req.body.salaryDetails.pf : 0),
-                    pt: (req.body.salaryDetails !== undefined ? req.body.salaryDetails.pt : 0),
+                    basic: (req.body.salaryDetails ? req.body.salaryDetails.basic : 0),
+                    hra: (req.body.salaryDetails ? req.body.salaryDetails.hra : 0),
+                    conveyance: (req.body.salaryDetails  ? req.body.salaryDetails.conveyance : 0),
+                    pa: (req.body.salaryDetails  ? req.body.salaryDetails.pa : 0),
+                    pf: (req.body.salaryDetails ? req.body.salaryDetails.pf : 0),
+                    pt: (req.body.salaryDetails  ? req.body.salaryDetails.pt : 0),
                 },
                 busDetails: {
-                    isNeeded: (req.body.busDetails !== undefined ? req.body.busDetails.isNeeded : false),
-                    busStopArea: (req.body.busDetails !== undefined ? req.body.busDetails.busStopArea : "NA"),
-                    busStop: (req.body.busDetails !== undefined ? req.body.busDetails.busStop : "NA"),
-                    availableBus: (req.body.busDetails !== undefined ? req.body.busDetails.availableBus : "NA")
+                    isNeeded: (req.body.busDetails  ? req.body.busDetails.isNeeded : false),
+                    busStopArea: (req.body.busDetails  ? req.body.busDetails.busStopArea : "NA"),
+                    busStop: (req.body.busDetails  ? req.body.busDetails.busStop : "NA"),
+                    availableBus: (req.body.busDetails ? req.body.busDetails.availableBus : "NA")
                 },
                 hostelDetails: {
-                    isNeeded: (req.body.hostelDetails !== undefined ? req.body.hostelDetails.isNeeded : false),
-                    roomType: (req.body.hostelDetails !== undefined ? req.body.hostelDetails.roomType : "NA"),
-                    foodType: (req.body.hostelDetails !== undefined ? req.body.hostelDetails.foodType : "NA"),
+                    isNeeded: (req.body.hostelDetails  ? req.body.hostelDetails.isNeeded : false),
+                    roomType: (req.body.hostelDetails ? req.body.hostelDetails.roomType : "NA"),
+                    foodType: (req.body.hostelDetails  ? req.body.hostelDetails.foodType : "NA"),
                 }
             });
             admin.save()
