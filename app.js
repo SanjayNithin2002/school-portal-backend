@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const schedule = require('node-schedule');
+const cors = require('cors');
 
 
 //importing routes
@@ -41,8 +42,10 @@ const job = schedule.scheduleJob('*/5 * * * *', () => {
 app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 
 // handling CORS
+/*
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
@@ -56,6 +59,7 @@ app.use((req, res, next) => {
     }
     next();
 });
+*/ 
 
 app.use('/public', express.static('public'));
 
