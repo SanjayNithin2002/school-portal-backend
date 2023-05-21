@@ -23,6 +23,8 @@ var adminSchema = mongoose.Schema({
         required: true,
         unique: true
     },
+    qualification: String,
+    experience: String,
     dob: Date,
     gender: String,
     bloodGroup: String,

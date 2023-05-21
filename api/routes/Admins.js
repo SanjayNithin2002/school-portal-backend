@@ -102,6 +102,8 @@ router.post("/signup", checkAuth, (req, res, next) => {
                 bloodGroup: req.body.bloodGroup,
                 aadharNumber: req.body.aadharNumber,
                 motherTongue: req.body.motherTongue,
+                qualification : req.body.qualification,
+                experience: req.body.experience,
                 address: {
                     line1: (req.body.address !== undefined ? req.body.address.line1 : "NA"),
                     line2: (req.body.address !== undefined ? req.body.address.line2 : "NA"),

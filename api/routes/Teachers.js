@@ -123,15 +123,15 @@ router.post("/signup", checkAuth, (req, res, next) => {
                     pt: req.body.salaryDetails.pt,
                 },
                 busDetails: {
-                    isNeeded: (req.body.busDetails !== undefined ? req.body.busDetails.isNeeded : false),
-                    busStopArea: (req.body.busDetails !== undefined ? req.body.busDetails.busStopArea : "NA"),
-                    busStop: (req.body.busDetails !== undefined ? req.body.busDetails.busStop : "NA"),
-                    availableBus: (req.body.busDetails !== undefined ? req.body.busDetails.availableBus : "NA")
+                    isNeeded: (req.body.busDetails ? req.body.busDetails.isNeeded : false),
+                    busStopArea: (req.body.busDetails ? req.body.busDetails.busStopArea : "NA"),
+                    busStop: (req.body.busDetails ? req.body.busDetails.busStop : "NA"),
+                    availableBus: (req.body.busDetails ? req.body.busDetails.availableBus : "NA")
                 },
                 hostelDetails: {
-                    isNeeded: (req.body.hostelDetails !== undefined ? req.body.hostelDetails.isNeeded : false),
-                    roomType: (req.body.hostelDetails !== undefined ? req.body.hostelDetails.roomType : "NA"),
-                    foodType: (req.body.hostelDetails !== undefined ? req.body.hostelDetails.foodType : "NA"),
+                    isNeeded: (req.body.hostelDetails ? req.body.hostelDetails.isNeeded : false),
+                    roomType: (req.body.hostelDetails  ? req.body.hostelDetails.roomType : "NA"),
+                    foodType: (req.body.hostelDetails  ? req.body.hostelDetails.foodType : "NA"),
                 }
             });
             teacher.save()
