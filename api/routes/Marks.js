@@ -41,8 +41,11 @@ const upload = multer({
 router.get("/", checkAuth, (req, res) => {
     Marks.find().populate([{ path: "assessment", populate: { path: "class" } }, { path: "student" }]).exec()
         .then(docs => {
+            var assessmentMarks = docs.filter(doc => doc.assessment != null);
+            var examMarks = docs.filter(doc => doc.exam != null);
             res.status(200).json({
-                docs: docs
+                assessmentMarks: assessmentMarks,
+                examMarks: examMarks
             });
         })
         .catch(err => {
@@ -69,8 +72,11 @@ router.get("/:id", checkAuth, (req, res) => {
 router.get("/students/:studentID", checkAuth, (req, res) => {
     Marks.find({ student: req.params.studentID }).populate([{ path: "assessment", populate: { path: "class" } }, { path: "student" }]).exec()
         .then(docs => {
+            var assessmentMarks = docs.filter(doc => doc.assessment != null);
+            var examMarks = docs.filter(doc => doc.exam != null);
             res.status(200).json({
-                docs: docs
+                assessmentMarks: assessmentMarks,
+                examMarks: examMarks
             });
         }
         )
@@ -98,6 +104,22 @@ router.get("/assessments/:assessmentID", checkAuth, (req, res) => {
         );
 });
 
+router.get("/exams/:examID", checkAuth, (req, res) => {
+    Marks.find({ exam: req.params.examID }).populate([{ path: "exam", populate: { path: "class" } }, { path: "student" }]).exec()
+        .then(docs => {
+            res.status(200).json({
+                docs: docs
+            });
+        }
+        )
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        }
+        );
+});
+
 router.post("/", checkAuth, (req, res) => {
     Assessments.findById(req.body.assessment).exec()
         .then(doc => {
@@ -108,7 +130,7 @@ router.post("/", checkAuth, (req, res) => {
             var mark = new Marks({
                 _id: new mongoose.Types.ObjectId(),
                 student: req.body.student,
-                assessment: req.body.assessment,
+                [req.body.type]: req.body[req.body.type],
                 scoredMarks: scoredMarks,
                 weightageScoredMarks: weightageScoredMarks,
                 remarks: req.body.remarks
@@ -146,7 +168,7 @@ router.post("/postmany", checkAuth, upload.single("marks"), (req, res) => {
                         return {
                             _id: new mongoose.Types.ObjectId(),
                             student: mark.id,
-                            assessment: req.body.assessment,
+                            [req.body.type]: req.body[req.body.type],
                             scoredMarks: mark.scoredMarks,
                             weightageScoredMarks: (mark.scoredMarks / maxMarks) * weightageMarks,
                             remarks: mark.Remarks

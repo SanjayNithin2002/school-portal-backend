@@ -6,10 +6,14 @@ var markSchema = mongoose.Schema({
         ref : 'Students',
         required : true
     },
+    type : String,
+    exam : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'Exams'
+    },
     assessment : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : 'Assessments',
-        required : true
+        ref : 'Assessments'
     },
     scoredMarks : Number,
     weightageScoredMarks : Number,

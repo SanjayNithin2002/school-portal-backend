@@ -44,8 +44,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
-// handling CORS
-/*
+
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
@@ -59,7 +58,6 @@ app.use((req, res, next) => {
     }
     next();
 });
-*/ 
 
 app.use('/public', express.static('public'));
 
