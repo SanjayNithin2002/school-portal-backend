@@ -179,8 +179,9 @@ router.patch("/:id", checkAuth, upload.single("bonafide"), (req, res) => {
                 }
             }, (err, file) => {
                 if (err) {
-                    console.log(err);
-                    return;
+                    res.status(500).json({
+                        error: err
+                    });
                 }
                 else {
                     res.status(201).json({

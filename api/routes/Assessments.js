@@ -66,6 +66,7 @@ router.get("/", checkAuth, (req, res) => {
                     postedOn: doc.postedOn,
                     lastDate: doc.lastDate,
                     title: doc.title,
+                    description : doc.description,
                     questionPaper: "http://localhost:3000/downloadfile/" + doc.questionPaper.split("\\").join("/"),
                     subject: doc.class.subject,
                     standard: doc.class.standard,
@@ -99,6 +100,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
                             postedOn: doc.postedOn,
                             lastDate: doc.lastDate,
                             title: doc.title,
+                            description : doc.description,
                             questionPaper: "http://localhost:3000/downloadfile/" + doc.questionPaper.split("\\").join("/"),
                             subject: doc.class.subject,
                             standard: doc.class.standard,
@@ -128,6 +130,7 @@ router.post("/", checkAuth, upload.single('questionPaper'), (req, res) => {
         postedOn: new Date().toJSON().slice(0, 10),
         lastDate: req.body.lastDate,
         title: req.body.title,
+        description : req.body.description,
         questionPaper: req.file.path,
         class: req.body.class
     });
@@ -140,8 +143,9 @@ router.post("/", checkAuth, upload.single('questionPaper'), (req, res) => {
                 }
             }, (err, file) => {
                 if (err) {
-                    console.log(err);
-                    return;
+                    res.status(500).json({
+                        error: err
+                    });
                 }
                 else {
                     res.status(201).json({
@@ -158,6 +162,7 @@ router.post("/", checkAuth, upload.single('questionPaper'), (req, res) => {
             })
         });
 });
+
 
 router.delete("/:id", checkAuth, (req, res) => {
     Assessments.findByIdAndDelete(req.params.id).exec()

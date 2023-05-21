@@ -21,6 +21,7 @@ var adminAttendanceRoutes = require('./api/routes/AdminAttendance');
 var teacherAttendanceRoutes = require('./api/routes/TeacherAttendance');
 var studentAttendanceRoutes = require('./api/routes/StudentAttendance');
 var downloadFileRoutes = require('./api/routes/DownloadFile');
+var answerRoutes = require('./api/routes/Answers');
 
 
 const app = express();
@@ -32,7 +33,8 @@ const job = schedule.scheduleJob('*/5 * * * *', () => {
     clearDirectory('./assessments/');
     clearDirectory('./bonafides/');
     clearDirectory('./marks/')
-    console.log("Cleared Assessment, Bonafide and Marks Directories");
+    clearDirectory('./answers/')
+    console.log("Cleared Assessment, Bonafide, Marks and Answers Directories");
 });
 
 //Middleware
@@ -76,6 +78,7 @@ app.use('/adminattendances', adminAttendanceRoutes);
 app.use('/teacherattendances', teacherAttendanceRoutes);
 app.use('/studentattendances', studentAttendanceRoutes);
 app.use('/downloadfile', downloadFileRoutes);
+app.use('/answers', answerRoutes);
 app.get('/', (req, res) => {
     res.status(200).json({
         message: "Welcome to School Management API"

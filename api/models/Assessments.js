@@ -12,6 +12,7 @@ var assessmentSchema = mongoose.Schema({
     postedOn : Date,
     lastDate : Date,
     title : String,
+    description : String,
     questionPaper : String
 });
 
