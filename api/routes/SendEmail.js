@@ -1,7 +1,7 @@
 var nodemailer = require('nodemailer');
 var express = require('express');
 var router = express.Router();
-var checkAuth = require('../middleware/check-auth');
+var checkAuth = require('../middleware/checkAuth');
 
 router.post("/",checkAuth, (req, res, next) => {
     const mailOptions = {
