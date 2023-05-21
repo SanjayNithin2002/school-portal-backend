@@ -23,7 +23,13 @@ var adminSchema = mongoose.Schema({
         required: true,
         unique: true
     },
-    qualification: String,
+    qualification : [{
+        title : String,
+        collegeName : String,
+        collegelocation : String,
+        yearPassed : Number,
+        percentage : Number
+    }],
     experience: String,
     dob: Date,
     gender: String,

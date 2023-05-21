@@ -2,7 +2,7 @@ var nodemailer = require('nodemailer');
 var express = require('express');
 var router = express.Router();
 
-router.post("/", (req, res, next) => {
+router.post("/",checkAuth, (req, res, next) => {
     const mailOptions = {
         from: req.body.email,
         to: "sanjay.nithin19@gmail.com",

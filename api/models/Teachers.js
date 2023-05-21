@@ -36,7 +36,13 @@ var teacherSchema = mongoose.Schema({
         pincode : Number
     },
     phoneNumber : String,
-    qualification : String,
+    qualification : [{
+        title : String,
+        collegeName : String,
+        collegelocation : String,
+        yearPassed : Number,
+        percentage : Number
+    }],
     experience : Number,
     subjects : [String],
     salaryDetails : {

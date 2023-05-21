@@ -232,7 +232,7 @@ router.get("/:id", checkAuth, (req, res, next) => {
         })
 });
 
-router.patch("/userid", checkAuth, (req, res) => {
+router.patch("/changeuserid", checkAuth, (req, res) => {
     var id = req.body.id;
     if (req.userData._id !== id) {
         res.status(401).json({
@@ -304,7 +304,7 @@ router.patch("/userid", checkAuth, (req, res) => {
     }
 });
 
-router.patch("/password", checkAuth, (req, res) => {
+router.patch("/changepassword", checkAuth, (req, res) => {
     var id = req.body.id;
     if (req.userData._id !== id) {
         res.status(401).json({

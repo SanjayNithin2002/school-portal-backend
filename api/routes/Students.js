@@ -324,7 +324,7 @@ router.get("/generatecsv/:standard/:section", checkAuth, (req, res, next) => {
 });
 
 
-router.patch("/userID", checkAuth, (req, res, next) => {
+router.patch("/changeuserid", checkAuth, (req, res, next) => {
     var id = req.body.id;
     if (req.userData._id !== id) {
         res.status(401).json({
@@ -390,7 +390,7 @@ router.patch("/userID", checkAuth, (req, res, next) => {
     }
 });
 
-router.patch("/password", checkAuth, (req, res) => {
+router.patch("/changepassword", checkAuth, (req, res) => {
     if (req.userData._id !== req.body.id) {
         res.status(401).json({
             message: "Auth Failed"
