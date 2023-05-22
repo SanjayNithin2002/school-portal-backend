@@ -127,26 +127,26 @@ router.post("/", checkAuth, (req, res) => {
         // check bonafide models 
         student: req.body.student,
         passport: {
-            description: (req.body.passport !== undefined) ? req.body.passport.description : "NA"
+            description: (req.body.passport) ? req.body.passport.description : "NA"
         },
         visa: {
-            fromDate: (req.body.visa !== undefined) ? req.body.visa.fromDate : "NA",
-            toDate: (req.body.visa !== undefined) ? req.body.visa.toDate : "NA",
-            place: (req.body.visa !== undefined) ? req.body.visa.place :  "NA",
-            description: (req.body.visa !== undefined) ? req.body.visa.description : "NA"
+            fromDate: (req.body.visa) ? req.body.visa.fromDate : "NA",
+            toDate: (req.body.visa) ? req.body.visa.toDate : "NA",
+            place: (req.body.visa) ? req.body.visa.place :  "NA",
+            description: (req.body.visa) ? req.body.visa.description : "NA"
         },
         buspass: {
-            description: (req.body.buspass !== undefined) ? req.body.buspass.description : "NA"
+            description: (req.body.buspass) ? req.body.buspass.description : "NA"
         },
         incomeTax: {
-            description: (req.body.incomeTax !== undefined) ? req.body.incomeTax.description : "NA",
-            employee: (req.body.incomeTax !== undefined) ? req.body.incomeTax.employee : "NA"
+            description: (req.body.incomeTax) ? req.body.incomeTax.description : "NA",
+            employee: (req.body.incomeTax) ? req.body.incomeTax.employee : "NA"
         },
         NCCBonafide: {
-            description: (req.body.NCCBonafide !== undefined) ? req.body.NCCBonafide.description : "NA"
+            description: (req.body.NCCBonafide) ? req.body.NCCBonafide.description : "NA"
         },
         tc: {
-            description: (req.body.tc !== undefined) ? req.body.TC.description : "NA"
+            description: (req.body.tc) ? req.body.TC.description : "NA"
         },
         requestedFile: null
     });

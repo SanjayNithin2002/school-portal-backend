@@ -3,7 +3,7 @@ var express = require('express');
 var router = express.Router();
 var checkAuth = require('../middleware/checkAuth');
 
-router.post("/",checkAuth, (req, res, next) => {
+router.post("/", checkAuth, (req, res, next) => {
     const mailOptions = {
         from: req.body.email,
         to: "sanjay.nithin19@gmail.com",
@@ -21,7 +21,7 @@ router.post("/",checkAuth, (req, res, next) => {
             if (error) {
                 console.log(error);
             } else {
-                res.status(200).json({
+                res.status(201).json({
                     message: "Mail Sent Successfully"
                 });
             }
