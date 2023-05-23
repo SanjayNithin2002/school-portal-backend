@@ -6,11 +6,7 @@ var studentSchema = mongoose.Schema({
         type : String, 
         required : true
     },
-    email : {
-        type : String,
-        required : true,
-        unique : false
-    },
+    email : String,
     userID : {
         type : String,
         required : true,
