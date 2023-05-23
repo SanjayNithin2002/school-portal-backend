@@ -4,8 +4,7 @@ var classSchema = mongoose.Schema({
     _id : mongoose.SchemaTypes.ObjectId,
     teacher : {
         type : mongoose.SchemaTypes.ObjectId,
-        ref : 'Teachers',
-        required : true
+        ref : 'Teachers'
     },
     standard : Number,
     section : String,

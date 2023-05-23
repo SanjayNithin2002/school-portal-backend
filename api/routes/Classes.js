@@ -79,13 +79,13 @@ router.post("/", checkAuth, (req, res, next) => {
         standard : req.body.standard,
         section : req.body.section,
         subject : req.body.subject,
-        timings : req.body.timings.map(timing => {
+        timings : req.body.timings ?  req.body.timings.map(timing => {
             return {
                 startTime : timeToString(timing.startTime),
                 endTime : timeToString(timing.endTime),
                 day : timing.day
             }
-        })
+        }) : []
     });
     classes.save()
         .then(docs => {
