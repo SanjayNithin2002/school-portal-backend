@@ -89,7 +89,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
             var section = studDoc.section;
             Assessments.find().populate('class').exec()
                 .then(docs => {
-                    var assessments = docs.filter(doc => doc.class.standard == standard && doc.class.section == section);
+                    var assessments = docs.filter(doc => doc.class ?  doc.class.standard == standard && doc.class.section == section : false);
                     var assessments = assessments.map(doc => {
                         return {
                             _id: doc._id,
