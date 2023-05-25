@@ -66,6 +66,7 @@ router.get("/", checkAuth, (req, res) => {
                     service: doc.service,
                     [doc.service]: doc[doc.service],
                     requestedFile: doc.requestedFile !== null ? "https://schoolportalbackend.onrender.com/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
+                    postedOn : doc.postedOn
                 }
             });
             res.status(200).json({
@@ -88,6 +89,7 @@ router.get("/:id", checkAuth, (req, res) => {
                     service: doc.service,
                     [doc.service]: doc[doc.service],
                     requestedFile: doc.requestedFile !== null ? "https://schoolportalbackend.onrender.com/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
+                    postedOn : doc.postedOn
                 }
             })
         }).catch(err => {
@@ -107,6 +109,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
                     service: doc.service,
                     [doc.service]: doc[doc.service],
                     requestedFile: doc.requestedFile !== null ? "https://schoolportalbackend.onrender.com/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
+                    postedOn : doc.postedOn
                 }
             });
             res.status(200).json({
@@ -148,7 +151,8 @@ router.post("/", checkAuth, (req, res) => {
         tc: {
             description: (req.body.tc) ? req.body.TC.description : "NA"
         },
-        requestedFile: null
+        requestedFile: null,
+        postedOn : new Date().toJSON().slice(0, 10)
     });
     bonafide.save()
         .then(doc => {

@@ -33,7 +33,8 @@ var bonafideSchema = mongoose.Schema({
     requestedFile : {
         type : String,
         default : null
-    }
+    },
+    postedOn : Date
 });
 
 module.exports = mongoose.model("Bonafides", bonafideSchema);

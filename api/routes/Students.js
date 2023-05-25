@@ -445,7 +445,8 @@ router.patch("/:id", checkAuth, (req, res, next) => {
         .then(docs => {
             res.status(200).json({
                 message: "Student Updated Successfully",
-                docs: docs
+                docs: docs,
+                updateOps : updateOps
             })
         })
         .catch(err => {
