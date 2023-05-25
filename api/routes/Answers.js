@@ -141,7 +141,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
 router.get("/teachers/:teacherID", checkAuth, (req, res) => {
     Answers.find().populate([{ path: "assessment", populate: { path: "class" , populate : {path : "teacher" }} }, { path: "student" }]).exec()
         .then(docs => {
-            var answers = docs.filter(doc => doc.assessment.class.teacher._id == req.params.teacherID).map(doc => {
+            var answers = docs.filter(doc => doc.assessment.class ?  doc.assessment.class.teacher._id == req.params.teacherID : false).map(doc => {
                 return {
                     _id: doc._id,
                     assessment: doc.assessment,
