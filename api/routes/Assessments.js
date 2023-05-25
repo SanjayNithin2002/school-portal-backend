@@ -56,7 +56,7 @@ admin.initializeApp({
 var bucket = admin.storage().bucket();
 
 router.get("/", checkAuth, (req, res) => {
-    Assessments.find().exec()
+    Assessments.find().populate("class").exec()
         .then(docs => {
             var assessments = docs.map(doc => {
                 return {
@@ -67,10 +67,8 @@ router.get("/", checkAuth, (req, res) => {
                     lastDate: doc.lastDate,
                     title: doc.title,
                     description : doc.description,
-                    questionPaper: "http://localhost:3000/downloadfile/" + doc.questionPaper.split("\\").join("/"),
-                    subject: doc.class.subject,
-                    standard: doc.class.standard,
-                    section: doc.class.section
+                    questionPaper: "https://schoolportalbackend.onrender.com/" + doc.questionPaper.split("\\").join("/"),
+                    class: doc.class
                 }
             });
             res.status(200).json({
@@ -101,10 +99,8 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
                             lastDate: doc.lastDate,
                             title: doc.title,
                             description : doc.description,
-                            questionPaper: "http://localhost:3000/downloadfile/" + doc.questionPaper.split("\\").join("/"),
-                            subject: doc.class.subject,
-                            standard: doc.class.standard,
-                            section: doc.class.section
+                            questionPaper: "https://schoolportalbackend.onrender.com/" + doc.questionPaper.split("\\").join("/"),
+                            class : doc.class
                         }
                     })
                     res.status(200).json({
@@ -122,6 +118,36 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
             })
         });
 });
+
+router.get("/teachers/:teacherID", (req, res) => {
+    Assessments.find().populate('class').exec()
+        .then(docs => {
+            var assessments = docs.filter(doc => doc.class ? doc.class.teacher == req.params.teacherID : false);
+            var assessments = assessments.map(doc => {
+                return {
+                    _id: doc._id,
+                    maxMarks: doc.maxMarks,
+                    weightageMarks: doc.weightageMarks,
+                    postedOn: doc.postedOn,
+                    lastDate: doc.lastDate,
+                    title: doc.title,
+                    description : doc.description,
+                    questionPaper: "https://schoolportalbackend.onrender.com/" + doc.questionPaper.split("\\").join("/"),
+                    class : doc.class
+                }
+            })
+            res.status(200).json({
+                assessments: assessments
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+});
+
+
 router.post("/", checkAuth, upload.single('questionPaper'), (req, res) => {
     var assessment = new Assessments({
         _id: new mongoose.Types.ObjectId(),
