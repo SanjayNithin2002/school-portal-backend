@@ -210,7 +210,7 @@ router.post("/login", (req, res, next) => {
                             userID: docs[0].userID,
                             _id: docs[0]._id
                         }, process.env.JWT_KEY, {
-                            expiresIn: "1h"
+                            expiresIn: "24h"
                         });
                         res.status(200).json({
                             message: "Auth Successful",
@@ -277,8 +277,8 @@ router.get("/class/:classID", checkAuth, (req, res, next) => {
     })
 });
 
-router.get("/generatecsv/:standard/:section", checkAuth, (req, res, next) => {
-    const filePath = "public/csv/" + req.params.standard + req.params.section + ".csv";
+router.get("/marks/generatecsv/:standard/:section", checkAuth, (req, res, next) => {
+    const filePath = "public/marks/" + req.params.standard + req.params.section + ".csv";
     fs.access(filePath, fs.constants.F_OK, (error) => {
         if (error) {
             Students.find({ standard: req.params.standard, section: req.params.section }).exec()
@@ -307,7 +307,53 @@ router.get("/generatecsv/:standard/:section", checkAuth, (req, res, next) => {
                         });
                         csvWriter
                             .writeRecords(studentArray)
-                            .then(() => res.sendFile(path.join(__dirname, "../../public/csv/" + req.params.standard + req.params.section + ".csv")))
+                            .then(() => res.sendFile(path.join(__dirname, "../../public/marks/" + req.params.standard + req.params.section + ".csv")))
+                            .catch((error) => console.error(error));
+                    }
+                })
+                .catch(err => {
+                    res.status(500).json({
+                        error: err
+                    })
+                });
+        } else {
+            res.sendFile(path.join(__dirname, "../../public/marks/" + req.params.standard + req.params.section + ".csv"));
+        }
+    });
+
+});
+
+router.get("/generatecsv/:standard", checkAuth, (req, res, next) => {
+    const filePath = "public/csv/" + req.params.standard + ".csv";
+    fs.access(filePath, fs.constants.F_OK, (error) => {
+        if (error) {
+            Students.find({ standard: req.params.standard }).exec()
+                .then(docs => {
+                    if (docs.length < 1) {
+                        res.status(404).json({
+                            message: "No Students Found"
+                        })
+                    } else {
+                        const csvWriter = createCsvWriter({
+                            path: "public/csv/" + req.params.standard + ".csv",
+                            header: [
+                                { id: '_id', title: 'id' },
+                                { id: 'name', title: 'Name' },
+                                { id: 'gender', title : 'Gender'},
+                                { id : 'section', title : 'Section'}
+                            ]
+                        });
+                        var studentArray = docs.map((student) => {
+                            return {
+                                _id: student._id,
+                                name: student.firstName + " " + student.lastName,
+                                gender : student.gender,
+                                section : null
+                            }
+                        });
+                        csvWriter
+                            .writeRecords(studentArray)
+                            .then(() => res.sendFile(path.join(__dirname, "../../public/csv/" + req.params.standard + ".csv")))
                             .catch((error) => console.error(error));
                     }
                 })

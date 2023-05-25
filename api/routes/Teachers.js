@@ -181,7 +181,7 @@ router.post("/login", (req, res, next) => {
                             userID: docs[0].userID,
                             _id: docs[0]._id
                         }, process.env.JWT_KEY, {
-                            expiresIn: "1h"
+                            expiresIn: "24h"
                         });
                         res.status(200).json({
                             message: "Auth Successful",
