@@ -2,8 +2,9 @@ var mongoose = require('mongoose');
 var PersonalMessages = require('../models/PersonalMessages');
 var express = require('express');
 var router = express.Router();
+var checkAuth = require('../middleware/checkAuth');
 
-router.get("/", (req, res) => {
+router.get("/", checkAuth, (req, res) => {
     PersonalMessages.find().populate([{ path: "teacher" }, { path: "student" }]).exec()
         .then(docs => {
             var personalMessages = docs.map(doc => {
@@ -23,7 +24,7 @@ router.get("/", (req, res) => {
             });
         });
 });
-router.get("/:id", (req, res) => {
+router.get("/:id", checkAuth, (req, res) => {
     PersonalMessages.findById(req.params.id).populate([{ path: "teacher" }, { path: "student" }]).exec()
         .then(doc => {
             if (doc) {
@@ -46,7 +47,7 @@ router.get("/:id", (req, res) => {
             });
         });
 });
-router.get("/students/:studentID", (req, res) => {
+router.get("/students/:studentID", checkAuth, (req, res) => {
     PersonalMessages.find({ student: req.params.studentID }).populate([{ path: "teacher" }, { path: "student" }]).exec()
         .then(docs => {
             var personalMessages = docs.map(doc => {
@@ -68,7 +69,7 @@ router.get("/students/:studentID", (req, res) => {
         }
         );
 });
-router.get("/teachers/:teacherID", (req, res) => {
+router.get("/teachers/:teacherID", checkAuth, (req, res) => {
     PersonalMessages.find({ teacher: req.params.teacherID }).populate([{ path: "teacher" }, { path: "student" }]).exec()
         .then(docs => {
             var personalMessages = docs.map(doc => {
@@ -90,7 +91,7 @@ router.get("/teachers/:teacherID", (req, res) => {
         }
         );
 });
-router.post("/", (req, res) => {
+router.post("/", checkAuth, (req, res) => {
     const personalMessages = new PersonalMessages({
         _id: new mongoose.Types.ObjectId(),
         teacher: req.body.teacher,
@@ -117,7 +118,7 @@ router.post("/", (req, res) => {
             });
         });
 });
-router.delete("/:id", (req, res) => {
+router.delete("/:id", checkAuth, (req, res) => {
     PersonalMessages.findByIdAndDelete(req.params.id)
         .then(result => {
             res.status(200).json({

@@ -23,6 +23,8 @@ var teacherAttendanceRoutes = require('./api/routes/TeacherAttendance');
 var studentAttendanceRoutes = require('./api/routes/StudentAttendance');
 var downloadFileRoutes = require('./api/routes/DownloadFile');
 var answerRoutes = require('./api/routes/Answers');
+var personalMessagesRoutes = require('./api/routes/PersonalMessages');
+var timetableRoutes = require('./api/routes/Timetable');
 
 
 const app = express();
@@ -81,6 +83,8 @@ app.use('/teacherattendances', teacherAttendanceRoutes);
 app.use('/studentattendances', studentAttendanceRoutes);
 app.use('/downloadfile', downloadFileRoutes);
 app.use('/answers', answerRoutes);
+app.use('/personalmessages', personalMessagesRoutes);
+app.use('/timetables', timetableRoutes);
 app.get('/', (req, res) => {
     res.status(200).json({
         message: "Welcome to School Management API"
