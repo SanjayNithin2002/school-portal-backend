@@ -324,7 +324,7 @@ router.get("/marks/generatecsv/:standard/:section", checkAuth, (req, res, next) 
 });
 
 router.get("/generatecsv/:standard", checkAuth, (req, res, next) => {
-    const filePath = "public/csv/" + req.params.standard + ".csv";
+    const filePath = "public/students/" + req.params.standard + ".csv";
     fs.access(filePath, fs.constants.F_OK, (error) => {
         if (error) {
             Students.find({ standard: req.params.standard }).exec()
@@ -353,7 +353,7 @@ router.get("/generatecsv/:standard", checkAuth, (req, res, next) => {
                         });
                         csvWriter
                             .writeRecords(studentArray)
-                            .then(() => res.sendFile(path.join(__dirname, "../../public/csv/" + req.params.standard + ".csv")))
+                            .then(() => res.sendFile(path.join(__dirname, "../../public/students/" + req.params.standard + ".csv")))
                             .catch((error) => console.error(error));
                     }
                 })
@@ -363,7 +363,7 @@ router.get("/generatecsv/:standard", checkAuth, (req, res, next) => {
                     })
                 });
         } else {
-            res.sendFile(path.join(__dirname, "../../public/csv/" + req.params.standard + req.params.section + ".csv"));
+            res.sendFile(path.join(__dirname, "../../public/students/" + req.params.standard + req.params.section + ".csv"));
         }
     });
 

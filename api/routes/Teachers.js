@@ -4,6 +4,9 @@ var express = require('express');
 var router = express.Router();
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
+var fs = require('fs');
+var path = require('path');
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const jwt = require("jsonwebtoken");
 const checkAuth = require('../middleware/checkAuth');
 
@@ -231,6 +234,55 @@ router.get("/:id", checkAuth, (req, res, next) => {
             })
         })
 });
+
+router.get("generatecsv", checkAuth, (req, res, next) => {
+    const filePath = "public/csv/teachers.csv";
+    fs.access(filePath, fs.constants.F_OK, (error) => {
+        if (error) {
+            Teachers.find().exec()
+                .then(docs => {
+                    if (docs.length < 1) {
+                        res.status(404).json({
+                            message: "No Teachers Found"
+                        })
+                    } else {
+                        const csvWriter = createCsvWriter({
+                            path: "public/csv/teachers.csv",
+                            header: [
+                                { id: '_id', title: 'id' },
+                                { id: 'name', title: 'Name' },
+                                { id : 'empid', title: 'EmployeeID'},
+                                { id: 'status', title: 'Status' }
+                            ]
+                        });
+                        var teacherArray = docs.map(doc => {
+                            return {
+                                _id : doc._id,
+                                name: doc.firstName + " " + doc.lastName,
+                                empid : doc.empid,
+                                status: null
+
+                            }
+                        })
+                        csvWriter
+                            .writeRecords(studentArray)
+                            .then(() => res.sendFile(path.join(__dirname, "../../public/csv/teachers.csv")))
+                            .catch((error) => console.error(error));
+                    }
+                })
+                .catch(err => {
+                    res.status(500).json({
+                        error: err
+                    })
+                });
+        } else {
+            res.sendFile(path.join(__dirname, "../../public/csv/teachers.csv"));
+        }
+    });
+
+});
+
+
 
 router.patch("/changeuserid", checkAuth, (req, res) => {
     var id = req.body.id;
