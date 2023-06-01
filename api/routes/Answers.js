@@ -62,7 +62,8 @@ router.get("/", checkAuth, (req, res) => {
                     _id: doc._id,
                     assessment: doc.assessment,
                     student: doc.student,
-                    answerFile: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.answerFile.split("\\").join("/")
+                    answerFile: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.answerFile.split("\\").join("/"),
+                    postedOn: doc.postedOn
                 }
             });
             res.status(200).json({
@@ -81,8 +82,11 @@ router.get("/:id", checkAuth, (req, res) => {
     Answers.findById(req.params.id).populate([{ path: "assessment", populate: { path: "class" } }, { path: "student" }]).exec()
         .then(doc => {
             res.status(200).json({
-                answer: doc,
-                url: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.answerFile.split("\\").join("/")
+                _id: doc._id,
+                assessment: doc.assessment,
+                student: doc.student,
+                answerFile: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.answerFile.split("\\").join("/"),
+                postedOn: doc.postedOn
             });
         })
         .catch(err => {
@@ -100,7 +104,8 @@ router.get("/assessments/:assID", checkAuth, (req, res) => {
                     _id: doc._id,
                     assessment: doc.assessment,
                     student: doc.student,
-                    answerFile: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.answerFile.split("\\").join("/")
+                    answerFile: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.answerFile.split("\\").join("/"),
+                    postedOn: doc.postedOn
                 }
             });
             res.status(200).json({
@@ -123,7 +128,8 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
                     _id: doc._id,
                     assessment: doc.assessment,
                     student: doc.student,
-                    answerFile: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.answerFile.split("\\").join("/")
+                    answerFile: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.answerFile.split("\\").join("/"),
+                    postedOn: doc.postedOn
                 }
             });
             res.status(200).json({
@@ -139,14 +145,15 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
 });
 
 router.get("/teachers/:teacherID", checkAuth, (req, res) => {
-    Answers.find().populate([{ path: "assessment", populate: { path: "class" , populate : {path : "teacher" }} }, { path: "student" }]).exec()
+    Answers.find().populate([{ path: "assessment", populate: { path: "class", populate: { path: "teacher" } } }, { path: "student" }]).exec()
         .then(docs => {
-            var answers = docs.filter(doc => doc.assessment.class ?  doc.assessment.class.teacher._id == req.params.teacherID : false).map(doc => {
+            var answers = docs.filter(doc => doc.assessment.class ? doc.assessment.class.teacher._id == req.params.teacherID : false).map(doc => {
                 return {
                     _id: doc._id,
                     assessment: doc.assessment,
                     student: doc.student,
-                    answerFile: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.answerFile.split("\\").join("/")
+                    answerFile: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.answerFile.split("\\").join("/"),
+                    postedOn: doc.postedOn
                 }
             });
             res.status(200).json({
@@ -166,7 +173,8 @@ router.post("/", checkAuth, upload.single('answerFile'), (req, res) => {
         _id: new mongoose.Types.ObjectId(),
         assessment: req.body.assessment,
         student: req.body.student,
-        answerFile: req.file.path
+        answerFile: req.file.path,
+        postedOn: new Date().toJSON().slice(0, 10)
     });
     answer.save()
         .then(doc => {
@@ -200,7 +208,7 @@ router.patch("/:id", checkAuth, upload.single("answerFile"), (req, res) => {
     //patch only the answerFile
     Answers.findByIdAndUpdate(req.params.id, { answerFile: req.file.path }, { new: true }).exec()
         .then(result => {
-            res.status(200).json({
+            res.status(201).json({
                 message: "Answer updated",
                 updatedAnswer: {
                     _id: result._id,

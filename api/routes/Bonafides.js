@@ -66,7 +66,9 @@ router.get("/", checkAuth, (req, res) => {
                     service: doc.service,
                     [doc.service]: doc[doc.service],
                     requestedFile: doc.requestedFile !== null ? "https://schoolportalbackend.onrender.com/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
-                    postedOn : doc.postedOn
+                    postedOn: doc.postedOn,
+                    status: doc.status,
+                    message: doc.message
                 }
             });
             res.status(200).json({
@@ -89,7 +91,9 @@ router.get("/:id", checkAuth, (req, res) => {
                     service: doc.service,
                     [doc.service]: doc[doc.service],
                     requestedFile: doc.requestedFile !== null ? "https://schoolportalbackend.onrender.com/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
-                    postedOn : doc.postedOn
+                    postedOn: doc.postedOn,
+                    status: doc.status,
+                    message: doc.message
                 }
             })
         }).catch(err => {
@@ -109,7 +113,9 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
                     service: doc.service,
                     [doc.service]: doc[doc.service],
                     requestedFile: doc.requestedFile !== null ? "https://schoolportalbackend.onrender.com/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
-                    postedOn : doc.postedOn
+                    postedOn: doc.postedOn,
+                    status: doc.status,
+                    message: doc.message
                 }
             });
             res.status(200).json({
@@ -135,7 +141,7 @@ router.post("/", checkAuth, (req, res) => {
         visa: {
             fromDate: (req.body.visa) ? req.body.visa.fromDate : "NA",
             toDate: (req.body.visa) ? req.body.visa.toDate : "NA",
-            place: (req.body.visa) ? req.body.visa.place :  "NA",
+            place: (req.body.visa) ? req.body.visa.place : "NA",
             description: (req.body.visa) ? req.body.visa.description : "NA"
         },
         buspass: {
@@ -152,7 +158,7 @@ router.post("/", checkAuth, (req, res) => {
             description: (req.body.tc) ? req.body.TC.description : "NA"
         },
         requestedFile: null,
-        postedOn : new Date().toJSON().slice(0, 10)
+        postedOn: new Date().toJSON().slice(0, 10)
     });
     bonafide.save()
         .then(doc => {
@@ -170,31 +176,39 @@ router.post("/", checkAuth, (req, res) => {
 
 
 router.patch("/:id", checkAuth, upload.single("bonafide"), (req, res) => {
-    Bonafides.findByIdAndUpdate(req.params.id, {
-        $set: {
-            requestedFile: req.file.path
-        }
-    }).exec()
+    updateOps = {
+        requestedFile: req.file ? req.file.path : null,
+        status: req.body.status,
+        message: req.body.message
+    }
+    Bonafides.findByIdAndUpdate(req.params.id, { $set: updateOps }).exec()
         .then(doc => {
-            bucket.upload(req.file.path, {
-                destination: 'bonafides/' + req.file.filename,
-                metadata: {
-                    contentType: req.file.mimetype
+            if (doc.requestedFile !== null) {
+                bucket.upload(req.file.path, {
+                    destination: 'bonafides/' + req.file.filename,
+                    metadata: {
+                        contentType: req.file.mimetype
+                    }
+                }, (err, file) => {
+                    if (err) {
+                        res.status(500).json({
+                            error: err
+                        });
+                    }
+                    else {
+                        res.status(201).json({
+                            message: "Bonafide Uploaded Successfully",
+                            doc: doc
+                        });
+                    }
                 }
-            }, (err, file) => {
-                if (err) {
-                    res.status(500).json({
-                        error: err
-                    });
-                }
-                else {
-                    res.status(201).json({
-                        message: "Bonafide Uploaded Successfully",
-                        doc: doc
-                    });
-                }
+                )
+            } else {
+                res.status(201).json({
+                    message: "Bonafide Updated Successfully",
+                    doc: doc
+                });
             }
-            );
         })
         .catch(err => {
             res.status(500).json({

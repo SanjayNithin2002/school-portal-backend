@@ -67,7 +67,7 @@ router.get("/", checkAuth, (req, res) => {
                     lastDate: doc.lastDate,
                     title: doc.title,
                     description : doc.description,
-                    questionPaper: "https://schoolportalbackend.onrender.com/" + doc.questionPaper.split("\\").join("/"),
+                    questionPaper: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.questionPaper.split("\\").join("/"),
                     class: doc.class
                 }
             });
@@ -99,7 +99,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
                             lastDate: doc.lastDate,
                             title: doc.title,
                             description : doc.description,
-                            questionPaper: "https://schoolportalbackend.onrender.com/" + doc.questionPaper.split("\\").join("/"),
+                            questionPaper: "https://schoolportalbackend.onrender.com//downloadfile/" + doc.questionPaper.split("\\").join("/"),
                             class : doc.class
                         }
                     })
@@ -132,7 +132,7 @@ router.get("/teachers/:teacherID", (req, res) => {
                     lastDate: doc.lastDate,
                     title: doc.title,
                     description : doc.description,
-                    questionPaper: "https://schoolportalbackend.onrender.com/" + doc.questionPaper.split("\\").join("/"),
+                    questionPaper: "https://schoolportalbackend.onrender.com//downloadfile/" + doc.questionPaper.split("\\").join("/"),
                     class : doc.class
                 }
             })
@@ -189,11 +189,29 @@ router.post("/", checkAuth, upload.single('questionPaper'), (req, res) => {
         });
 });
 
+router.patch("/:id", checkAuth, (req, res) => {
+    var updateOps = {};
+    for (const ops of req.body) {
+        updateOps[ops.propName] = ops.value;
+    }
+    Assessments.findByIdAndUpdate(req.params.id, { $set: updateOps }).exec()
+        .then(doc => {
+            res.status(201).json({
+                message: "Assessment Updated Successfully",
+                doc: doc
+            })
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+});
 
 router.delete("/:id", checkAuth, (req, res) => {
     Assessments.findByIdAndDelete(req.params.id).exec()
         .then(doc => {
-            res.status(201).json({
+            res.status(200).json({
                 message: "Assessment Deleted Successfully",
                 doc: doc
             })

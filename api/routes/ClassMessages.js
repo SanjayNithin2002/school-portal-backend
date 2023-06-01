@@ -38,6 +38,7 @@ router.get("/students/:studentID", checkAuth, (req, res)=> {
 })
 });
 
+
 router.get("/teachers/:teacherID", checkAuth, (req, res)=>{
     var teacherID = req.params.teacherID;
     ClassMessages.find().populate('class').exec()
@@ -50,6 +51,8 @@ router.get("/teachers/:teacherID", checkAuth, (req, res)=>{
         })
     })
 });
+
+
 
 router.post("/", checkAuth, (req, res) => {
     var classMessages = new ClassMessages({

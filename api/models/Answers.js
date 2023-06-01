@@ -12,7 +12,8 @@ var answerSchema = new mongoose.Schema({
         ref : "Students",
         required : true
     },
-    answerFile : String
+    answerFile : String,
+    postedOn : Date
 });
 
 module.exports = mongoose.model("Answers", answerSchema);

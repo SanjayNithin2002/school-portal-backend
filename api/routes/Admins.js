@@ -4,7 +4,6 @@ var express = require('express');
 var router = express.Router();
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
-const bcrypt = require("bcrypt");
 var fs = require('fs');
 var path = require('path');
 const jwt = require("jsonwebtoken");

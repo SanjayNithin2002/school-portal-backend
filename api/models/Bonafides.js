@@ -34,7 +34,15 @@ var bonafideSchema = mongoose.Schema({
         type : String,
         default : null
     },
-    postedOn : Date
+    postedOn : Date,
+    status : {
+        type : String,
+        default : "Pending"
+    },
+    message : {
+        type : String,
+        default : null
+    }
 });
 
 module.exports = mongoose.model("Bonafides", bonafideSchema);

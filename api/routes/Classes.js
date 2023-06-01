@@ -33,7 +33,7 @@ router.get("/:id", checkAuth, (req, res, next) => {
         });
 });
 
-router.get("students/:studentID", checkAuth, (req, res, next) => {
+router.get("/students/:studentID", checkAuth, (req, res, next) => {
     Students.findById(req.params.studentID).exec()
         .then(studDoc => {
             var standard = studDoc.standard;
@@ -58,7 +58,7 @@ router.get("students/:studentID", checkAuth, (req, res, next) => {
         });
 });
 
-router.get("teachers/:teacherID", checkAuth, (req, res, next) => {
+router.get("/teachers/:teacherID", checkAuth, (req, res, next) => {
     Classes.find({ teacher: req.params.teacherID }).populate('teacher').exec()
         .then(docs => {
             res.status(200).json({
