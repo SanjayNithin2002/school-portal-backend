@@ -58,7 +58,8 @@ router.post("/", checkAuth, (req, res) => {
     var classMessages = new ClassMessages({
         _id: new mongoose.Types.ObjectId(),
         class: req.body.class,
-        message: req.body.message
+        message: req.body.message,
+        postedBy : req.body.postedBy
     });
     classMessages.save()
         .then(docs => {
