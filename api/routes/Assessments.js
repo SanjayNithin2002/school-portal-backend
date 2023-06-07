@@ -37,16 +37,16 @@ const upload = multer({
 });
 const serviceAccount = {
     type: process.env.type,
-    project_id : process.env.project_id,
+    project_id: process.env.project_id,
     private_key_id: process.env.private_key_id,
-    private_key : process.env.private_key.replace(/\\n/g, '\n'),
+    private_key: process.env.private_key.replace(/\\n/g, '\n'),
     client_email: process.env.client_email,
-    client_id : process.env.client_id,
-    auth_uri : process.env.auth_uri,
-    token_uri : process.env.token_uri,
-    auth_provider_x509_cert_url : process.env.auth_provider_x509_cert_url,
-    client_x509_cert_url : process.env.client_x509_cert_url,
-    universe_domain : process.env.universe_domain
+    client_id: process.env.client_id,
+    auth_uri: process.env.auth_uri,
+    token_uri: process.env.token_uri,
+    auth_provider_x509_cert_url: process.env.auth_provider_x509_cert_url,
+    client_x509_cert_url: process.env.client_x509_cert_url,
+    universe_domain: process.env.universe_domain
 }
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -66,7 +66,7 @@ router.get("/", checkAuth, (req, res) => {
                     postedOn: doc.postedOn,
                     lastDate: doc.lastDate,
                     title: doc.title,
-                    description : doc.description,
+                    description: doc.description,
                     questionPaper: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.questionPaper.split("\\").join("/"),
                     class: doc.class
                 }
@@ -89,7 +89,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
             var section = studDoc.section;
             Assessments.find().populate('class').exec()
                 .then(docs => {
-                    var assessments = docs.filter(doc => doc.class ?  doc.class.standard == standard && doc.class.section == section : false);
+                    var assessments = docs.filter(doc => doc.class ? doc.class.standard == standard && doc.class.section == section : false);
                     var assessments = assessments.map(doc => {
                         return {
                             _id: doc._id,
@@ -98,9 +98,9 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
                             postedOn: doc.postedOn,
                             lastDate: doc.lastDate,
                             title: doc.title,
-                            description : doc.description,
+                            description: doc.description,
                             questionPaper: "https://schoolportalbackend.onrender.com//downloadfile/" + doc.questionPaper.split("\\").join("/"),
-                            class : doc.class
+                            class: doc.class
                         }
                     })
                     res.status(200).json({
@@ -131,9 +131,9 @@ router.get("/teachers/:teacherID", (req, res) => {
                     postedOn: doc.postedOn,
                     lastDate: doc.lastDate,
                     title: doc.title,
-                    description : doc.description,
+                    description: doc.description,
                     questionPaper: "https://schoolportalbackend.onrender.com//downloadfile/" + doc.questionPaper.split("\\").join("/"),
-                    class : doc.class
+                    class: doc.class
                 }
             })
             res.status(200).json({
@@ -156,7 +156,7 @@ router.post("/", checkAuth, upload.single('questionPaper'), (req, res) => {
         postedOn: new Date().toJSON().slice(0, 10),
         lastDate: req.body.lastDate,
         title: req.body.title,
-        description : req.body.description,
+        description: req.body.description,
         questionPaper: req.file.path,
         class: req.body.class
     });
@@ -176,6 +176,36 @@ router.post("/", checkAuth, upload.single('questionPaper'), (req, res) => {
                 else {
                     res.status(201).json({
                         message: "Assessment Uploaded Successfully",
+                        doc: doc
+                    });
+                }
+            }
+            );
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+});
+
+router.patch("/questionPaper/:id", checkAuth, upload.single('questionPaper'), (req, res) => {
+    Assessments.findByIdAndUpdate(req.params.id, { $set: { questionPaper: req.file.path } }).exec()
+        .then(doc => {
+            bucket.upload(req.file.path, {
+                destination: 'assessments/' + req.file.filename,
+                metadata: {
+                    contentType: req.file.mimetype
+                }
+            }, (err, file) => {
+                if (err) {
+                    res.status(500).json({
+                        error: err
+                    });
+                }
+                else {
+                    res.status(201).json({
+                        message: "Assessment Updated Successfully",
                         doc: doc
                     });
                 }

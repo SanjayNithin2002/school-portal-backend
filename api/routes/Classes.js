@@ -3,6 +3,7 @@ var express = require('express');
 var router = express.Router();
 var timeToString = require('../middleware/timeToString');
 var Classes = require('../models/Classes');
+var Students = require('../models/Students');
 var checkAuth = require('../middleware/checkAuth');
 
 router.get("/", checkAuth, (req, res, next) => {
@@ -33,7 +34,7 @@ router.get("/:id", checkAuth, (req, res, next) => {
         });
 });
 
-router.get("/students/:studentID", checkAuth, (req, res, next) => {
+router.get("/students/:studentID",  (req, res, next) => {
     Students.findById(req.params.studentID).exec()
         .then(studDoc => {
             var standard = studDoc.standard;

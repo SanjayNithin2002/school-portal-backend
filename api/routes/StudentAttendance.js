@@ -11,7 +11,7 @@ router.get("/", (req, res) => {
                 {
                     $group: {
                         _id: {
-                            student : '$student',
+                            student: '$student',
                             date: '$date'
                         },
                         count: {
@@ -70,7 +70,7 @@ router.get("/students/:studentID", (req, res) => {
                 {
                     $group: {
                         _id: {
-                            student : '$student',
+                            student: '$student',
                             date: '$date'
                         },
                         count: {
@@ -107,8 +107,24 @@ router.get("/students/:studentID", (req, res) => {
     })();
 });
 
+router.get("/standard/:standard/section/:section/date/:date/time/:time", checkAuth, (req, res) => {
+    StudentAttendance.find({date : new Date(req.params.date) , time: req.params.time }).populate('student').exec()
+        .then(docs => {
+            var docs = docs.filter(doc => doc.student.standard == req.params.standard && doc.student.section == req.params.section );
+            res.status(200).json({
+                StudentAttendances: docs
+            })
+        })
+        .catch(err => {~
+            res.status(500).json({
+                error: err
+            })
+        }
+        )
+});
 
-router.post("/", checkAuth, (req, res) => {
+
+router.post("/", (req, res) => {
     const studentAttendance = new StudentAttendance({
         _id: new mongoose.Types.ObjectId(),
         student: req.body.student,
@@ -150,7 +166,7 @@ router.post("/postmany", checkAuth, (req, res) => {
             createdStudentAttendances: result
         })
     }
-    ).catch(err => {    
+    ).catch(err => {
         res.status(500).json({
             error: err
         })

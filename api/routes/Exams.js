@@ -72,6 +72,8 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
 
 });
 
+router.get()
+
 
 router.post("/", checkAuth, (req, res) => {
     var exam = new Exams({
