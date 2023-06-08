@@ -72,6 +72,19 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
 
 });
 
+router.get("/standard/:standard/section/:section",checkAuth, (req, res) => {
+    Exams.find().populate('class').exec()
+        .then(docs => {
+            var docs = docs.filter(doc => doc.class.standard == req.params.standard && doc.class.section == req.params.section);
+            res.status(200).json({
+                docs : docs
+            });
+        }).catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+})
 
 router.post("/", checkAuth, (req, res) => {
     var exam = new Exams({
@@ -97,7 +110,7 @@ router.post("/", checkAuth, (req, res) => {
         });
 });
 
-router.delete("/:id",checkAuth,  (req, res) => {
+router.delete("/:id", checkAuth, (req, res) => {
     Exams.findByIdAndDelete(req.params.id).exec()
         .then(doc => {
             res.status(201).json({

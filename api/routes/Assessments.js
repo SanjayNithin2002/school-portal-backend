@@ -4,6 +4,7 @@ var multer = require('multer');
 var admin = require("firebase-admin");
 var Students = require('../models/Students');
 var Assessments = require('../models/Assessments');
+var Answers = require('../models/Answers');
 var checkAuth = require('../middleware/checkAuth');
 var router = express.Router();
 
@@ -241,9 +242,17 @@ router.patch("/:id", checkAuth, (req, res) => {
 router.delete("/:id", checkAuth, (req, res) => {
     Assessments.findByIdAndDelete(req.params.id).exec()
         .then(doc => {
-            res.status(200).json({
-                message: "Assessment Deleted Successfully",
-                doc: doc
+            Answers.deleteMany({ assessment : req.params.id}, (error) => {
+                if(err){
+                    res.status(500).json({
+                        error: err
+                    })
+                }else{
+                    res.status(200).json({
+                        message: "Assessment Deleted Successfully",
+                        doc: doc
+                    })
+                }
             })
         })
         .catch(err => {
