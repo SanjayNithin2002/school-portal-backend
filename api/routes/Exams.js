@@ -72,10 +72,10 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
 
 });
 
-router.get("/standard/:standard/section/:section",checkAuth, (req, res) => {
+router.get("/standard/:standard",checkAuth, (req, res) => {
     Exams.find().populate('class').exec()
         .then(docs => {
-            var docs = docs.filter(doc => doc.class.standard == req.params.standard && doc.class.section == req.params.section);
+            var docs = docs.filter(doc => doc.class.standard == req.params.standard);
             res.status(200).json({
                 docs : docs
             });
@@ -84,7 +84,8 @@ router.get("/standard/:standard/section/:section",checkAuth, (req, res) => {
                 error: err
             })
         });
-})
+});
+
 
 router.post("/", checkAuth, (req, res) => {
     var exam = new Exams({

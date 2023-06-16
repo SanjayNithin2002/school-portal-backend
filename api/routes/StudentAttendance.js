@@ -107,8 +107,8 @@ router.get("/students/:studentID", (req, res) => {
     })();
 });
 
-router.get("/standard/:standard/section/:section/date/:date/time/:time", checkAuth, (req, res) => {
-    StudentAttendance.find({date : new Date(req.params.date) , time: req.params.time }).populate('student').exec()
+router.get("/standard/:standard/section/:section/date/:date/", checkAuth, (req, res) => {
+    StudentAttendance.find({date : new Date(req.params.date)}).populate('student').exec()
         .then(docs => {
             var docs = docs.filter(doc => doc.student.standard == req.params.standard && doc.student.section == req.params.section );
             res.status(200).json({
