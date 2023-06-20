@@ -12,10 +12,7 @@ var examSchema = mongoose.Schema({
     endTime: String,
     maxMarks: Number,
     weightageMarks : Number,
-    title : {
-        name : String,
-        sequence : Number
-    }
+    examName : String
 });
 
 module.exports = mongoose.model("Exams", examSchema);
