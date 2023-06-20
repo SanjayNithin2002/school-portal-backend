@@ -111,7 +111,7 @@ router.post("/", checkAuth, (req, res) => {
         });
 });
 
-router.patch("/:id", (req, res) => {
+router.patch("/:id",checkAuth, (req, res) => {
     var updateOps = {};
     for (const ops of req.body) {
         updateOps[ops.propName] = ops.value;
