@@ -260,7 +260,7 @@ router.patch("/", checkAuth, (req, res, next) => {
             Leave.findByIdAndUpdate(req.body.id, { $set: { status: req.body.status } }, { new: true }).exec()
                 .then(docs => {
                     res.status(200).json({
-                        message: "Leave Deleted Successfully",
+                        message: "Leave Approved Successfully",
                         docs: docs
                     })
                 })
