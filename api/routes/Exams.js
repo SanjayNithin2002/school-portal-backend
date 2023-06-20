@@ -72,12 +72,12 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
 
 });
 
-router.get("/standard/:standard",checkAuth, (req, res) => {
+router.get("/standard/:standard", checkAuth, (req, res) => {
     Exams.find().populate('class').exec()
         .then(docs => {
             var docs = docs.filter(doc => doc.class.standard == req.params.standard);
             res.status(200).json({
-                docs : docs
+                docs: docs
             });
         }).catch(err => {
             res.status(500).json({
@@ -103,6 +103,25 @@ router.post("/", checkAuth, (req, res) => {
                 message: "Exam Posted Successfully",
                 doc: doc
             })
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+});
+
+router.patch("/:id", (req, res) => {
+    var updateOps = {};
+    for (const ops of req.body) {
+        updateOps[ops.propName] = ops.value;
+    }
+    Exams.findByIdAndUpdate(req.params.id, updateOps).exec()
+        .then(doc => {
+            res.status(200).json({
+                message: "Exam Updated",
+                doc: doc
+            });
         })
         .catch(err => {
             res.status(500).json({
