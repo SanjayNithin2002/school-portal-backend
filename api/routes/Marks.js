@@ -197,6 +197,25 @@ router.post("/postmany", checkAuth, upload.single("marks"), (req, res) => {
         });
 });
 
+router.patch("/:id", checkAuth, (req, res) => {
+    var updateOps = {};
+    for (const ops of req.body) {
+        updateOps[ops.propName] = ops.value;
+    }
+    Marks.findByIdAndUpdate(req.params.id, updateOps).exec()
+        .then(doc => {
+            res.status(200).json({
+                message : "Marks Updated",
+                doc : doc
+            })
+
+        }).catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+})
+
 router.delete("/:id", checkAuth, (req, res) => {
     Marks.findByIdAndDelete(req.params.id).exec()
         .then(doc => {
