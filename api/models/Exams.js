@@ -11,7 +11,7 @@ var examSchema = mongoose.Schema({
     startTime: String,
     endTime: String,
     maxMarks: Number,
-    examName: String,
+    weightageMarks : Number,
     title : {
         name : String,
         sequence : Number

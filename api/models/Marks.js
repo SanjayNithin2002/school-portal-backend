@@ -6,7 +6,6 @@ var markSchema = mongoose.Schema({
         ref : 'Students',
         required : true
     },
-    type : String,
     exam : {
         type : mongoose.Schema.Types.ObjectId,
         ref : 'Exams'

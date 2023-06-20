@@ -7,6 +7,7 @@ const fs = require('fs');
 const csv = require('csv-parser');
 var router = express.Router();
 var checkAuth = require('../middleware/checkAuth');
+const Exams = require('../models/Exams');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -121,80 +122,119 @@ router.get("/exams/:examID", checkAuth, (req, res) => {
 });
 
 router.post("/", checkAuth, (req, res) => {
-    Assessments.findById(req.body.assessment).exec()
-        .then(doc => {
-            var maxMarks = doc.maxMarks;
-            var weightageMarks = doc.weightageMarks;
-            var scoredMarks = req.body.scoredMarks;
-            var weightageScoredMarks = (scoredMarks / maxMarks) * weightageMarks;
-            var mark = new Marks({
-                _id: new mongoose.Types.ObjectId(),
-                student: req.body.student,
-                [req.body.type]: req.body[req.body.type],
-                scoredMarks: scoredMarks,
-                weightageScoredMarks: weightageScoredMarks,
-                remarks: req.body.remarks
-            });
-            mark.save()
-                .then(result => {
-                    res.status(201).json({
-                        message: "Mark Saved Successfully",
-                        result: result
-                    });
-                }
-                )
-                .catch(err => {
-                    res.status(500).json({
-                        error: err
-                    })
-                }
-                );
-        })
+    if (req.body.type === "assessment") {
+        Assessments.findById(req.body.assessment).exec()
+            .then(doc => {
+                var maxMarks = doc.maxMarks;
+                var weightageMarks = doc.weightageMarks;
+                var scoredMarks = req.body.scoredMarks;
+                var weightageScoredMarks = (scoredMarks / maxMarks) * weightageMarks;
+                var mark = new Marks({
+                    _id: new mongoose.Types.ObjectId(),
+                    student: req.body.student,
+                    [req.body.type]: req.body[req.body.type],
+                    scoredMarks: scoredMarks,
+                    weightageScoredMarks: weightageScoredMarks,
+                    remarks: req.body.remarks
+                });
+                mark.save()
+                    .then(result => {
+                        res.status(201).json({
+                            message: "Mark Saved Successfully",
+                            result: result
+                        });
+                    }
+                    )
+                    .catch(err => {
+                        res.status(500).json({
+                            error: err
+                        })
+                    }
+                    );
+            })
+    }
+    if (req.body.type === "exam") {
+        Exams.findById(req.body.exam).exec()
+            .then(doc => {
+                var maxMarks = doc.maxMarks;
+                var weightageMarks = doc.weightageMarks;
+                var scoredMarks = req.body.scoredMarks;
+                var weightageScoredMarks = (scoredMarks / maxMarks) * weightageMarks;
+                var mark = new Marks({
+                    _id: new mongoose.Types.ObjectId(),
+                    student: req.body.student,
+                    [req.body.type]: req.body[req.body.type],
+                    scoredMarks: scoredMarks,
+                    weightageScoredMarks: weightageScoredMarks,
+                    remarks: req.body.remarks
+                });
+                mark.save()
+                    .then(result => {
+                        res.status(201).json({
+                            message: "Mark Saved Successfully",
+                            result: result
+                        });
+                    }
+                    )
+                    .catch(err => {
+                        res.status(500).json({
+                            error: err
+                        })
+                    }
+                    );
+            })
+    }
 });
 
 router.post("/postmany", checkAuth, upload.single("marks"), (req, res) => {
     //receive student array and perform insert many operation
-    Assessments.findById(req.body.assessment).exec()
-        .then(doc => {
-            fs.createReadStream(req.file.path)
-                .pipe(csv())
-                .on('data', (data) => {
-                    var maxMarks = doc.maxMarks;
-                    var weightageMarks = doc.weightageMarks;
-                    var marks = [];
-                    marks.push(data);
-                    console.log(marks);
-                    var marks = marks.map(mark => {
-                        return {
-                            _id: new mongoose.Types.ObjectId(),
-                            student: mark.id,
-                            [req.body.type]: req.body[req.body.type],
-                            scoredMarks: mark.scoredMarks,
-                            weightageScoredMarks: (mark.scoredMarks / maxMarks) * weightageMarks,
-                            remarks: mark.Remarks
-                        }
-                    });
-                    Marks.insertMany(marks)
-                        .then(results => {
-                            res.status(201).json({
-                                message: "Marks Saved Successfully",
-                                results: results
-                            });
-                        })
-                        .catch(err => {
-                            res.status(500).json({
-                                error: err
-                            })
+    if (req.body.type === "assessment") {
+        Assessments.findById(req.body.assessment).exec()
+            .then(doc => {
+                fs.createReadStream(req.file.path)
+                    .pipe(csv())
+                    .on('data', (data) => {
+                        var maxMarks = doc.maxMarks;
+                        var weightageMarks = doc.weightageMarks;
+                        var marks = [];
+                        marks.push(data);
+                        console.log(marks);
+                        var marks = marks.map(mark => {
+                            return {
+                                _id: new mongoose.Types.ObjectId(),
+                                student: mark.id,
+                                [req.body.type]: req.body[req.body.type],
+                                scoredMarks: mark.scoredMarks,
+                                weightageScoredMarks: (mark.scoredMarks / maxMarks) * weightageMarks,
+                                remarks: mark.Remarks
+                            }
                         });
+                        Marks.insertMany(marks)
+                            .then(results => {
+                                res.status(201).json({
+                                    message: "Marks Saved Successfully",
+                                    results: results
+                                });
+                            })
+                            .catch(err => {
+                                res.status(500).json({
+                                    error: err
+                                })
+                            });
+                    })
+                    .on('end', () => {
+                        console.log('CSV file successfully processed');
+                    });
+            }).catch(err => {
+                res.status(500).json({
+                    error: err
                 })
-                .on('end', () => {
-                    console.log('CSV file successfully processed');
-                });
-        }).catch(err => {
-            res.status(500).json({
-                error: err
-            })
-        });
+            });
+    }
+    if (req.body.type === "exam") {
+
+    }
+
 });
 
 router.patch("/:id", checkAuth, (req, res) => {
@@ -205,8 +245,8 @@ router.patch("/:id", checkAuth, (req, res) => {
     Marks.findByIdAndUpdate(req.params.id, updateOps).exec()
         .then(doc => {
             res.status(200).json({
-                message : "Marks Updated",
-                doc : doc
+                message: "Marks Updated",
+                doc: doc
             })
 
         }).catch(err => {

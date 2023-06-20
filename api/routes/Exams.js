@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var express = require('express');
 var Exams = require('../models/Exams');
 var Students = require('../models/Students');
+var Classes = require('../models/Classes');
 var timeToString = require('../middleware/timeToString');
 var router = express.Router();
 var checkAuth = require('../middleware/checkAuth');
@@ -17,6 +18,7 @@ router.get("/", checkAuth, (req, res) => {
                         startTime: timeToString(doc.startTime),
                         endTime: timeToString(doc.endTime),
                         maxMarks: doc.maxMarks,
+                        weightageMarks: doc.weightageMarks,
                         examName: doc.examName,
                         subject: doc.class.subject,
                         standard: doc.class.standard,
@@ -49,6 +51,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
                             startTime: doc.startTime,
                             endTime: doc.endTime,
                             maxMarks: doc.maxMarks,
+                            weightageMarks: doc.weightageMarks,
                             examName: doc.examName,
                             subject: doc.class.subject,
                             standard: doc.class.standard,
@@ -95,6 +98,7 @@ router.post("/", checkAuth, (req, res) => {
         startTime: req.body.startTime,
         endTime: req.body.endTime,
         maxMarks: req.body.maxMarks,
+        weightageMarks: req.body.weightageMarks,
         examName: req.body.examName
     });
     exam.save()
@@ -111,7 +115,7 @@ router.post("/", checkAuth, (req, res) => {
         });
 });
 
-router.patch("/:id",checkAuth, (req, res) => {
+router.patch("/:id", checkAuth, (req, res) => {
     var updateOps = {};
     for (const ops of req.body) {
         updateOps[ops.propName] = ops.value;
@@ -143,6 +147,5 @@ router.delete("/:id", checkAuth, (req, res) => {
                 error: err
             })
         });
-})
-
+});
 module.exports = router;
