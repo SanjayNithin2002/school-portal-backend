@@ -71,7 +71,7 @@ app.use("/classes", classRoutes);
 app.use('/students', studentRoutes);
 app.use('/teachers', teacherRoutes);
 app.use('/admins', adminRoutes);
-app.use('/leave', leaveRoutes);
+app.use('/leaves', leaveRoutes);
 app.use('/classmessages', classMessageRoutes);
 app.use('/exams', examRoutes);
 app.use('/assessments', assesssmentRoutes);
