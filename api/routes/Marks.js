@@ -191,15 +191,20 @@ router.post("/postmany", checkAuth, upload.single("marks"), (req, res) => {
     if (req.body.type === "assessment") {
         Assessments.findById(req.body.assessment).exec()
             .then(doc => {
+                var marks = [];
+                var maxMarks = doc.maxMarks;
+                var weightageMarks = doc.weightageMarks;
                 fs.createReadStream(req.file.path)
                     .pipe(csv())
                     .on('data', (data) => {
-                        var maxMarks = doc.maxMarks;
-                        var weightageMarks = doc.weightageMarks;
-                        var marks = [];
+
+
                         marks.push(data);
+                    })
+                    .on('end', () => {
+                        console.log('CSV file successfully processed');
                         console.log(marks);
-                        var marks = marks.map(mark => {
+                        Marks.insertMany(marks.map(mark => {
                             return {
                                 _id: new mongoose.Types.ObjectId(),
                                 student: mark.id,
@@ -208,8 +213,7 @@ router.post("/postmany", checkAuth, upload.single("marks"), (req, res) => {
                                 weightageScoredMarks: (mark.scoredMarks / maxMarks) * weightageMarks,
                                 remarks: mark.Remarks
                             }
-                        });
-                        Marks.insertMany(marks)
+                        }))
                             .then(results => {
                                 res.status(201).json({
                                     message: "Marks Saved Successfully",
@@ -221,9 +225,6 @@ router.post("/postmany", checkAuth, upload.single("marks"), (req, res) => {
                                     error: err
                                 })
                             });
-                    })
-                    .on('end', () => {
-                        console.log('CSV file successfully processed');
                     });
             }).catch(err => {
                 res.status(500).json({
@@ -232,6 +233,46 @@ router.post("/postmany", checkAuth, upload.single("marks"), (req, res) => {
             });
     }
     if (req.body.type === "exam") {
+        Exams.findById(req.body.exam).exec()
+            .then(doc => {
+                var marks = [];
+                var maxMarks = doc.maxMarks;
+                var weightageMarks = doc.weightageMarks;
+                fs.createReadStream(req.file.path)
+                    .pipe(csv())
+                    .on('data', (data) => {
+                        marks.push(data);
+                    })
+                    .on('end', () => {
+                        console.log('CSV file successfully processed');
+                        console.log(marks);
+                        Marks.insertMany(marks.map(mark => {
+                            return {
+                                _id: new mongoose.Types.ObjectId(),
+                                student: mark.id,
+                                [req.body.type]: req.body[req.body.type],
+                                scoredMarks: mark.scoredMarks,
+                                weightageScoredMarks: (mark.scoredMarks / maxMarks) * weightageMarks,
+                                remarks: mark.Remarks
+                            }
+                        }))
+                            .then(results => {
+                                res.status(201).json({
+                                    message: "Marks Saved Successfully",
+                                    results: results
+                                });
+                            })
+                            .catch(err => {
+                                res.status(500).json({
+                                    error: err
+                                })
+                            });
+                    });
+            }).catch(err => {
+                res.status(500).json({
+                    error: err
+                })
+            });
 
     }
 
