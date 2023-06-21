@@ -317,7 +317,7 @@ router.get("/marks/generatecsv/:standard/:section", checkAuth, (req, res, next) 
                     })
                 });
         } else {
-            res.sendFile(path.join(__dirname, "../../public/marks/" + req.params.standard + req.params.section + ".csv"));
+            res.download(path.join(__dirname, "../../public/marks/" + req.params.standard + req.params.section + ".csv"));
         }
     });
 
@@ -363,7 +363,7 @@ router.get("/generatecsv/:standard", checkAuth, (req, res, next) => {
                     })
                 });
         } else {
-            res.sendFile(path.join(__dirname, "../../public/students/" + req.params.standard + req.params.section + ".csv"));
+            res.download(path.join(__dirname, "../../public/students/" + req.params.standard + req.params.section + ".csv"));
         }
     });
 
