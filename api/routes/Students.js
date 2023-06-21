@@ -289,7 +289,7 @@ router.get("/marks/generatecsv/:standard/:section", checkAuth, (req, res, next) 
                         })
                     } else {
                         const csvWriter = createCsvWriter({
-                            path: "public/csv/" + req.params.standard + req.params.section + ".csv",
+                            path: "public/marks/" + req.params.standard + req.params.section + ".csv",
                             header: [
                                 { id: '_id', title: 'id' },
                                 { id: 'name', title: 'Name' },
@@ -335,7 +335,7 @@ router.get("/generatecsv/:standard", checkAuth, (req, res, next) => {
                         })
                     } else {
                         const csvWriter = createCsvWriter({
-                            path: "public/csv/" + req.params.standard + ".csv",
+                            path: "public/students/" + req.params.standard + ".csv",
                             header: [
                                 { id: '_id', title: 'id' },
                                 { id: 'name', title: 'Name' },
