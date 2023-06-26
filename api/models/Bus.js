@@ -11,7 +11,11 @@ var busSchema = mongoose.Schema({
         fees: Number,
     }],
     availableSeats: Number,
-    maxSeats: Number
+    maxSeats: Number,
+    students : [{
+        type : mongoose.SchemaTypes.ObjectId,
+        ref : 'Students'
+    }]
 });
 
 module.exports = mongoose.model('Buses', busSchema);

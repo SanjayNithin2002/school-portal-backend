@@ -29,6 +29,7 @@ var extracurricularRoutes = require('./api/routes/Extracurricular');
 var busRoutes = require('./api/routes/Bus');
 var paymentRoutes = require('./api/routes/Payments');
 var hostelRoomsRoutes = require('./api/routes/HostelRooms');
+var hostelMessRoutes = require('./api/routes/HostelMess');
 
 const app = express();
 
@@ -92,6 +93,7 @@ app.use("/extracurricular", extracurricularRoutes);
 app.use("/buses", busRoutes);
 app.use('/payments', paymentRoutes);
 app.use('/hostelrooms', hostelRoomsRoutes);
+app.use('/hostelmess', hostelMessRoutes);
 app.get('/', (req, res) => {
     res.status(200).json({
         message: "Welcome to School Management API"
