@@ -82,7 +82,7 @@ router.patch("/:id/addstudent/:studentID", checkAuth, (req, res) => {
                         var payment = new Payments({
                             _id: new mongoose.Types.ObjectId(),
                             amount: doc.fees,
-                            due: new Date(doc.paymentDue),
+                            due: req.body.paymentDue,
                             status: "Pending",
                             student: req.params.studentID
                         });

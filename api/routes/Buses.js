@@ -1,56 +1,55 @@
 var mongoose = require('mongoose');
 var express = require('express');
-var HostelMess = require('../models/HostelMess');
+var Buses = require('../models/Buses');
 var Payments = require('../models/Payments');
 var checkAuth = require('../middleware/checkAuth');
 var router = express.Router();
 
 router.get("/", checkAuth, (req, res) => {
-    HostelMess.find().populate("students").exec()
+    Buses.find().populate("students").exec()
         .then(docs => {
             res.status(200).json({
                 docs: docs
-            });
+            })
         }).catch(err => {
             res.status(500).json({
                 error: err
-            });
+            })
         });
 });
 
 router.get("/:id", checkAuth, (req, res) => {
-    HostelMess.findById(req.params.id).populate("students").exec()
+    Buses.findById(req.params.id).populate("students").exec()
         .then(doc => {
             res.status(200).json({
                 doc: doc
-            });
+            })
         }).catch(err => {
             res.status(500).json({
                 error: err
-            });
+            })
         });
 });
 
 router.post("/", checkAuth, (req, res) => {
-    var hostelMess = new HostelMess({
+    var bus = new Buses({
         _id: new mongoose.Types.ObjectId(),
-        type: req.body.type,
-        available: req.body.maximum,
-        maximum: req.body.maximum,
-        fees: req.body.fees,
-        paymentDue: req.body.paymentDue,
+        busNumber: req.body.busNumber,
+        stops : req.body.stops,
+        availableSeats: req.body.maxSeats,
+        maxSeats: req.body.maxSeats,
         students: []
     });
-    hostelMess.save()
+    bus.save()
         .then(docs => {
             res.status(200).json({
-                message: "New Hostel Mess Created",
+                message: "New Bus Posted",
                 docs: docs
-            });
+            })
         }).catch(err => {
             res.status(500).json({
                 error: err
-            });
+            })
         });
 });
 
@@ -60,76 +59,84 @@ router.patch("/:id", checkAuth, (req, res) => {
     for (const ops of req.body) {
         updateOps[ops.propName] = ops.value;
     }
-    HostelMess.findByIdAndUpdate(id, updateOps).exec()
+    Buses.findByIdAndUpdate(id, updateOps).exec()
         .then(docs => {
             res.status(200).json({
-                message: "Hostel Mess Updated",
+                message: "Bus Patched",
                 docs: docs
-            });
+            })
         }).catch(err => {
             res.status(500).json({
                 error: err
-            });
+            })
         });
 });
 
-router.patch("/:id/addstudent/:studentID", checkAuth, (req, res) => {
-    HostelMess.findById(req.params.id).exec()
-        .then(doc => {
-            if (doc.available > 0) {
-                HostelMess.findByIdAndUpdate(req.params.id, { $push: { students: req.params.studentID }, $inc: { available: -1 } }).exec()
-                    .then(updatedDoc => {
+router.patch("/", checkAuth, (req, res) => {
+    var id = req.body.id;
+    var studentID = req.body.studentID;
+    var fees = req.body.fees;
+    var due = req.body.due;
+    Buses.findById(id).exec()
+        .then(bus => {
+            if (bus.availableSeats > 0) {
+                Buses.findByIdAndUpdate(id, { $push: { students: studentID }, $inc: { availableSeats: -1 } }).exec()
+                    .then(updatedBus => {
+                        // Create a new payment
                         var payment = new Payments({
                             _id: new mongoose.Types.ObjectId(),
-                            amount: doc.fees,
-                            due: req.body.paymentDue,
+                            amount: fees,
+                            due: due,
                             status: "Pending",
-                            student: req.params.studentID
+                            student: studentID
                         });
+
                         payment.save()
-                            .then(newDocs => {
+                            .then(newPayment => {
                                 res.status(200).json({
-                                    message: "Student Added",
-                                    doc: updatedDoc,
-                                    payment: newDocs
+                                    message: "Student Added to Bus",
+                                    bus: updatedBus,
+                                    payment: newPayment
                                 });
-                            }).catch(err => {
+                            })
+                            .catch(err => {
                                 console.error("Error saving payment:", err);
                                 res.status(500).json({
                                     error: err.message
                                 });
                             });
-                    }).catch(err => {
-                        console.error("Error updating hostel mess:", err);
+                    })
+                    .catch(err => {
+                        console.error("Error updating bus:", err);
                         res.status(500).json({
                             error: err.message
                         });
                     });
             } else {
                 res.status(400).json({
-                    message: "No available slots"
+                    message: "No available seats on the bus"
                 });
             }
-        }).catch(err => {
-            console.error("Error finding hostel mess:", err);
+        })
+        .catch(err => {
+            console.error("Error finding bus:", err);
             res.status(500).json({
                 error: err.message
             });
         });
 });
 
-
 router.delete("/:id", checkAuth, (req, res) => {
-    HostelMess.findByIdAndDelete(req.params.id).exec()
+    Buses.findByIdAndDelete(req.params.id).exec()
         .then(docs => {
             res.status(200).json({
-                message: "Hostel Mess Deleted",
+                message: "Bus Deleted",
                 docs: docs
-            });
+            })
         }).catch(err => {
             res.status(500).json({
                 error: err
-            });
+            })
         });
 });
 

@@ -6,7 +6,6 @@ var hostelMessSchema = mongoose.Schema({
     available : Number,
     maximum : Number,
     fees : Number,
-    paymentDue : Date,
     students : [{
         type : mongoose.SchemaTypes.ObjectId,
         ref : 'Students'
