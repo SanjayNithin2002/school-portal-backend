@@ -22,7 +22,8 @@ router.get("/", checkAuth, (req, res, next) => {
                         endDate : doc.endDate,
                         reason : doc.reason,
                         status : doc.status,
-                        type : doc.type
+                        type : doc.type,
+                        postedOn : doc.postedOn
                     }
                 })
             })
@@ -45,7 +46,8 @@ router.get("/:id", checkAuth, (req, res, next) => {
                 endDate : doc.endDate,
                 reason : doc.reason,
                 status : doc.status,
-                type : doc.type
+                type : doc.type,
+                postedOn : doc.postedOn
             })
         })
         .catch(err => {
@@ -68,7 +70,8 @@ router.get("/teachers/:teacherID", (req, res) => {
                         endDate : doc.endDate,
                         reason : doc.reason,
                         status : doc.status,
-                        type : doc.type
+                        type : doc.type,
+                        postedOn : doc.postedOn
                     }
                 })
             })
@@ -93,7 +96,8 @@ router.get("/admins/:adminID", (req, res) => {
                         endDate : doc.endDate,
                         reason : doc.reason,
                         status : doc.status,
-                        type : doc.type
+                        type : doc.type,
+                        postedOn : doc.postedOn
                     }
                 })
             })
@@ -123,7 +127,8 @@ router.post("/", checkAuth, (req, res, next) => {
                             type: req.body.type,
                             startDate: req.body.startDate,
                             endDate: req.body.endDate,
-                            reason: req.body.reason
+                            reason: req.body.reason,
+                            postedOn: new Date().toJSON().slice(0, 10),
                         });
                         leave.save()
                             .then(docs => {
@@ -177,7 +182,8 @@ router.post("/", checkAuth, (req, res, next) => {
                             type: req.body.type,
                             startDate: req.body.startDate,
                             endDate: req.body.endDate,
-                            reason: req.body.reason
+                            reason: req.body.reason,
+                            postedOn: new Date().toJSON().slice(0, 10),
                         });
                         leave.save()
                             .then(docs => {

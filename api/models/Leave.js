@@ -26,6 +26,7 @@ var leaveSchema = mongoose.Schema({
         type : String,
         default : "Pending"
     },
+    postedOn : Date,
     type : String
 });
  

@@ -25,7 +25,8 @@ var downloadFileRoutes = require('./api/routes/DownloadFile');
 var answerRoutes = require('./api/routes/Answers');
 var personalMessagesRoutes = require('./api/routes/PersonalMessages');
 var timetableRoutes = require('./api/routes/Timetable');
-
+var extracurricularRoutes = require('./api/routes/Extracurricular');
+var busRoutes = require('./api/routes/Bus');
 
 const app = express();
 
@@ -85,6 +86,8 @@ app.use('/downloadfile', downloadFileRoutes);
 app.use('/answers', answerRoutes);
 app.use('/personalmessages', personalMessagesRoutes);
 app.use('/timetables', timetableRoutes);
+app.use("/extracurricular", extracurricularRoutes);
+app.use("/buses", busRoutes);
 app.get('/', (req, res) => {
     res.status(200).json({
         message: "Welcome to School Management API"
