@@ -30,6 +30,19 @@ router.get("/:id", checkAuth, (req, res) => {
         });
 });
 
+router.get("/students/:studentID",checkAuth, (req, res) => {
+    Payments.find({ student: req.params.studentID }).exec()
+        .then(doc => {
+            res.status(200).json({
+                doc: doc
+            });
+        }).catch(err => {
+            res.status(500).json({
+                error: err
+            });
+        });
+});
+
 router.post("/", checkAuth, (req, res) => {
     var payment = new Payments({
         _id: new mongoose.Types.ObjectId(),
