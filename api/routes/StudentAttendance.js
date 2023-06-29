@@ -31,7 +31,7 @@ router.get("/", (req, res) => {
                 }
             ]);
             res.status(200).json({
-                results: results.map(result => {
+                docs: results.map(result => {
                     return {
                         student: result._id.student,
                         date: new Date(result._id.date).toISOString().split('T')[0],
@@ -52,7 +52,7 @@ router.get("/:id", (req, res) => {
     StudentAttendance.findById(req.params.id).exec()
         .then(docs => {
             res.status(200).json({
-                StudentAttendance: docs
+                docs: docs
             })
         }
         ).catch(err => {
@@ -91,7 +91,7 @@ router.get("/students/:studentID", (req, res) => {
             ]);
             var docs = results.filter(result => result._id.student == req.params.studentID);
             res.status(200).json({
-                results: docs.map(doc => {
+                docs: docs.map(doc => {
                     return {
                         student: doc._id.student,
                         date: new Date(doc._id.date).toISOString().split('T')[0],
@@ -112,7 +112,7 @@ router.get("/standard/:standard/section/:section/date/:date/", checkAuth, (req, 
         .then(docs => {
             var docs = docs.filter(doc => doc.student.standard == req.params.standard && doc.student.section == req.params.section );
             res.status(200).json({
-                StudentAttendances: docs
+                docs : docs
             })
         })
         .catch(err => {~

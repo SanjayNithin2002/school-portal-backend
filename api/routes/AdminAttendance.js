@@ -9,7 +9,7 @@ router.get("/", checkAuth, (req, res) => {
     AdminAttendance.find().exec()
         .then(docs => {
             res.status(200).json({
-                AdminAttendances: docs
+                docs: docs
             })
         }
         ).catch(err => {
@@ -23,7 +23,7 @@ router.get("/:id", checkAuth, (req, res) => {
     AdminAttendance.findById(req.params.id).exec()
         .then(docs => {
             res.status(200).json({
-                AdminAttendance: docs
+                docs : docs
             })
         }
         ).catch(err => {
@@ -37,7 +37,7 @@ router.get("/admin/:adminID", checkAuth, (req, res) => {
     AdminAttendance.find({ admin: req.params.adminID }).exec()
         .then(docs => {
             res.status(200).json({
-                AdminAttendances: docs
+               docs: docs
             })
         }
         ).catch(err => {
