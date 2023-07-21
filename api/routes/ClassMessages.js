@@ -41,13 +41,11 @@ router.get("/students/:studentID", checkAuth, (req, res)=> {
 
 router.get("/teachers/:teacherID", checkAuth, (req, res)=>{
     var teacherID = req.params.teacherID;
-    ClassMessages.find().populate('class').exec()
+    ClassMessages.find({postedBy : teacherID}).populate('postedBy').exec()
     .then(docs => {
-        var classMessages = docs.filter(doc => {
-            return (doc.class) && (doc.class.teacher) && doc.class.teacher == teacherID;
-        })
+        
         res.status(200).json({
-            docs : classMessages
+            docs : docs
         })
     })
 });
