@@ -44,7 +44,7 @@ router.get("/teachers/:teacherID", checkAuth, (req, res)=>{
     ClassMessages.find().populate('class').exec()
     .then(docs => {
         var classMessages = docs.filter(doc => {
-            return String(doc.class.teacher) === String(teacherID);
+            return (doc.class) && (doc.class.teacher) && doc.class.teacher == teacherID;
         })
         res.status(200).json({
             docs : classMessages
