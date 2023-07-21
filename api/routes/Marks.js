@@ -45,8 +45,10 @@ router.get("/", checkAuth, (req, res) => {
             var assessmentMarks = docs.filter(doc => doc.assessment != null);
             var examMarks = docs.filter(doc => doc.exam != null);
             res.status(200).json({
-                assessmentMarks: assessmentMarks,
-                examMarks: examMarks
+                docs: {
+                    assessmentMarks: assessmentMarks,
+                    examMarks: examMarks
+                }
             });
         })
         .catch(err => {
@@ -60,7 +62,7 @@ router.get("/:id", checkAuth, (req, res) => {
     Marks.findById(req.params.id).populate([{ path: "assessment", populate: { path: "class" } }, { path: "student" }]).exec()
         .then(doc => {
             res.status(200).json({
-                doc: doc
+                docs: doc
             });
         })
         .catch(err => {
@@ -76,8 +78,10 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
             var assessmentMarks = docs.filter(doc => doc.assessment != null);
             var examMarks = docs.filter(doc => doc.exam != null);
             res.status(200).json({
-                assessmentMarks: assessmentMarks,
-                examMarks: examMarks
+                docs: {
+                    assessmentMarks: assessmentMarks,
+                    examMarks: examMarks
+                }
             });
         }
         )
@@ -141,7 +145,7 @@ router.post("/", checkAuth, (req, res) => {
                     .then(result => {
                         res.status(201).json({
                             message: "Mark Saved Successfully",
-                            result: result
+                            docs: result
                         });
                     }
                     )
@@ -172,7 +176,7 @@ router.post("/", checkAuth, (req, res) => {
                     .then(result => {
                         res.status(201).json({
                             message: "Mark Saved Successfully",
-                            result: result
+                            docs: result
                         });
                     }
                     )
@@ -217,7 +221,7 @@ router.post("/postmany", checkAuth, upload.single("marks"), (req, res) => {
                             .then(results => {
                                 res.status(201).json({
                                     message: "Marks Saved Successfully",
-                                    results: results
+                                    docs: results
                                 });
                             })
                             .catch(err => {
@@ -259,7 +263,7 @@ router.post("/postmany", checkAuth, upload.single("marks"), (req, res) => {
                             .then(results => {
                                 res.status(201).json({
                                     message: "Marks Saved Successfully",
-                                    results: results
+                                    docs : results
                                 });
                             })
                             .catch(err => {
@@ -287,7 +291,7 @@ router.patch("/:id", checkAuth, (req, res) => {
         .then(doc => {
             res.status(200).json({
                 message: "Marks Updated",
-                doc: doc
+                docs: doc
             })
 
         }).catch(err => {
@@ -302,7 +306,7 @@ router.delete("/:id", checkAuth, (req, res) => {
         .then(doc => {
             res.status(200).json({
                 message: "Mark Deleted Successfully",
-                doc: doc
+                docs: doc
             });
         }
         )

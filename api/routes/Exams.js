@@ -59,7 +59,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
                         }
                     });
                     res.status(200).json({
-                        exams: exams
+                        docs: exams
                     });
                 }).catch(err => {
                     res.status(500).json({
@@ -105,7 +105,7 @@ router.post("/", checkAuth, (req, res) => {
         .then(doc => {
             res.status(201).json({
                 message: "Exam Posted Successfully",
-                doc: doc
+                docs: doc
             })
         })
         .catch(err => {
@@ -124,7 +124,7 @@ router.patch("/:id", checkAuth, (req, res) => {
         .then(doc => {
             res.status(200).json({
                 message: "Exam Updated",
-                doc: doc
+                docs: doc
             });
         })
         .catch(err => {
@@ -139,7 +139,7 @@ router.delete("/:id", checkAuth, (req, res) => {
         .then(doc => {
             res.status(201).json({
                 message: "Exam Deleted Successfully",
-                doc: doc
+                docs: doc
             })
         })
         .catch(err => {

@@ -22,7 +22,7 @@ router.get("/:id", checkAuth, (req, res) => {
     Buses.findById(req.params.id).populate("students").exec()
         .then(doc => {
             res.status(200).json({
-                doc: doc
+                docs: doc
             })
         }).catch(err => {
             res.status(500).json({
@@ -95,7 +95,7 @@ router.patch("/", checkAuth, (req, res) => {
                             .then(newPayment => {
                                 res.status(200).json({
                                     message: "Student Added to Bus",
-                                    bus: updatedBus,
+                                    docs: updatedBus,
                                     payment: newPayment
                                 });
                             })

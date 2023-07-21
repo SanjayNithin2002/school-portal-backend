@@ -73,7 +73,7 @@ router.get("/", checkAuth, (req, res) => {
                 }
             });
             res.status(200).json({
-                assessments: assessments
+                docs: assessments
             });
         })
         .catch(err => {
@@ -105,7 +105,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
                         }
                     })
                     res.status(200).json({
-                        assessments: assessments
+                        docs: assessments
                     });
                 })
                 .catch(err => {
@@ -138,7 +138,7 @@ router.get("/teachers/:teacherID", (req, res) => {
                 }
             })
             res.status(200).json({
-                assessments: assessments
+                docs: assessments
             });
         })
         .catch(err => {
@@ -177,7 +177,7 @@ router.post("/", checkAuth, upload.single('questionPaper'), (req, res) => {
                 else {
                     res.status(201).json({
                         message: "Assessment Uploaded Successfully",
-                        doc: doc
+                        docs: doc
                     });
                 }
             }
@@ -207,7 +207,7 @@ router.patch("/questionPaper/:id", checkAuth, upload.single('questionPaper'), (r
                 else {
                     res.status(201).json({
                         message: "Assessment Updated Successfully",
-                        doc: doc
+                        docs: doc
                     });
                 }
             }
@@ -229,7 +229,7 @@ router.patch("/:id", checkAuth, (req, res) => {
         .then(doc => {
             res.status(201).json({
                 message: "Assessment Updated Successfully",
-                doc: doc
+                docs: doc
             })
         })
         .catch(err => {
@@ -250,7 +250,7 @@ router.delete("/:id", checkAuth, (req, res) => {
                 }else{
                     res.status(200).json({
                         message: "Assessment Deleted Successfully",
-                        doc: doc
+                        docs: doc
                     })
                 }
             })

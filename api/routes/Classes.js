@@ -43,7 +43,7 @@ router.get("/students/:studentID", (req, res, next) => {
                 .then(docs => {
                     var classes = docs.filter(doc => doc.standard === standard && doc.section === section);
                     res.status(200).json({
-                        classes: classes
+                        docs: classes
                     });
                 })
                 .catch(err => {
@@ -63,7 +63,7 @@ router.get("/teachers/:teacherID", checkAuth, (req, res, next) => {
     Classes.find({ teacher: req.params.teacherID }).populate('teacher').exec()
         .then(docs => {
             res.status(200).json({
-                classes: docs
+                docs: docs
             })
         })
         .catch(err => {

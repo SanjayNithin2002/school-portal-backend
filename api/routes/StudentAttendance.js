@@ -135,7 +135,7 @@ router.post("/", (req, res) => {
     studentAttendance.save().then(result => {
         res.status(200).json({
             message: "StudentAttendance Created Successfully",
-            createdStudentAttendance: result
+            docs: result
         })
     }
     ).catch(err => {
@@ -163,7 +163,7 @@ router.post("/postmany", checkAuth, (req, res) => {
     StudentAttendance.insertMany(studentAttendances).then(result => {
         res.status(200).json({
             message: "Student Attendances Created Successfully",
-            createdStudentAttendances: result
+            docs: result
         })
     }
     ).catch(err => {

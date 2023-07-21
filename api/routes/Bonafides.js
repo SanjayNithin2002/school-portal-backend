@@ -72,7 +72,7 @@ router.get("/", checkAuth, (req, res) => {
                 }
             });
             res.status(200).json({
-                bonafides: bonafides
+                docs: bonafides
             })
         }).catch(err => {
             res.status(500).json({
@@ -85,7 +85,7 @@ router.get("/:id", checkAuth, (req, res) => {
     Bonafides.findById(req.params.id).populate("student").exec()
         .then(doc => {
             res.status(200).json({
-                bonafide: {
+                docs: {
                     _id: doc._id,
                     student: doc.student,
                     service: doc.service,
@@ -119,7 +119,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
                 }
             });
             res.status(200).json({
-                bonafides: bonafides
+                docs: bonafides
             })
         })
         .catch(err => {
@@ -164,7 +164,7 @@ router.post("/", checkAuth, (req, res) => {
         .then(doc => {
             res.status(201).json({
                 message: "Bonafide Requested Successfully",
-                bonafide: doc
+                docs: doc
             })
         }).catch(err => {
             res.status(500).json({
@@ -198,7 +198,7 @@ router.patch("/:id", checkAuth, upload.single("bonafide"), (req, res) => {
                     else {
                         res.status(201).json({
                             message: "Bonafide Uploaded Successfully",
-                            doc: doc
+                            docs: doc
                         });
                     }
                 }
@@ -206,7 +206,7 @@ router.patch("/:id", checkAuth, upload.single("bonafide"), (req, res) => {
             } else {
                 res.status(201).json({
                     message: "Bonafide Updated Successfully",
-                    doc: doc
+                    docs: doc
                 });
             }
         })

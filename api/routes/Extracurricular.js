@@ -23,7 +23,7 @@ router.get("/:id", checkAuth, (req, res) => {
     Extracurricular.findById(req.params.id).populate("students").exec()
         .then(doc => {
             res.status(200).json({
-                doc: doc
+                docs: doc
             })
         }).catch(err => {
             res.status(500).json({
@@ -97,7 +97,7 @@ router.patch("/:id/addstudent/:studentID", checkAuth, (req, res) => {
           .then(newDocs => {
             res.status(200).json({
               message: "Student Added",
-              doc: doc, 
+              docs: doc, 
               payment: newDocs
             });
           }).catch(err => {

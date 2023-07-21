@@ -21,7 +21,7 @@ router.get("/:id", checkAuth, (req, res) => {
     Payments.findById(req.params.id).exec()
         .then(doc => {
             res.status(200).json({
-                doc: doc
+                docs: doc
             });
         }).catch(err => {
             res.status(500).json({
@@ -34,7 +34,7 @@ router.get("/students/:studentID",checkAuth, (req, res) => {
     Payments.find({ student: req.params.studentID }).exec()
         .then(doc => {
             res.status(200).json({
-                doc: doc
+                docs: doc
             });
         }).catch(err => {
             res.status(500).json({

@@ -16,7 +16,9 @@ router.get("/", checkAuth, (req, res) => {
                     date: doc.date
                 }
             });
-            res.status(200).json(personalMessages);
+            res.status(200).json({
+                docs: personalMessages
+            });
         })
         .catch(err => {
             res.status(500).json({
@@ -59,7 +61,9 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
                     date: doc.date
                 }
             });
-            res.status(200).json(personalMessages);
+            res.status(200).json({
+                docs: personalMessages
+            });
         }
         )
         .catch(err => {
@@ -81,7 +85,9 @@ router.get("/teachers/:teacherID", checkAuth, (req, res) => {
                     date: doc.date
                 }
             });
-            res.status(200).json(personalMessages);
+            res.status(200).json({
+                docs: personalMessages
+            });
         }
         )
         .catch(err => {
@@ -103,7 +109,7 @@ router.post("/", checkAuth, (req, res) => {
         .then(result => {
             res.status(201).json({
                 message: "Created personalMessages successfully",
-                createdPersonalMessages: {
+                docs: {
                     _id: result._id,
                     teacher: result.teacher,
                     student: result.student,
@@ -123,7 +129,7 @@ router.delete("/:id", checkAuth, (req, res) => {
         .then(result => {
             res.status(200).json({
                 message: "PersonalMessages deleted",
-                deletedPersonalMessages: {
+                docs : {
                     _id: result._id,
                     teacher: result.teacher,
                     student: result.student,

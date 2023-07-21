@@ -68,7 +68,7 @@ router.get("/", checkAuth, (req, res) => {
             });
             res.status(200).json({
                 count: docs.length,
-                answers: answers
+                docs: answers
             });
         })
         .catch(err => {
@@ -110,7 +110,7 @@ router.get("/assessments/:assID", checkAuth, (req, res) => {
             });
             res.status(200).json({
                 count: docs.length,
-                answers: answers
+                docs: answers
             });
         })
         .catch(err => {
@@ -134,7 +134,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
             });
             res.status(200).json({
                 count: docs.length,
-                answers: answers
+                docs: answers
             });
         })
         .catch(err => {
@@ -158,7 +158,7 @@ router.get("/teachers/:teacherID", checkAuth, (req, res) => {
             });
             res.status(200).json({
                 count: docs.length,
-                answers: answers
+                docs : answers
             });
         })
         .catch(err => {
@@ -210,7 +210,7 @@ router.patch("/:id", checkAuth, upload.single("answerFile"), (req, res) => {
         .then(result => {
             res.status(201).json({
                 message: "Answer updated",
-                updatedAnswer: {
+                docs: {
                     _id: result._id,
                     assessment: result.assessment,
                     student: result.student,

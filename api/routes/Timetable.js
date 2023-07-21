@@ -17,7 +17,9 @@ router.get("/", (req, res) => {
                     break: doc.break
                 }
             });
-            res.status(200).json(timetables);
+            res.status(200).json({
+                docs : timetables
+            });
         })
         .catch(err => {
             res.status(500).json({
@@ -64,7 +66,9 @@ router.get("/standard/:standard", (req, res) => {
                     break: doc.break
                 }
             });
-            res.status(200).json(timetables);
+            res.status(200).json({
+                docs : timetables
+            });
         })
         .catch(err => {
             res.status(500).json({
@@ -86,7 +90,7 @@ router.post("/", (req, res) => {
         .then(result => {
             res.status(201).json({
                 message: "Created timetable successfully",
-                createdTimetable: {
+                docs: {
                     _id: result._id,
                     standard: result.standard,
                     workingDays: result.workingDays,
@@ -113,10 +117,7 @@ router.patch("/:id", (req, res) => {
         .then(result => {
             res.status(200).json({
                 message: "Timetable updated",
-                request: {
-                    type: "GET",
-                    url: "http://localhost:3000/timetables/" + id
-                }
+                docs : result
             });
         })
         .catch(err => {
@@ -130,18 +131,7 @@ router.delete("/:id", (req, res) => {
         .then(result => {
             res.status(200).json({
                 message: "Timetable deleted",
-                request: {
-                    type: "POST",
-                    url: "http://localhost:3000/timetables",
-                    body: {
-                        standard: "Number",
-                        workingDays: "[String]",
-                        startTime: "String",
-                        endTime: "String",
-                        duration: "Number",
-                        break: "[{title: String, startTime: String, endTime: String}]"
-                    }
-                }
+                docs : result
             });
         })
         .catch(err => {
