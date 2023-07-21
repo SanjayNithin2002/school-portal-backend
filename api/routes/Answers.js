@@ -4,6 +4,7 @@ var multer = require('multer');
 var admin = require("firebase-admin");
 var express = require("express");
 var checkAuth = require('../middleware/checkAuth');
+var makeUrlFriendly = require('../middleware/makeUrlFriendly');
 var router = express.Router();
 
 const storage = multer.diskStorage({
@@ -173,13 +174,13 @@ router.post("/", checkAuth, upload.single('answerFile'), (req, res) => {
         _id: new mongoose.Types.ObjectId(),
         assessment: req.body.assessment,
         student: req.body.student,
-        answerFile: req.file.path,
+        answerFile: 'answers/' + makeUrlFriendly(req.file.filename),
         postedOn: new Date().toJSON().slice(0, 10)
     });
     answer.save()
         .then(doc => {
             bucket.upload(req.file.path, {
-                destination: 'answers/' + req.file.filename,
+                destination: 'answers/' + makeUrlFriendly(req.file.filename),
                 metadata: {
                     contentType: req.file.mimetype
                 }
@@ -205,39 +206,95 @@ router.post("/", checkAuth, upload.single('answerFile'), (req, res) => {
 });
 
 router.patch("/:id", checkAuth, upload.single("answerFile"), (req, res) => {
-    //patch only the answerFile
-    Answers.findByIdAndUpdate(req.params.id, { answerFile: req.file.path }, { new: true }).exec()
-        .then(result => {
-            res.status(201).json({
-                message: "Answer updated",
-                docs: {
-                    _id: result._id,
-                    assessment: result.assessment,
-                    student: result.student,
-                    answerFile: result.answerFile
-                }
-            });
+    const answerId = req.params.id;
+
+    Answers.findById(answerId)
+        .exec()
+        .then(existingAnswer => {
+            if (!existingAnswer) {
+                return res.status(404).json({
+                    message: "Answer not found",
+                });
+            }
+
+            const previousFilePath = existingAnswer.answerFile;
+            const newFilePath = 'answers/' + makeUrlFriendly(req.file.filename);
+
+            // Update the answerFile field in the answer document with the new file path
+            existingAnswer.answerFile = newFilePath;
+
+            // Save the updated answer document
+            existingAnswer.save()
+                .then(updatedAnswer => {
+                    // Delete the previous file from Firebase Storage
+                    const previousFile = bucket.file(previousFilePath);
+
+                    previousFile.delete()
+                        .then(() => {
+                            res.status(200).json({
+                                message: "Answer updated and previous file deleted from Firebase Storage",
+                                docs: updatedAnswer,
+                            });
+                        })
+                        .catch(err => {
+                            res.status(500).json({
+                                error: "Error deleting previous file from Firebase Storage: " + err.message,
+                            });
+                        });
+                })
+                .catch(err => {
+                    res.status(500).json({
+                        error: "Error updating answer: " + err.message,
+                    });
+                });
         })
         .catch(err => {
             res.status(500).json({
-                error: err
+                error: err.message,
             });
-        })
-
+        });
 });
 
+
+
+// DELETE an answer by ID
 router.delete("/:id", checkAuth, (req, res) => {
-    Answers.findByIdAndDelete(req.params.id).exec()
-        .then(result => {
+    const answerId = req.params.id;
+  
+    Answers.findById(answerId)
+      .exec()
+      .then(answer => {
+        if (!answer) {
+          return res.status(404).json({
+            message: "Answer not found",
+          });
+        }
+  
+        const filePath = answer.answerFile;
+        const file = bucket.file(filePath);
+  
+        file.delete()
+          .then(() => {
+            return Answers.findByIdAndDelete(answerId).exec();
+          })
+          .then(() => {
             res.status(200).json({
-                message: "Answer deleted"
+              message: "Answer and associated file deleted successfully",
+              doc: answer,
             });
-        })
-        .catch(err => {
+          })
+          .catch(err => {
             res.status(500).json({
-                error: err
+              error: "Error deleting file from Firebase Storage: " + err.message,
             });
-        })
-});
+          });
+      })
+      .catch(err => {
+        res.status(500).json({
+          error: err.message,
+        });
+      });
+  });
+  
 
 module.exports = router;

@@ -4,6 +4,7 @@ var multer = require('multer');
 var admin = require("firebase-admin");
 var Bonafides = require('../models/Bonafides');
 var checkAuth = require('../middleware/checkAuth');
+var makeUrlFriendly = require('../middleware/makeUrlFriendly');
 var router = express.Router();
 
 const storage = multer.diskStorage({
@@ -177,7 +178,7 @@ router.post("/", checkAuth, (req, res) => {
 
 router.patch("/:id", checkAuth, upload.single("bonafide"), (req, res) => {
     updateOps = {
-        requestedFile: req.file ? req.file.path : null,
+        requestedFile: req.file ? 'bonafides/' + makeUrlFriendly(req.file.filename) : null,
         status: req.body.status,
         message: req.body.message
     }
@@ -185,7 +186,7 @@ router.patch("/:id", checkAuth, upload.single("bonafide"), (req, res) => {
         .then(doc => {
             if (doc.requestedFile !== null) {
                 bucket.upload(req.file.path, {
-                    destination: 'bonafides/' + req.file.filename,
+                    destination: 'bonafides/' + makeUrlFriendly(req.file.filename),
                     metadata: {
                         contentType: req.file.mimetype
                     }

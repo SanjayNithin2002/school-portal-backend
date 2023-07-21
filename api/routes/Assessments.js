@@ -6,6 +6,7 @@ var Students = require('../models/Students');
 var Assessments = require('../models/Assessments');
 var Answers = require('../models/Answers');
 var checkAuth = require('../middleware/checkAuth');
+var makeUrlFriendly = require('../middleware/makeUrlFriendly');
 var router = express.Router();
 
 const storage = multer.diskStorage({
@@ -158,13 +159,13 @@ router.post("/", checkAuth, upload.single('questionPaper'), (req, res) => {
         lastDate: req.body.lastDate,
         title: req.body.title,
         description: req.body.description,
-        questionPaper: req.file.path,
+        questionPaper: 'assessments/' + makeUrlFriendly(req.file.filename),
         class: req.body.class
     });
     assessment.save()
         .then(doc => {
             bucket.upload(req.file.path, {
-                destination: 'assessments/' + req.file.filename,
+                destination: 'assessments/' + makeUrlFriendly(req.file.filename),
                 metadata: {
                     contentType: req.file.mimetype
                 }
@@ -191,34 +192,57 @@ router.post("/", checkAuth, upload.single('questionPaper'), (req, res) => {
 });
 
 router.patch("/questionPaper/:id", checkAuth, upload.single('questionPaper'), (req, res) => {
-    Assessments.findByIdAndUpdate(req.params.id, { $set: { questionPaper: req.file.path } }).exec()
-        .then(doc => {
-            bucket.upload(req.file.path, {
-                destination: 'assessments/' + req.file.filename,
-                metadata: {
-                    contentType: req.file.mimetype
-                }
-            }, (err, file) => {
-                if (err) {
-                    res.status(500).json({
-                        error: err
-                    });
-                }
-                else {
-                    res.status(201).json({
-                        message: "Assessment Updated Successfully",
-                        docs: doc
-                    });
-                }
+    const assessmentId = req.params.id;
+    Assessments.findById(assessmentId)
+        .exec()
+        .then(assessment => {
+            if (!assessment) {
+                return res.status(404).json({
+                    message: "Assessment not found",
+                });
             }
-            );
+            const oldFilePath = assessment.questionPaper;
+            const oldFile = bucket.file(oldFilePath);
+
+            oldFile.delete()
+                .then(() => {
+                    const newFilePath = 'assessments/' + makeUrlFriendly(req.file.filename);
+                    const newFile = bucket.file(newFilePath);
+
+                    newFile.save(req.file.buffer, {
+                        metadata: {
+                            contentType: req.file.mimetype,
+                        },
+                    })
+                    .then(() => {
+                        assessment.questionPaper = newFilePath;
+                        return assessment.save();
+                    })
+                    .then(updatedAssessment => {
+                        res.status(200).json({
+                            message: "Assessment Updated Successfully",
+                            docs: updatedAssessment
+                        });
+                    })
+                    .catch(err => {
+                        res.status(500).json({
+                            error: "Error uploading new file to Firebase Storage: " + err.message,
+                        });
+                    });
+                })
+                .catch(err => {
+                    res.status(500).json({
+                        error: "Error deleting old file from Firebase Storage: " + err.message,
+                    });
+                });
         })
         .catch(err => {
             res.status(500).json({
-                error: err
-            })
+                error: err.message,
+            });
         });
 });
+
 
 router.patch("/:id", checkAuth, (req, res) => {
     var updateOps = {};
@@ -240,25 +264,43 @@ router.patch("/:id", checkAuth, (req, res) => {
 });
 
 router.delete("/:id", checkAuth, (req, res) => {
-    Assessments.findByIdAndDelete(req.params.id).exec()
-        .then(doc => {
-            Answers.deleteMany({ assessment : req.params.id}, (error) => {
-                if(err){
-                    res.status(500).json({
-                        error: err
-                    })
-                }else{
+    const assessmentId = req.params.id;
+
+    // Find the assessment in the database
+    Assessments.findById(assessmentId)
+        .exec()
+        .then(assessment => {
+            if (!assessment) {
+                return res.status(404).json({
+                    message: "Assessment not found",
+                });
+            }
+            const filePath = assessment.questionPaper;
+            const file = bucket.file(filePath);
+
+            file.delete()
+                .then(() => {
+                    return Assessments.findByIdAndDelete(assessmentId).exec();
+                })
+                .then(() => {
+                    return Answers.deleteMany({ assessment: assessmentId }).exec();
+                })
+                .then(() => {
                     res.status(200).json({
-                        message: "Assessment Deleted Successfully",
-                        docs: doc
-                    })
-                }
-            })
+                        message: "Assessment and associated files deleted successfully",
+                        docs: assessment,
+                    });
+                })
+                .catch(err => {
+                    res.status(500).json({
+                        error: "Error deleting file from Firebase Storage: " + err.message,
+                    });
+                });
         })
         .catch(err => {
             res.status(500).json({
-                error: err
-            })
+                error: err.message,
+            });
         });
 });
 
