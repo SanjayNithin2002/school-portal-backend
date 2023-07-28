@@ -82,8 +82,8 @@ router.get("/standard/:standard", (req, res, next) => {
             var count = {};
             uniqueSections.forEach(section => {
                 count[section] = {
-                    male : 0,
-                    female : 0
+                    male: 0,
+                    female: 0
                 }
             });
             studDocs.forEach(doc => {
@@ -138,6 +138,57 @@ router.post("/", checkAuth, (req, res, next) => {
                 error: err
             })
         });
-})
+});
 
+router.post("/postmany", checkAuth, (req, res) => {
+    var classes = req.body.map(classrec => {
+        return new Classes({
+            _id: new mongoose.Types.ObjectId(),
+            teacher: classrec.teacher,
+            standard: classrec.standard,
+            section: classrec.section,
+            subject: classrec.subject,
+            timings: classrec.timings ? classrec.timings.map(timing => {
+                return {
+                    startTime: timeToString(timing.startTime),
+                    endTime: timeToString(timing.endTime),
+                    day: timing.day
+                }
+            }) : []
+        })
+    });
+
+    Classes.insertMany(classes)
+        .then(docs => {
+            res.status(200).json({
+                message: "Classes Created Successfully",
+                docs: docs
+            })
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+});
+
+router.patch("/:id", checkAuth, (req, res, next) => {
+    var id = req.params.id;
+    var updateOps = {};
+    for (const ops of req.body) {
+        updateOps[ops.propName] = ops.value;
+    }
+    Classes.findByIdAndUpdate(id, updateOps).exec()
+        .then(docs => {
+            res.status(200).json({
+                message: "Class Updated Successfully",
+                docs: docs
+            })
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        })
+});
 module.exports = router;

@@ -30,6 +30,7 @@ var busRoutes = require('./api/routes/Buses');
 var paymentRoutes = require('./api/routes/Payments');
 var hostelRoomsRoutes = require('./api/routes/HostelRooms');
 var hostelMessRoutes = require('./api/routes/HostelMess');
+var recordRoutes = require('./api/routes/Records');
 
 const app = express();
 
@@ -41,6 +42,7 @@ const job = schedule.scheduleJob('*/5 * * * *', () => {
     clearDirectory('./bonafides/');
     clearDirectory('./marks/')
     clearDirectory('./answers/')
+    clearDirectory('./records/')
     console.log("Cleared Assessment, Bonafide, Marks and Answers Directories");
 });
 
@@ -94,6 +96,7 @@ app.use("/buses", busRoutes);
 app.use('/payments', paymentRoutes);
 app.use('/hostelrooms', hostelRoomsRoutes);
 app.use('/hostelmess', hostelMessRoutes);
+app.use('/records', recordRoutes);
 app.get('/', (req, res) => {
     res.status(200).json({
         message: "Welcome to School Management API"

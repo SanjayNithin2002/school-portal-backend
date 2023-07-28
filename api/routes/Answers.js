@@ -252,7 +252,7 @@ router.patch("/:id", checkAuth, upload.single("answerFile"), (req, res) => {
             res.status(500).json({
                 error: err.message,
             });
-        });
+        });s
 });
 
 

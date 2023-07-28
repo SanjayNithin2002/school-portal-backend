@@ -5,8 +5,9 @@ var express = require('express');
 var router = express.Router();
 var checkAuth = require('../middleware/checkAuth');
 
+
 router.get("/", checkAuth, (req, res) => {
-    ClassMessages.find().populate('class').exec()
+    ClassMessages.find().populate('postedBy').exec()
         .then(docs => {
             res.status(200).json({
                 docs: docs
@@ -25,7 +26,7 @@ router.get("/students/:studentID", checkAuth, (req, res)=> {
     .then(student => {
         var standard = student.standard;
         var section = student.section;
-        ClassMessages.find().populate('class').exec()
+        ClassMessages.find().populate('postedBy').exec()
         .then(docs => {
             var classMessages = docs.filter(doc => {
                 return doc.class.standard == standard && doc.class.section == section;
@@ -57,7 +58,8 @@ router.post("/", checkAuth, (req, res) => {
         _id: new mongoose.Types.ObjectId(),
         class: req.body.class,
         message: req.body.message,
-        postedBy : req.body.postedBy
+        postedBy : req.body.postedBy,
+        postedOn : new Date().toJSON().slice(0, 10)
     });
     classMessages.save()
         .then(docs => {

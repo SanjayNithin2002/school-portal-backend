@@ -12,7 +12,8 @@ var classMessageSchema = mongoose.Schema({
         type : mongoose.SchemaTypes.ObjectId,
         ref : 'Teachers',
         required : true
-    }
+    },
+    postedOn : Date
 });
 
 module.exports = mongoose.model("ClassMessages", classMessageSchema);

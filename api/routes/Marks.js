@@ -40,7 +40,7 @@ const upload = multer({
 
 
 router.get("/", checkAuth, (req, res) => {
-    Marks.find().populate([{ path: "assessment", populate: { path: "class" } }, { path: "student" }]).exec()
+    Marks.find().populate([{ path: "assessment", populate: { path: "class" } }, { path: "exam", populate: { path: "class" } },  { path: "student" }]).exec()
         .then(docs => {
             var assessmentMarks = docs.filter(doc => doc.assessment != null);
             var examMarks = docs.filter(doc => doc.exam != null);
@@ -59,7 +59,7 @@ router.get("/", checkAuth, (req, res) => {
 });
 
 router.get("/:id", checkAuth, (req, res) => {
-    Marks.findById(req.params.id).populate([{ path: "assessment", populate: { path: "class" } }, { path: "student" }]).exec()
+    Marks.findById(req.params.id).populate([{ path: "assessment", populate: { path: "class" } }, { path: "exam", populate: { path: "class" } }, { path: "student" }]).exec()
         .then(doc => {
             res.status(200).json({
                 docs: doc
@@ -73,7 +73,7 @@ router.get("/:id", checkAuth, (req, res) => {
 });
 
 router.get("/students/:studentID", checkAuth, (req, res) => {
-    Marks.find({ student: req.params.studentID }).populate([{ path: "assessment", populate: { path: "class" } }, { path: "student" }]).exec()
+    Marks.find({ student: req.params.studentID }).populate([{ path: "assessment", populate: { path: "class" } }, { path: "exam", populate: { path: "class" } }, { path: "student" }]).exec()
         .then(docs => {
             var assessmentMarks = docs.filter(doc => doc.assessment != null);
             var examMarks = docs.filter(doc => doc.exam != null);
