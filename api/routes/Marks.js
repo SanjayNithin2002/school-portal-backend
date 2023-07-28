@@ -93,6 +93,29 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
         );
 });
 
+router.get("/teachers/:teacherID", checkAuth, (req, res) => {
+    var teacherID = req.params.teacherID;
+    Marks.find().populate([{ path: "assessment", populate: { path: "class" } }, { path: "exam", populate: { path: "class" } }, { path: "student" }]).exec()
+        .then(docs => {
+            var assessmentMarks = docs.filter(doc => doc.assessment != null && doc.assessment.class.teacher == teacherID);
+            var examMarks = docs.filter(doc => doc.exam != null && doc.exam.class.teacher == teacherID);
+            res.status(200).json({
+                docs: {
+                    assessmentMarks: assessmentMarks,
+                    examMarks: examMarks
+                }
+            });
+        }
+        )
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        }
+        );
+});
+
+
 router.get("/assessments/:assessmentID", checkAuth, (req, res) => {
     Marks.find({ assessment: req.params.assessmentID }).populate([{ path: "assessment", populate: { path: "class" } }, { path: "student" }]).exec()
         .then(docs => {
