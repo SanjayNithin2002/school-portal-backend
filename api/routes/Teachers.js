@@ -115,6 +115,7 @@ router.post("/signup", checkAuth, (req, res, next) => {
                 },
                 phoneNumber: req.body.phoneNumber,
                 qualification: req.body.qualification,
+                designation : req.body.designation,
                 experience: req.body.experience,
                 subjects: req.body.subjects,
                 salaryDetails: {

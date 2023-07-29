@@ -39,6 +39,7 @@ var teacherSchema = mongoose.Schema({
         yearPassed : Number,
         percentage : Number
     }],
+    designation : String,
     experience : Number,
     subjects : [String],
     salaryDetails : {
