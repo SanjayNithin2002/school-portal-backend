@@ -11,6 +11,25 @@ var Students = require('../models/Students');
 var Classes = require('../models/Classes');
 const checkAuth = require('../middleware/checkAuth');
 
+
+async function updateMultipleRecords(updatesArray) {
+    const updatePromises = updatesArray.map(async (update) => {
+        try {
+            const { _id, ...updateData } = update;
+            const result = await Students.updateOne({ _id }, updateData);
+            return result;
+        } catch (error) {
+            res.status(500).json({
+                error: err
+            });
+            console.error(`Error updating document with _id ${update._id}:`, error);
+        }
+    });
+
+    const results = await Promise.all(updatePromises);
+    console.log('Documents updated successfully:', results);
+}
+
 router.post("/sendotp", (req, res, next) => {
     const otp = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
     const mailOptions = {
@@ -480,6 +499,22 @@ router.patch("/changepassword", checkAuth, (req, res) => {
             });
     }
 });
+
+router.patch('/patchmany', async (req, res) => {
+    try {
+        const results = await updateMultipleRecords(req.body);
+
+        res.status(200).json({
+            message: 'Updated the students records',
+            docs: results,
+        });
+    } catch (err) {
+        res.status(500).json({
+            error: err.message || 'Internal server error',
+        });
+    }
+});
+
 
 router.patch("/:id", checkAuth, (req, res, next) => {
     var id = req.params.id;

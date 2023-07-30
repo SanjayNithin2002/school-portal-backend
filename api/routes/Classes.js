@@ -6,6 +6,24 @@ var Classes = require('../models/Classes');
 var Students = require('../models/Students');
 var checkAuth = require('../middleware/checkAuth');
 
+async function updateMultipleRecords(updatesArray) {
+    const updatePromises = updatesArray.map(async (update) => {
+        try {
+            const { _id, ...updateData } = update;
+            const result = await Classes.updateOne({ _id }, updateData);
+            return result;
+        } catch (error) {
+            res.status(500).json({
+                error: err
+            });
+            console.error(`Error updating document with _id ${update._id}:`, error);
+        }
+    });
+
+    const results = await Promise.all(updatePromises);
+    console.log('Documents updated successfully:', results);
+}
+
 router.get("/", checkAuth, (req, res, next) => {
     Classes.find().populate('teacher').exec()
         .then(docs => {
@@ -172,7 +190,25 @@ router.post("/postmany", checkAuth, (req, res) => {
         });
 });
 
-router.patch("/:id", checkAuth, (req, res, next) => {
+router.patch('/patchmany', async (req, res) => {
+    
+
+    try {
+        const results = await updateMultipleRecords(req.body);
+
+        res.status(200).json({
+            message: 'Updated the classes records',
+            docs: results,
+        });
+    } catch (err) {
+        res.status(500).json({
+            error: err.message || 'Internal server error',
+        });
+    }
+});
+
+router.patch("/:id", checkAuth, (req, res) => {
+    console.log("NO");
     var id = req.params.id;
     var updateOps = {};
     for (const ops of req.body) {
@@ -191,4 +227,23 @@ router.patch("/:id", checkAuth, (req, res, next) => {
             })
         })
 });
+
+
+
+
+
+router.delete("/:id", (req, res) => {
+    Classes.findByIdAndDelete(req.params.id).exec()
+        .then(docs => {
+            res.status(200).json({
+                message: "Class record deleted successfully",
+                docs: docs
+            })
+        }).catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+});
+
 module.exports = router;
