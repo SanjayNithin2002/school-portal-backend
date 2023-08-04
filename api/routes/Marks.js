@@ -40,7 +40,7 @@ const upload = multer({
 
 
 router.get("/", checkAuth, (req, res) => {
-    Marks.find().populate([{ path: "assessment", populate: { path: "class" } }, { path: "exam", populate: { path: "class" } },  { path: "student" }]).exec()
+    Marks.find().populate([{ path: "assessment", populate: { path: "class" } }, { path: "exam", populate: { path: "class" } }, { path: "student" }]).exec()
         .then(docs => {
             var assessmentMarks = docs.filter(doc => doc.assessment != null);
             var examMarks = docs.filter(doc => doc.exam != null);
@@ -213,7 +213,7 @@ router.post("/", checkAuth, (req, res) => {
     }
 });
 
-router.post("/postmany", checkAuth, upload.single("marks"), (req, res) => {
+router.post("/postmany/fileupload", checkAuth, upload.single("marks"), (req, res) => {
     //receive student array and perform insert many operation
     if (req.body.type === "assessment") {
         Assessments.findById(req.body.assessment).exec()
@@ -286,7 +286,7 @@ router.post("/postmany", checkAuth, upload.single("marks"), (req, res) => {
                             .then(results => {
                                 res.status(201).json({
                                     message: "Marks Saved Successfully",
-                                    docs : results
+                                    docs: results
                                 });
                             })
                             .catch(err => {
@@ -304,6 +304,67 @@ router.post("/postmany", checkAuth, upload.single("marks"), (req, res) => {
     }
 
 });
+
+router.post("/postmany", (req, res) => {
+    if (req.body.type === "assessment") {
+        Assessments.findById(req.body.assessment).exec()
+            .then(doc => {
+                var marks = [];
+                var maxMarks = doc.maxMarks;
+                var weightageMarks = doc.weightageMarks;
+                Marks.insertMany(req.body.marks.map(mark => {
+                    return {
+                        _id: new mongoose.Types.ObjectId(),
+                        student: mark.id,
+                        [req.body.type]: req.body[req.body.type],
+                        scoredMarks: mark.scoredMarks,
+                        weightageScoredMarks: (mark.scoredMarks / maxMarks) * weightageMarks,
+                        remarks: mark.Remarks
+                    }
+                }))
+                    .then(results => {
+                        res.status(201).json({
+                            message: "Marks Saved Successfully",
+                            docs: results
+                        });
+                    })
+                    .catch(err => {
+                        res.status(500).json({
+                            error: err
+                        })
+                    });
+            });
+    }
+    if (req.body.type === "exam") {
+        Exams.findById(req.body.exam).exec()
+            .then(doc => {
+                var maxMarks = doc.maxMarks;
+                var weightageMarks = doc.weightageMarks;
+                Marks.insertMany(marks.map(mark => {
+                    return {
+                        _id: new mongoose.Types.ObjectId(),
+                        student: mark.id,
+                        [req.body.type]: req.body[req.body.type],
+                        scoredMarks: mark.scoredMarks,
+                        weightageScoredMarks: (mark.scoredMarks / maxMarks) * weightageMarks,
+                        remarks: mark.Remarks
+                    }
+                }))
+                    .then(results => {
+                        res.status(201).json({
+                            message: "Marks Saved Successfully",
+                            docs: results
+                        });
+                    })
+                    .catch(err => {
+                        res.status(500).json({
+                            error: err
+                        })
+                    });
+            });
+    }
+});
+
 
 router.patch("/:id", checkAuth, (req, res) => {
     var updateOps = {};
