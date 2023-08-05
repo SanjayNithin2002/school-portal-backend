@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var personalMessagesSchema = mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    teacher: { 
+    postedBy: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: "Teachers", 
         required: true 
@@ -15,7 +15,7 @@ var personalMessagesSchema = mongoose.Schema({
         type: String, 
         required: true 
     },
-    date: { 
+    postedOn: { 
         type: Date, 
         required: true
     }

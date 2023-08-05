@@ -5,15 +5,15 @@ var router = express.Router();
 var checkAuth = require('../middleware/checkAuth');
 
 router.get("/", checkAuth, (req, res) => {
-    PersonalMessages.find().populate([{ path: "teacher" }, { path: "student" }]).exec()
+    PersonalMessages.find().populate([{ path: "postedBy" }, { path: "student" }]).exec()
         .then(docs => {
             var personalMessages = docs.map(doc => {
                 return {
                     _id: doc._id,
-                    teacher: doc.teacher,
+                    teacher: doc.postedBy,
                     student: doc.student,
                     message: doc.message,
-                    date: doc.date
+                    date: doc.postedOn
                 }
             });
             res.status(200).json({
@@ -27,15 +27,15 @@ router.get("/", checkAuth, (req, res) => {
         });
 });
 router.get("/:id", checkAuth, (req, res) => {
-    PersonalMessages.findById(req.params.id).populate([{ path: "teacher" }, { path: "student" }]).exec()
+    PersonalMessages.findById(req.params.id).populate([{ path: "postedBy" }, { path: "student" }]).exec()
         .then(doc => {
             if (doc) {
                 res.status(200).json({
                     _id: doc._id,
-                    teacher: doc.teacher,
+                    teacher: doc.postedBy,
                     student: doc.student,
                     message: doc.message,
-                    date: doc.date
+                    date: doc.postedOn
                 });
             } else {
                 res.status(404).json({
@@ -49,16 +49,17 @@ router.get("/:id", checkAuth, (req, res) => {
             });
         });
 });
+
 router.get("/students/:studentID", checkAuth, (req, res) => {
-    PersonalMessages.find({ student: req.params.studentID }).populate([{ path: "teacher" }, { path: "student" }]).exec()
+    PersonalMessages.find({ student: req.params.studentID }).populate([{ path: "postedBy" }, { path: "student" }]).exec()
         .then(docs => {
             var personalMessages = docs.map(doc => {
                 return {
                     _id: doc._id,
-                    teacher: doc.teacher,
+                    teacher: doc.postedBy,
                     student: doc.student,
                     message: doc.message,
-                    date: doc.date
+                    date: doc.postedOn
                 }
             });
             res.status(200).json({
@@ -74,15 +75,15 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
         );
 });
 router.get("/teachers/:teacherID", checkAuth, (req, res) => {
-    PersonalMessages.find({ teacher: req.params.teacherID }).populate([{ path: "teacher" }, { path: "student" }]).exec()
+    PersonalMessages.find({ teacher: req.params.teacherID }).populate([{ path: "postedBy" }, { path: "student" }]).exec()
         .then(docs => {
             var personalMessages = docs.map(doc => {
                 return {
                     _id: doc._id,
-                    teacher: doc.teacher,
+                    teacher: doc.postedBy,
                     student: doc.student,
                     message: doc.message,
-                    date: doc.date
+                    date: doc.postedOn
                 }
             });
             res.status(200).json({
@@ -100,10 +101,10 @@ router.get("/teachers/:teacherID", checkAuth, (req, res) => {
 router.post("/", checkAuth, (req, res) => {
     const personalMessages = new PersonalMessages({
         _id: new mongoose.Types.ObjectId(),
-        teacher: req.body.teacher,
+        postedBy: req.body.postedBy,
         student: req.body.student,
         message: req.body.message,
-        date: req.body.date ? req.body.date : new Date().toJSON().slice(0, 10)
+        postedOn: req.body.postedOn ? req.body.postedOn : new Date().toJSON().slice(0, 10)
     });
     personalMessages.save()
         .then(result => {
@@ -111,10 +112,10 @@ router.post("/", checkAuth, (req, res) => {
                 message: "Created personalMessages successfully",
                 docs: {
                     _id: result._id,
-                    teacher: result.teacher,
+                    teacher: result.postedBy,
                     student: result.student,
                     message: result.message,
-                    date: result.date
+                    postedOn: result.postedOn
                 }
             });
         })

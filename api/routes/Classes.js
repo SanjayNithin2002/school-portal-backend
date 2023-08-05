@@ -114,7 +114,8 @@ router.get("/standard/:standard", (req, res, next) => {
                     res.status(200).json({
                         subjects: uniqueSubjects,
                         sections: uniqueSections,
-                        count: count
+                        count: count,
+                        students: studDocs
                     })
                 })
                 .catch(err => {
@@ -191,8 +192,6 @@ router.post("/postmany", checkAuth, (req, res) => {
 });
 
 router.patch('/patchmany', async (req, res) => {
-    
-
     try {
         const results = await updateMultipleRecords(req.body);
 

@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var ClassMessages = require("../models/ClassMessages");
+var PersonalMessages = require('../models/PersonalMessages');
 var Students = require('../models/Students');
 var express = require('express');
 var router = express.Router();
@@ -21,34 +22,72 @@ router.get("/", checkAuth, (req, res) => {
 });
 
 
-router.get("/students/:studentID", checkAuth, (req, res)=> {
+router.get("/students/:studentID", checkAuth, (req, res) => {
     Students.findById(req.params.studentID).exec()
-    .then(student => {
-        var standard = student.standard;
-        var section = student.section;
-        ClassMessages.find().populate('postedBy').exec()
-        .then(docs => {
-            var classMessages = docs.filter(doc => {
-                return doc.class.standard == standard && doc.class.section == section;
+        .then(student => {
+            var standard = student.standard;
+            var section = student.section;
+            ClassMessages.find().populate([{ path: "postedBy" }, { path: "class" }]).exec()
+                .then(classmessagedocs => {
+                    console.log(classmessagedocs);
+                    var classMessages = classmessagedocs.filter(doc => {
+                        return doc.class.standard == standard && doc.class.section == section;
+                    });
+
+                    PersonalMessages.find({ student: req.params.studentID }).populate([{ path: "postedBy" }, { path: "student" }]).exec()
+                        .then(docs => {
+                            var personalMessages = docs.map(doc => {
+                                return {
+                                    _id: doc._id,
+                                    teacher: doc.postedBy,
+                                    student: doc.student,
+                                    message: doc.message,
+                                    date: doc.postedOn
+                                }
+                            });
+                            res.status(200).json({
+                                personalMessages: personalMessages,
+                                classMessages: classMessages
+                            });
+                        })
+                        .catch(err => {
+                            res.status(500).json({
+                                error: err
+                            });
+                        });
+                }).catch(err => {
+                    res.status(500).json({
+                        error: err
+                    })
+                });
+        }).catch(err => {
+            res.status(500).json({
+                error: err
             })
-            res.status(200).json({
-                docs: classMessages
-            })
-        }
-        )
-})
+        });
 });
 
 
-router.get("/teachers/:teacherID", checkAuth, (req, res)=>{
+router.get("/teachers/:teacherID", checkAuth, (req, res) => {
     var teacherID = req.params.teacherID;
-    ClassMessages.find({postedBy : teacherID}).populate('postedBy').exec()
-    .then(docs => {
-        
-        res.status(200).json({
-            docs : docs
-        })
-    })
+    ClassMessages.find({ postedBy: teacherID }).populate([{ path: "postedBy" }, { path: "class" }]).exec()
+        .then(classmessagedocs => {
+            PersonalMessages.find({ postedBy: req.params.teacherID }).populate([{ path: "postedBy" }, { path: "student" }]).exec()
+                .then(docs => {
+                    res.status(200).json({
+                        personalMessages: docs,
+                        classMessages: classmessagedocs
+                    })
+                }).catch(err => {
+                    res.status(500).json({
+                        error: err
+                    })
+                });
+        }).catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
 });
 
 
@@ -58,8 +97,8 @@ router.post("/", checkAuth, (req, res) => {
         _id: new mongoose.Types.ObjectId(),
         class: req.body.class,
         message: req.body.message,
-        postedBy : req.body.postedBy,
-        postedOn : new Date().toJSON().slice(0, 10)
+        postedBy: req.body.postedBy,
+        postedOn: new Date().toJSON().slice(0, 10)
     });
     classMessages.save()
         .then(docs => {
@@ -74,19 +113,19 @@ router.post("/", checkAuth, (req, res) => {
         });
 });
 
-router.delete("/:id", checkAuth, (req, res)=>{
+router.delete("/:id", checkAuth, (req, res) => {
     ClassMessages.findByIdAndDelete(req.params.id).exec()
-    .then(docs => {
-        res.status(200).json({
-            message : "Class Message Deleted Successfully",
-            docs : docs
+        .then(docs => {
+            res.status(200).json({
+                message: "Class Message Deleted Successfully",
+                docs: docs
+            })
         })
-    })
-    .catch(err => {
-        res.status(500).json({
-            error : err
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
         })
-    })
 })
 
 module.exports = router;
