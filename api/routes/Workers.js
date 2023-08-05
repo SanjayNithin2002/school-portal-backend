@@ -4,7 +4,7 @@ var checkAuth = require('../middleware/checkAuth');
 var express = require('express');
 var router = express.Router();
 
-router.get("/", (req, res) => {
+router.get("/", checkAuth, (req, res) => {
     Workers.find().exec()
         .then(docs => {
             res.status(200).json({
@@ -19,7 +19,7 @@ router.get("/", (req, res) => {
 });
 
 
-router.get("/:id", (req, res) => {
+router.get("/:id", checkAuth, (req, res) => {
     const workerId = req.params.id;
     Workers.findById(workerId).exec()
         .then(docs => {
@@ -38,7 +38,7 @@ router.get("/:id", (req, res) => {
         });
 });
 
-router.post("/", (req, res) => {
+router.post("/", checkAuth, (req, res) => {
     var worker = new Workers({
         _id: new mongoose.Types.ObjectId(),
         email: req.body.email,
@@ -94,7 +94,7 @@ router.post("/", (req, res) => {
         });
 });
 
-router.patch("/:id", checkAuth, (req, res, next) => {
+router.patch("/:id", checkAuth, checkAuth, (req, res, next) => {
     var id = req.params.id;
     var updateOps = {};
     for (var ops of req.body) {

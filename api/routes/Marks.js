@@ -305,7 +305,7 @@ router.post("/postmany/fileupload", checkAuth, upload.single("marks"), (req, res
 
 });
 
-router.post("/postmany", (req, res) => {
+router.post("/postmany", checkAuth, (req, res) => {
     if (req.body.type === "assessment") {
         Assessments.findById(req.body.assessment).exec()
             .then(doc => {

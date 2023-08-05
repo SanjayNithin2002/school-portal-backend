@@ -32,6 +32,7 @@ var hostelRoomsRoutes = require('./api/routes/HostelRooms');
 var hostelMessRoutes = require('./api/routes/HostelMess');
 var recordRoutes = require('./api/routes/Records');
 var workerRoutes = require('./api/routes/Workers');
+var spotlightRoutes = require('./api/routes/Spotlight');
 
 var app = express();
 
@@ -74,7 +75,7 @@ app.use('/public', express.static('public'));
 mongoose.connect("mongodb+srv://sanjaynithin2002:" + process.env.MONGODB_PASSWORD + "@cluster0.kgz6ota.mongodb.net/?retryWrites=true&w=majority")
 console.log("Connected to MongoDB Atlas");
 //routes
-app.use("/classes", classRoutes);
+app.use('/classes', classRoutes);
 app.use('/students', studentRoutes);
 app.use('/teachers', teacherRoutes);
 app.use('/admins', adminRoutes);
@@ -92,13 +93,14 @@ app.use('/downloadfile', downloadFileRoutes);
 app.use('/answers', answerRoutes);
 app.use('/personalmessages', personalMessagesRoutes);
 app.use('/timetables', timetableRoutes);
-app.use("/extracurricular", extracurricularRoutes);
-app.use("/buses", busRoutes);
+app.use('/extracurricular', extracurricularRoutes);
+app.use('/buses', busRoutes);
 app.use('/payments', paymentRoutes);
 app.use('/hostelrooms', hostelRoomsRoutes);
 app.use('/hostelmess', hostelMessRoutes);
 app.use('/records', recordRoutes);
 app.use('/workers', workerRoutes);
+app.use('/spotlight', spotlightRoutes)
 app.get('/', (req, res) => {
     res.status(200).json({
         message: "Welcome to School Management API"
