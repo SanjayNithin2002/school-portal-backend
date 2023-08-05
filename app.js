@@ -1,9 +1,9 @@
-const express = require("express");
-const morgan = require("morgan");
-const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
-const schedule = require('node-schedule');
-const cors = require('cors');
+var express = require("express");
+var morgan = require("morgan");
+var mongoose = require("mongoose");
+var bodyParser = require("body-parser");
+var schedule = require('node-schedule');
+var cors = require('cors');
 
 
 //importing routes
@@ -31,13 +31,14 @@ var paymentRoutes = require('./api/routes/Payments');
 var hostelRoomsRoutes = require('./api/routes/HostelRooms');
 var hostelMessRoutes = require('./api/routes/HostelMess');
 var recordRoutes = require('./api/routes/Records');
+var workerRoutes = require('./api/routes/Workers');
 
-const app = express();
+var app = express();
 
 //Schedule Job to clear Assessment and Bonafide Directories
 
-const clearDirectory = require('./api/middleware/clearDirectory');
-const job = schedule.scheduleJob('*/5 * * * *', () => {
+var clearDirectory = require('./api/middleware/clearDirectory');
+var job = schedule.scheduleJob('*/5 * * * *', () => {
     clearDirectory('./assessments/');
     clearDirectory('./bonafides/');
     clearDirectory('./marks/')
@@ -97,6 +98,7 @@ app.use('/payments', paymentRoutes);
 app.use('/hostelrooms', hostelRoomsRoutes);
 app.use('/hostelmess', hostelMessRoutes);
 app.use('/records', recordRoutes);
+app.use('/workers', workerRoutes);
 app.get('/', (req, res) => {
     res.status(200).json({
         message: "Welcome to School Management API"
@@ -105,7 +107,7 @@ app.get('/', (req, res) => {
 
 // handling "Not Found" errors
 app.use((req, res, next) => {
-    const error = new Error("Not Found");
+    var error = new Error("Not Found");
     error.status = 404;
     next(error);
 });

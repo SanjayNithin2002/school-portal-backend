@@ -117,7 +117,7 @@ router.post("/", checkAuth, (req, res) => {
 
 router.patch("/:id", checkAuth, (req, res) => {
     var updateOps = {};
-    for (const ops of req.body) {
+    for (var ops of req.body) {
         updateOps[ops.propName] = ops.value;
     }
     Exams.findByIdAndUpdate(req.params.id, updateOps).exec()

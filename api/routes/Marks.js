@@ -3,13 +3,13 @@ var Marks = require('../models/Marks');
 var Assessments = require('../models/Assessments');
 var express = require('express');
 var multer = require('multer');
-const fs = require('fs');
-const csv = require('csv-parser');
+var fs = require('fs');
+var csv = require('csv-parser');
 var router = express.Router();
 var checkAuth = require('../middleware/checkAuth');
-const Exams = require('../models/Exams');
+var Exams = require('../models/Exams');
 
-const storage = multer.diskStorage({
+var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "./marks/");
     },
@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const fileFilter = (req, file, cb) => {
+var fileFilter = (req, file, cb) => {
     //accept
     if (file.mimetype === 'text/csv') {
         cb(null, true);
@@ -30,7 +30,7 @@ const fileFilter = (req, file, cb) => {
     }
 }
 
-const upload = multer({
+var upload = multer({
     storage: storage,
     limits: {
         fileSize: 1024 * 1024 * 10
@@ -368,7 +368,7 @@ router.post("/postmany", (req, res) => {
 
 router.patch("/:id", checkAuth, (req, res) => {
     var updateOps = {};
-    for (const ops of req.body) {
+    for (var ops of req.body) {
         updateOps[ops.propName] = ops.value;
     }
     Marks.findByIdAndUpdate(req.params.id, updateOps).exec()

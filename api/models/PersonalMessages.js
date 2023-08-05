@@ -6,11 +6,10 @@ var personalMessagesSchema = mongoose.Schema({
         ref: "Teachers", 
         required: true 
     },
-    student: { 
+    student: [{ 
         type: mongoose.Schema.Types.ObjectId, 
-        ref: "Students", 
-        required: true 
-    },
+        ref: "Students"
+    }],
     message: { 
         type: String, 
         required: true 

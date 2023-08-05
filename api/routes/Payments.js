@@ -67,7 +67,7 @@ router.post("/", checkAuth, (req, res) => {
 router.patch("/:id", checkAuth, (req, res) => {
     var id = req.params.id;
     var updateOps = {};
-    for (const ops of req.body) {
+    for (var ops of req.body) {
         updateOps[ops.propName] = ops.value;
     }
     Payments.findByIdAndUpdate(id, updateOps).exec()

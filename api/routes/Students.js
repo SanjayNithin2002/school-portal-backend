@@ -1,22 +1,22 @@
 var mongoose = require('mongoose');
 var express = require('express');
 var router = express.Router();
-const nodemailer = require("nodemailer");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
+var nodemailer = require("nodemailer");
+var bcrypt = require("bcrypt");
+var jwt = require("jsonwebtoken");
 var fs = require('fs');
 var path = require('path');
-const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+var createCsvWriter = require('csv-writer').createObjectCsvWriter;
 var Students = require('../models/Students');
 var Classes = require('../models/Classes');
-const checkAuth = require('../middleware/checkAuth');
+var checkAuth = require('../middleware/checkAuth');
 
 
 async function updateMultipleRecords(updatesArray) {
-    const updatePromises = updatesArray.map(async (update) => {
+    var updatePromises = updatesArray.map(async (update) => {
         try {
-            const { _id, ...updateData } = update;
-            const result = await Students.updateOne({ _id }, updateData);
+            var { _id, ...updateData } = update;
+            var result = await Students.updateOne({ _id }, updateData);
             return result;
         } catch (error) {
             res.status(500).json({
@@ -26,19 +26,19 @@ async function updateMultipleRecords(updatesArray) {
         }
     });
 
-    const results = await Promise.all(updatePromises);
+    var results = await Promise.all(updatePromises);
     console.log('Documents updated successfully:', results);
 }
 
 router.post("/sendotp", (req, res, next) => {
-    const otp = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
-    const mailOptions = {
+    var otp = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
+    var mailOptions = {
         from: 'schoolportal@vit.edu.in',
         to: req.body.email,
         subject: 'Verify your OTP for School Portal',
         text: 'Your OTP for the school portal is ' + otp
     };
-    const transporter = nodemailer.createTransport({
+    var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
             user: process.env.NODEMAIL,
@@ -99,7 +99,7 @@ router.post("/signup",checkAuth, (req, res, next) => {
     var userID = firstName + lastName + dob.getDate() + Number(dob.getMonth() + 1) + dob.getFullYear();
     var length = 10;
     var password = Array.from({ length }, () => String.fromCharCode(Math.floor(Math.random() * 26) + 97)).join('');
-    const mailOptions = {
+    var mailOptions = {
         from: 'schoolportal@vit.edu.in',
         to: req.body.email,
         subject: 'Login Credentials for School Portal',
@@ -116,7 +116,7 @@ router.post("/signup",checkAuth, (req, res, next) => {
                         error: err
                     });
                 } else {
-                    const student = new Students({
+                    var student = new Students({
                         _id: new mongoose.Types.ObjectId(),
                         password: hash,
                         email: req.body.email,
@@ -179,7 +179,7 @@ router.post("/signup",checkAuth, (req, res, next) => {
                     });
                     student.save()
                         .then(docs => {
-                            const transporter = nodemailer.createTransport({
+                            var transporter = nodemailer.createTransport({
                                 service: 'gmail',
                                 auth: {
                                     user: process.env.NODEMAIL,
@@ -297,8 +297,8 @@ router.get("/class/:classID", checkAuth, (req, res, next) => {
 });
 
 router.get("/marks/generatecsv/:standard/:section", checkAuth, (req, res, next) => {
-    const filePath = "public/marks/" + req.params.standard + req.params.section + ".csv";
-    fs.access(filePath, fs.constants.F_OK, (error) => {
+    var filePath = "public/marks/" + req.params.standard + req.params.section + ".csv";
+    fs.access(filePath, fs.varants.F_OK, (error) => {
         if (error) {
             Students.find({ standard: req.params.standard, section: req.params.section }).exec()
                 .then(docs => {
@@ -307,7 +307,7 @@ router.get("/marks/generatecsv/:standard/:section", checkAuth, (req, res, next) 
                             message: "No Students Found"
                         })
                     } else {
-                        const csvWriter = createCsvWriter({
+                        var csvWriter = createCsvWriter({
                             path: "public/marks/" + req.params.standard + req.params.section + ".csv",
                             header: [
                                 { id: '_id', title: 'id' },
@@ -343,8 +343,8 @@ router.get("/marks/generatecsv/:standard/:section", checkAuth, (req, res, next) 
 });
 
 router.get("/generatecsv/:standard", checkAuth, (req, res, next) => {
-    const filePath = "public/students/" + req.params.standard + ".csv";
-    fs.access(filePath, fs.constants.F_OK, (error) => {
+    var filePath = "public/students/" + req.params.standard + ".csv";
+    fs.access(filePath, fs.varants.F_OK, (error) => {
         if (error) {
             Students.find({ standard: req.params.standard }).exec()
                 .then(docs => {
@@ -353,7 +353,7 @@ router.get("/generatecsv/:standard", checkAuth, (req, res, next) => {
                             message: "No Students Found"
                         })
                     } else {
-                        const csvWriter = createCsvWriter({
+                        var csvWriter = createCsvWriter({
                             path: "public/students/" + req.params.standard + ".csv",
                             header: [
                                 { id: '_id', title: 'id' },
@@ -502,7 +502,7 @@ router.patch("/changepassword", checkAuth, (req, res) => {
 
 router.patch('/patchmany', async (req, res) => {
     try {
-        const results = await updateMultipleRecords(req.body);
+        var results = await updateMultipleRecords(req.body);
 
         res.status(200).json({
             message: 'Updated the students records',
@@ -519,7 +519,7 @@ router.patch('/patchmany', async (req, res) => {
 router.patch("/:id", checkAuth, (req, res, next) => {
     var id = req.params.id;
     var updateOps = {};
-    for (const ops of req.body) {
+    for (var ops of req.body) {
         updateOps[ops.propName] = ops.value;
     }
     Students.findByIdAndUpdate(id, updateOps).exec()

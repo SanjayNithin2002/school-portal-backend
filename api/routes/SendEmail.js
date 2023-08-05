@@ -4,13 +4,13 @@ var router = express.Router();
 var checkAuth = require('../middleware/checkAuth');
 
 router.post("/", checkAuth, (req, res, next) => {
-    const mailOptions = {
+    var mailOptions = {
         from: req.body.email,
         to: "sanjay.nithin19@gmail.com",
         subject: req.body.subject,
         text: "Name : " + req.body.name + "\nEmail : " + req.body.email + "\nSubject : " + req.body.subject + "\nMessage : " + req.body.message
     };
-    const transporter = nodemailer.createTransport({
+    var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
             user: process.env.NODEMAIL,

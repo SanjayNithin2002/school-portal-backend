@@ -3,7 +3,7 @@ var express = require('express');
 var router = express.Router();
 var checkAuth = require('../middleware/checkAuth');
 
-const serviceAccount = {
+var serviceAccount = {
     type: process.env.type,
     project_id: process.env.project_id,
     private_key_id: process.env.private_key_id,

@@ -2,22 +2,22 @@ var mongoose = require('mongoose');
 var Admins = require('../models/Admins');
 var express = require('express');
 var router = express.Router();
-const nodemailer = require("nodemailer");
-const bcrypt = require("bcrypt");
+var nodemailer = require("nodemailer");
+var bcrypt = require("bcrypt");
 var fs = require('fs');
 var path = require('path');
-const jwt = require("jsonwebtoken");
-const checkAuth = require('../middleware/checkAuth');
+var jwt = require("jsonwebtoken");
+var checkAuth = require('../middleware/checkAuth');
 
 router.post("/sendotp", (req, res, next) => {
-    const otp = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
-    const mailOptions = {
+    var otp = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
+    var mailOptions = {
         from: 'schoolportal@vit.edu.in',
         to: req.body.email,
         subject: 'Verify your OTP for School Portal',
         text: 'Your OTP for the school portal is ' + otp
     };
-    const transporter = nodemailer.createTransport({
+    var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
             user: process.env.NODEMAIL,
@@ -79,7 +79,7 @@ router.post("/signup", checkAuth, (req, res, next) => {
     var userID = firstName + lastName + empID;
     var length = 10;
     var password = Array.from({ length }, () => String.fromCharCode(Math.floor(Math.random() * 26) + 97)).join('');
-    const mailOptions = {
+    var mailOptions = {
         from: 'schoolportal@vit.edu.in',
         to: req.body.email,
         subject: 'Login Credentials for School Portal',
@@ -91,7 +91,7 @@ router.post("/signup", checkAuth, (req, res, next) => {
                 error: err
             });
         } else {
-            const admin = new Admins({
+            var admin = new Admins({
                 _id: new mongoose.Types.ObjectId(),
                 password: hash,
                 email: email,
@@ -136,7 +136,7 @@ router.post("/signup", checkAuth, (req, res, next) => {
             });
             admin.save()
                 .then(doc => {
-                    const transporter = nodemailer.createTransport({
+                    var transporter = nodemailer.createTransport({
                         service: 'gmail',
                         auth: {
                             user: process.env.NODEMAIL,
@@ -236,8 +236,8 @@ router.get("/:id", checkAuth, (req, res, next) => {
 });
 
 router.get("generatecsv", checkAuth, (req, res, next) => {
-    const filePath = "public/csv/admins.csv";
-    fs.access(filePath, fs.constants.F_OK, (error) => {
+    var filePath = "public/csv/admins.csv";
+    fs.access(filePath, fs.varants.F_OK, (error) => {
         if (error) {
             Admins.find().exec()
                 .then(docs => {
@@ -246,7 +246,7 @@ router.get("generatecsv", checkAuth, (req, res, next) => {
                             message: "No Admins Found"
                         })
                     } else {
-                        const csvWriter = createCsvWriter({
+                        var csvWriter = createCsvWriter({
                             path: "public/csv/admins.csv",
                             header: [
                                 { id: '_id', title: 'id' },
@@ -398,7 +398,7 @@ router.patch("/changepassword", checkAuth, (req, res) => {
 router.patch("/:id", checkAuth, (req, res, next) => {
     var id = req.params.id;
     var updateOps = {};
-    for (const ops of req.body) {
+    for (var ops of req.body) {
         updateOps[ops.propName] = ops.value;
     }
     Admins.findByIdAndUpdate(id, updateOps).exec()

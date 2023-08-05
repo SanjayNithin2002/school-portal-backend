@@ -99,7 +99,7 @@ router.get("/teachers/:teacherID", checkAuth, (req, res) => {
         );
 });
 router.post("/", checkAuth, (req, res) => {
-    const personalMessages = new PersonalMessages({
+    var personalMessages = new PersonalMessages({
         _id: new mongoose.Types.ObjectId(),
         postedBy: req.body.postedBy,
         student: req.body.student,

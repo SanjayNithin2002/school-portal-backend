@@ -7,10 +7,10 @@ var Students = require('../models/Students');
 var checkAuth = require('../middleware/checkAuth');
 
 async function updateMultipleRecords(updatesArray) {
-    const updatePromises = updatesArray.map(async (update) => {
+    var updatePromises = updatesArray.map(async (update) => {
         try {
-            const { _id, ...updateData } = update;
-            const result = await Classes.updateOne({ _id }, updateData);
+            var { _id, ...updateData } = update;
+            var result = await Classes.updateOne({ _id }, updateData);
             return result;
         } catch (error) {
             res.status(500).json({
@@ -20,7 +20,7 @@ async function updateMultipleRecords(updatesArray) {
         }
     });
 
-    const results = await Promise.all(updatePromises);
+    var results = await Promise.all(updatePromises);
     console.log('Documents updated successfully:', results);
 }
 
@@ -193,7 +193,7 @@ router.post("/postmany", checkAuth, (req, res) => {
 
 router.patch('/patchmany', async (req, res) => {
     try {
-        const results = await updateMultipleRecords(req.body);
+        var results = await updateMultipleRecords(req.body);
 
         res.status(200).json({
             message: 'Updated the classes records',
@@ -210,7 +210,7 @@ router.patch("/:id", checkAuth, (req, res) => {
     console.log("NO");
     var id = req.params.id;
     var updateOps = {};
-    for (const ops of req.body) {
+    for (var ops of req.body) {
         updateOps[ops.propName] = ops.value;
     }
     Classes.findByIdAndUpdate(id, updateOps).exec()

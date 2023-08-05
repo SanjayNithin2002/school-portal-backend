@@ -7,7 +7,7 @@ var checkAuth = require('../middleware/checkAuth');
 var makeUrlFriendly = require('../middleware/makeUrlFriendly');
 var router = express.Router();
 
-const storage = multer.diskStorage({
+var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "./answers/");
     },
@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const fileFilter = (req, file, cb) => {
+var fileFilter = (req, file, cb) => {
     //accept
     if (file.mimetype === 'application/pdf') {
         cb(null, true);
@@ -28,14 +28,14 @@ const fileFilter = (req, file, cb) => {
     }
 }
 
-const upload = multer({
+var upload = multer({
     storage: storage,
     limits: {
         fileSize: 1024 * 1024 * 10
     },
     fileFilter: fileFilter
 });
-const serviceAccount = {
+var serviceAccount = {
     type: process.env.type,
     project_id: process.env.project_id,
     private_key_id: process.env.private_key_id,
@@ -206,7 +206,7 @@ router.post("/", checkAuth, upload.single('answerFile'), (req, res) => {
 });
 
 router.patch("/:id", checkAuth, upload.single("answerFile"), (req, res) => {
-    const answerId = req.params.id;
+    var answerId = req.params.id;
 
     Answers.findById(answerId)
         .exec()
@@ -217,8 +217,8 @@ router.patch("/:id", checkAuth, upload.single("answerFile"), (req, res) => {
                 });
             }
 
-            const previousFilePath = existingAnswer.answerFile;
-            const newFilePath = 'answers/' + makeUrlFriendly(req.file.filename);
+            var previousFilePath = existingAnswer.answerFile;
+            var newFilePath = 'answers/' + makeUrlFriendly(req.file.filename);
 
             // Update the answerFile field in the answer document with the new file path
             existingAnswer.answerFile = newFilePath;
@@ -227,7 +227,7 @@ router.patch("/:id", checkAuth, upload.single("answerFile"), (req, res) => {
             existingAnswer.save()
                 .then(updatedAnswer => {
                     // Delete the previous file from Firebase Storage
-                    const previousFile = bucket.file(previousFilePath);
+                    var previousFile = bucket.file(previousFilePath);
 
                     previousFile.delete()
                         .then(() => {
@@ -259,7 +259,7 @@ router.patch("/:id", checkAuth, upload.single("answerFile"), (req, res) => {
 
 // DELETE an answer by ID
 router.delete("/:id", checkAuth, (req, res) => {
-    const answerId = req.params.id;
+    var answerId = req.params.id;
   
     Answers.findById(answerId)
       .exec()
@@ -270,8 +270,8 @@ router.delete("/:id", checkAuth, (req, res) => {
           });
         }
   
-        const filePath = answer.answerFile;
-        const file = bucket.file(filePath);
+        var filePath = answer.answerFile;
+        var file = bucket.file(filePath);
   
         file.delete()
           .then(() => {

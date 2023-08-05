@@ -7,7 +7,7 @@ var checkAuth = require('../middleware/checkAuth');
 router.get("/", (req, res) => {
     (async () => {
         try {
-            const results = await StudentAttendance.aggregate([
+            var results = await StudentAttendance.aggregate([
                 {
                     $group: {
                         _id: {
@@ -66,7 +66,7 @@ router.get("/:id", (req, res) => {
 router.get("/students/:studentID", (req, res) => {
     (async () => {
         try {
-            const results = await StudentAttendance.aggregate([
+            var results = await StudentAttendance.aggregate([
                 {
                     $group: {
                         _id: {
@@ -125,7 +125,7 @@ router.get("/standard/:standard/section/:section/date/:date/", checkAuth, (req, 
 
 
 router.post("/", (req, res) => {
-    const studentAttendance = new StudentAttendance({
+    var studentAttendance = new StudentAttendance({
         _id: new mongoose.Types.ObjectId(),
         student: req.body.student,
         date: req.body.date,

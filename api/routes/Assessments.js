@@ -9,7 +9,7 @@ var checkAuth = require('../middleware/checkAuth');
 var makeUrlFriendly = require('../middleware/makeUrlFriendly');
 var router = express.Router();
 
-const storage = multer.diskStorage({
+var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "./assessments/");
     },
@@ -19,7 +19,7 @@ const storage = multer.diskStorage({
     }
 });
 
-const fileFilter = (req, file, cb) => {
+var fileFilter = (req, file, cb) => {
     //accept
     if (file.mimetype === 'application/pdf') {
         cb(null, true);
@@ -30,14 +30,14 @@ const fileFilter = (req, file, cb) => {
     }
 }
 
-const upload = multer({
+var upload = multer({
     storage: storage,
     limits: {
         fileSize: 1024 * 1024 * 10
     },
     fileFilter: fileFilter
 });
-const serviceAccount = {
+var serviceAccount = {
     type: process.env.type,
     project_id: process.env.project_id,
     private_key_id: process.env.private_key_id,
@@ -192,7 +192,7 @@ router.post("/", checkAuth, upload.single('questionPaper'), (req, res) => {
 });
 
 router.patch("/questionPaper/:id", checkAuth, upload.single('questionPaper'), (req, res) => {
-    const assessmentId = req.params.id;
+    var assessmentId = req.params.id;
     Assessments.findById(assessmentId)
         .exec()
         .then(assessment => {
@@ -201,13 +201,13 @@ router.patch("/questionPaper/:id", checkAuth, upload.single('questionPaper'), (r
                     message: "Assessment not found",
                 });
             }
-            const oldFilePath = assessment.questionPaper;
-            const oldFile = bucket.file(oldFilePath);
+            var oldFilePath = assessment.questionPaper;
+            var oldFile = bucket.file(oldFilePath);
 
             oldFile.delete()
                 .then(() => {
-                    const newFilePath = 'assessments/' + makeUrlFriendly(req.file.filename);
-                    const newFile = bucket.file(newFilePath);
+                    var newFilePath = 'assessments/' + makeUrlFriendly(req.file.filename);
+                    var newFile = bucket.file(newFilePath);
 
                     newFile.save(req.file.buffer, {
                         metadata: {
@@ -246,7 +246,7 @@ router.patch("/questionPaper/:id", checkAuth, upload.single('questionPaper'), (r
 
 router.patch("/:id", checkAuth, (req, res) => {
     var updateOps = {};
-    for (const ops of req.body) {
+    for (var ops of req.body) {
         updateOps[ops.propName] = ops.value;
     }
     Assessments.findByIdAndUpdate(req.params.id, { $set: updateOps }).exec()
@@ -264,7 +264,7 @@ router.patch("/:id", checkAuth, (req, res) => {
 });
 
 router.delete("/:id", checkAuth, (req, res) => {
-    const assessmentId = req.params.id;
+    var assessmentId = req.params.id;
 
     // Find the assessment in the database
     Assessments.findById(assessmentId)
@@ -275,8 +275,8 @@ router.delete("/:id", checkAuth, (req, res) => {
                     message: "Assessment not found",
                 });
             }
-            const filePath = assessment.questionPaper;
-            const file = bucket.file(filePath);
+            var filePath = assessment.questionPaper;
+            var file = bucket.file(filePath);
 
             file.delete()
                 .then(() => {

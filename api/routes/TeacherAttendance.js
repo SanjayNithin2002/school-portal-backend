@@ -50,7 +50,7 @@ router.get("/teachers/:teacherID", checkAuth, (req, res) => {
 });
 
 router.post("/", checkAuth, (req, res) => {
-    const teacherAttendance = new TeacherAttendance({
+    var teacherAttendance = new TeacherAttendance({
         _id: new mongoose.Types.ObjectId(),
         teacher: req.body.teacher,
         date: req.body.date,

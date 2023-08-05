@@ -49,7 +49,7 @@ router.get("/admin/:adminID", checkAuth, (req, res) => {
 });
 
 router.post("/", checkAuth, (req, res) => {
-    const adminAttendance = new AdminAttendance({
+    var adminAttendance = new AdminAttendance({
         _id: new mongoose.Types.ObjectId(),
         admin: req.body.admin,
         date: req.body.date,
