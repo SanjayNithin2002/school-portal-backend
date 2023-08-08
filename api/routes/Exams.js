@@ -10,6 +10,7 @@ var checkAuth = require('../middleware/checkAuth');
 router.get("/", checkAuth, (req, res) => {
     Exams.find().populate('class').exec()
         .then(docs => {
+            console.log(docs)
             res.status(200).json({
                 docs: docs.map(doc => {
                     return {
@@ -18,8 +19,8 @@ router.get("/", checkAuth, (req, res) => {
                         startTime: timeToString(doc.startTime),
                         endTime: timeToString(doc.endTime),
                         maxMarks: doc.maxMarks,
-                        weightageMarks: doc.weightageMarks,
-                        examName: doc.examName,
+                        //weightageMarks: doc.weightageMarks,
+                        //examName: doc.examName,
                         subject: doc.class.subject,
                         standard: doc.class.standard,
                         section: doc.class.section
@@ -78,6 +79,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
 router.get("/standard/:standard", checkAuth, (req, res) => {
     Exams.find().populate('class').exec()
         .then(docs => {
+            console.log(docs);
             var docs = docs.filter(doc => doc.class.standard == req.params.standard);
             res.status(200).json({
                 docs: docs
@@ -88,7 +90,6 @@ router.get("/standard/:standard", checkAuth, (req, res) => {
             })
         });
 });
-
 
 router.post("/", checkAuth, (req, res) => {
     var exam = new Exams({

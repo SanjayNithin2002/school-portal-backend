@@ -298,7 +298,7 @@ router.get("/class/:classID", checkAuth, (req, res, next) => {
 
 router.get("/marks/generatecsv/:standard/:section", checkAuth, (req, res, next) => {
     var filePath = "public/marks/" + req.params.standard + req.params.section + ".csv";
-    fs.access(filePath, fs.varants.F_OK, (error) => {
+    fs.access(filePath, fs.constants.F_OK, (error) => {
         if (error) {
             Students.find({ standard: req.params.standard, section: req.params.section }).exec()
                 .then(docs => {

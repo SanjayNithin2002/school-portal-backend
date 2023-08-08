@@ -114,8 +114,7 @@ router.get("/standard/:standard", (req, res, next) => {
                     res.status(200).json({
                         subjects: uniqueSubjects,
                         sections: uniqueSections,
-                        count: count,
-                        students: studDocs
+                        count: count
                     })
                 })
                 .catch(err => {
