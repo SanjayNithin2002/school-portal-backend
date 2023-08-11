@@ -12,7 +12,7 @@ var razorpay = new Razorpay({
     key_id: process.env.rpy_key,
     key_secret: process.env.rpy_key_secret
 });
-router.get("/", (req, res) => {
+router.get("/", checkAuth, (req, res) => {
     Transactions.find().exec()
         .then(docs => {
             docs = docs.filter(doc => doc.transation != null);
@@ -26,7 +26,7 @@ router.get("/", (req, res) => {
         });
 });
 
-router.get("/:id", (req, res) => {
+router.get("/:id", checkAuth, (req, res) => {
     Transactions.findById(req.params.id).exec()
         .then(docs => {
             res.status(200).json({
@@ -39,7 +39,7 @@ router.get("/:id", (req, res) => {
         });
 });
 
-router.get("/students/:studentID", (req, res) => {
+router.get("/students/:studentID", checkAuth, (req, res) => {
     Transactions.find().populate('paymentID').exec()
         .then(docs => {
             res.status(200).json({
@@ -53,7 +53,7 @@ router.get("/students/:studentID", (req, res) => {
 });
 
 
-router.post("/razorpay", async (req, res) => {
+router.post("/razorpay", checkAuth, async (req, res) => {
     var paymentID = req.body.payment;
     Payments.findById(paymentID).exec()
         .then(async (docs) => {
