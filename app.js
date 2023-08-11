@@ -33,6 +33,7 @@ var hostelMessRoutes = require('./api/routes/HostelMess');
 var recordRoutes = require('./api/routes/Records');
 var workerRoutes = require('./api/routes/Workers');
 var spotlightRoutes = require('./api/routes/Spotlight');
+var transactionRoutes = require('./api/routes/Transactions');
 
 var app = express();
 
@@ -100,7 +101,8 @@ app.use('/hostelrooms', hostelRoomsRoutes);
 app.use('/hostelmess', hostelMessRoutes);
 app.use('/records', recordRoutes);
 app.use('/workers', workerRoutes);
-app.use('/spotlight', spotlightRoutes)
+app.use('/spotlight', spotlightRoutes);
+app.use('/transactions', transactionRoutes);
 app.get('/', (req, res) => {
     res.status(200).json({
         message: "Welcome to School Management API"

@@ -53,7 +53,7 @@ router.post("/", checkAuth, (req, res) => {
     });
     payment.save()
         .then(docs => {
-            res.status(200).json({
+            res.status(201).json({
                 message: "New Payment Created",
                 docs: docs
             });

@@ -18,7 +18,8 @@
     "nodemailer": "^6.9.1",
     "nodemon": "^2.0.21",
     "path": "^0.12.7",
-    "razorpay": "^2.9.1"
+    "razorpay": "^2.9.1",
+    "shortid": "^2.2.16"
   },
   "scripts": {
     "start": "nodemon server.js"
