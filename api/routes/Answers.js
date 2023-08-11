@@ -63,7 +63,7 @@ router.get("/", checkAuth, (req, res) => {
                     _id: doc._id,
                     assessment: doc.assessment,
                     student: doc.student,
-                    answerFile: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.answerFile.split("\\").join("/"),
+                    answerFile: process.env.url + "/downloadfile/" + doc.answerFile.split("\\").join("/"),
                     postedOn: doc.postedOn
                 }
             });
@@ -86,7 +86,7 @@ router.get("/:id", checkAuth, (req, res) => {
                 _id: doc._id,
                 assessment: doc.assessment,
                 student: doc.student,
-                answerFile: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.answerFile.split("\\").join("/"),
+                answerFile: process.env.url + "/downloadfile/" + doc.answerFile.split("\\").join("/"),
                 postedOn: doc.postedOn
             });
         })
@@ -105,7 +105,7 @@ router.get("/assessments/:assID", checkAuth, (req, res) => {
                     _id: doc._id,
                     assessment: doc.assessment,
                     student: doc.student,
-                    answerFile: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.answerFile.split("\\").join("/"),
+                    answerFile: process.env.url + "/downloadfile/" + doc.answerFile.split("\\").join("/"),
                     postedOn: doc.postedOn
                 }
             });
@@ -129,7 +129,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
                     _id: doc._id,
                     assessment: doc.assessment,
                     student: doc.student,
-                    answerFile: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.answerFile.split("\\").join("/"),
+                    answerFile: process.env.url + "/downloadfile/" + doc.answerFile.split("\\").join("/"),
                     postedOn: doc.postedOn
                 }
             });
@@ -153,7 +153,7 @@ router.get("/teachers/:teacherID", checkAuth, (req, res) => {
                     _id: doc._id,
                     assessment: doc.assessment,
                     student: doc.student,
-                    answerFile: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.answerFile.split("\\").join("/"),
+                    answerFile: process.env.url + "/downloadfile/" + doc.answerFile.split("\\").join("/"),
                     postedOn: doc.postedOn
                 }
             });

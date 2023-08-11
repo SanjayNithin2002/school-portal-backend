@@ -69,7 +69,7 @@ router.get("/", checkAuth, (req, res) => {
                     lastDate: doc.lastDate,
                     title: doc.title,
                     description: doc.description,
-                    questionPaper: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.questionPaper.split("\\").join("/"),
+                    questionPaper: process.env.url + "/downloadfile/" + doc.questionPaper.split("\\").join("/"),
                     class: doc.class
                 }
             });
@@ -101,7 +101,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
                             lastDate: doc.lastDate,
                             title: doc.title,
                             description: doc.description,
-                            questionPaper: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.questionPaper.split("\\").join("/"),
+                            questionPaper: process.env.url + "/downloadfile/" + doc.questionPaper.split("\\").join("/"),
                             class: doc.class
                         }
                     })
@@ -134,7 +134,7 @@ router.get("/teachers/:teacherID", (req, res) => {
                     lastDate: doc.lastDate,
                     title: doc.title,
                     description: doc.description,
-                    questionPaper: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.questionPaper.split("\\").join("/"),
+                    questionPaper: process.env.url + "/downloadfile/" + doc.questionPaper.split("\\").join("/"),
                     class: doc.class
                 }
             })

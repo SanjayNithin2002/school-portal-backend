@@ -66,7 +66,7 @@ router.get("/", checkAuth, (req, res) => {
                     student: doc.student,
                     service: doc.service,
                     [doc.service]: doc[doc.service],
-                    requestedFile: doc.requestedFile !== null ? "https://schoolportalbackend.onrender.com/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
+                    requestedFile: doc.requestedFile !== null ? process.env.url + "/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
                     postedOn: doc.postedOn,
                     status: doc.status,
                     message: doc.message
@@ -91,7 +91,7 @@ router.get("/:id", checkAuth, (req, res) => {
                     student: doc.student,
                     service: doc.service,
                     [doc.service]: doc[doc.service],
-                    requestedFile: doc.requestedFile !== null ? "https://schoolportalbackend.onrender.com/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
+                    requestedFile: doc.requestedFile !== null ? process.env.url + "/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
                     postedOn: doc.postedOn,
                     status: doc.status,
                     message: doc.message
@@ -113,7 +113,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
                     student: doc.student,
                     service: doc.service,
                     [doc.service]: doc[doc.service],
-                    requestedFile: doc.requestedFile !== null ? "https://schoolportalbackend.onrender.com/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
+                    requestedFile: doc.requestedFile !== null ? process.env.url + "/downloadfile/" + doc.requestedFile.split("\\").join("/") : null,
                     postedOn: doc.postedOn,
                     status: doc.status,
                     message: doc.message

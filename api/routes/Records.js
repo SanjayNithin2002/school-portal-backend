@@ -63,7 +63,7 @@ router.get("/", checkAuth, (req, res) => {
                     _id: doc._id,
                     title : doc.title,
                     date : doc.date,
-                    document: "https://schoolportalbackend.onrender.com/downloadfile/" + doc.document.split("\\").join("/"),
+                    document: process.env.url + "/downloadfile/" + doc.document.split("\\").join("/"),
                     class: doc.class
                 }
             });
