@@ -58,7 +58,7 @@ router.get("/:id", checkAuth, (req, res, next) => {
 });
 
 router.get("/teachers/:teacherID", (req, res) => {
-    Leave.find({ teacher: req.params.teacherID }).exec()
+    Leave.find({ teacher: req.params.teacherID }).populate("teacher").exec()
         .then(docs => {
             res.status(200).json({
                 docs: docs.map(doc => {
@@ -84,7 +84,7 @@ router.get("/teachers/:teacherID", (req, res) => {
 });
 
 router.get("/admins/:adminID", (req, res) => {
-    Leave.find({ admin : req.params.adminID }).exec()
+    Leave.find({ admin : req.params.adminID }).populate("admin").exec()
         .then(docs => {
             res.status(200).json({
                 docs: docs.map(doc => {

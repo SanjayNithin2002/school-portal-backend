@@ -46,8 +46,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
                                 }
                             });
                             res.status(200).json({
-                                personalMessages: personalMessages,
-                                classMessages: classMessages
+                                docs: personalMessages.concat(classMessages)
                             });
                         })
                         .catch(err => {
@@ -75,8 +74,7 @@ router.get("/teachers/:teacherID", checkAuth, (req, res) => {
             PersonalMessages.find({ postedBy: req.params.teacherID }).populate([{ path: "postedBy" }, { path: "student" }]).exec()
                 .then(docs => {
                     res.status(200).json({
-                        personalMessages: docs,
-                        classMessages: classmessagedocs
+                        docs: docs.concat(classmessagedocs)
                     })
                 }).catch(err => {
                     res.status(500).json({
