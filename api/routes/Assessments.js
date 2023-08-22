@@ -4,6 +4,7 @@ var multer = require('multer');
 var admin = require("firebase-admin");
 var Students = require('../models/Students');
 var Assessments = require('../models/Assessments');
+var Exams = require('../models/Exams');
 var Answers = require('../models/Answers');
 var checkAuth = require('../middleware/checkAuth');
 var makeUrlFriendly = require('../middleware/makeUrlFriendly');
@@ -149,6 +150,58 @@ router.get("/teachers/:teacherID", (req, res) => {
         });
 });
 
+router.get('/exams/:teacherID', (req, res) => {
+    Assessments.find().populate('class').exec()
+        .then(docs => {
+            var assessments = docs.filter(doc => doc.class ? doc.class.teacher == req.params.teacherID : false);
+            var assessments = assessments.map(doc => {
+                return {
+                    _id: doc._id,
+                    maxMarks: doc.maxMarks,
+                    weightageMarks: doc.weightageMarks,
+                    postedOn: doc.postedOn,
+                    lastDate: doc.lastDate,
+                    title: doc.title,
+                    description: doc.description,
+                    questionPaper: process.env.url + "/downloadfile/" + doc.questionPaper.split("\\").join("/"),
+                    class: doc.class
+                }
+            });
+            Exams.find().populate('class').exec()
+                .then(docs => {
+                    var docs = docs.filter(doc => doc.class ? doc.class.teacher == req.params.teacherID : false);
+                    var exams = docs.map(doc => {
+                        return {
+                            _id: doc._id,
+                            date: doc.date,
+                            startTime: timeToString(doc.startTime),
+                            endTime: timeToString(doc.endTime),
+                            maxMarks: doc.maxMarks,
+                            //weightageMarks: doc.weightageMarks,
+                            //examName: doc.examName,
+                            subject: doc.class.subject,
+                            standard: doc.class.standard,
+                            section: doc.class.section
+                        }
+                    });
+                    res.status(200).json({
+                        assessments: assessments,
+                        exams: exams
+                    });
+                })
+                .catch(err => {
+                    res.status(500).json({
+                        error: err
+                    })
+                });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+})
+
 
 router.post("/", checkAuth, upload.single('questionPaper'), (req, res) => {
     var assessment = new Assessments({
@@ -214,21 +267,21 @@ router.patch("/questionPaper/:id", checkAuth, upload.single('questionPaper'), (r
                             contentType: req.file.mimetype,
                         },
                     })
-                    .then(() => {
-                        assessment.questionPaper = newFilePath;
-                        return assessment.save();
-                    })
-                    .then(updatedAssessment => {
-                        res.status(200).json({
-                            message: "Assessment Updated Successfully",
-                            docs: updatedAssessment
+                        .then(() => {
+                            assessment.questionPaper = newFilePath;
+                            return assessment.save();
+                        })
+                        .then(updatedAssessment => {
+                            res.status(200).json({
+                                message: "Assessment Updated Successfully",
+                                docs: updatedAssessment
+                            });
+                        })
+                        .catch(err => {
+                            res.status(500).json({
+                                error: "Error uploading new file to Firebase Storage: " + err.message,
+                            });
                         });
-                    })
-                    .catch(err => {
-                        res.status(500).json({
-                            error: "Error uploading new file to Firebase Storage: " + err.message,
-                        });
-                    });
                 })
                 .catch(err => {
                     res.status(500).json({

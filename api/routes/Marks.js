@@ -132,7 +132,6 @@ router.get("/teachers/:teacherID", checkAuth, (req, res) => {
         );
 });
 
-
 router.get("/assessments/:assessmentID", checkAuth, (req, res) => {
     Marks.find({ assessment: req.params.assessmentID }).populate([{ path: "assessment", populate: { path: "class" } }, { path: "student" }]).exec()
         .then(docs => {
