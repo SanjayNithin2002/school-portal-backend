@@ -185,8 +185,10 @@ router.get('/exams/:teacherID', (req, res) => {
                         }
                     });
                     res.status(200).json({
-                        assessments: assessments,
-                        exams: exams
+                        docs: {
+                            assessmentsMarks: assessments,
+                            examsMarks: exams
+                        }
                     });
                 })
                 .catch(err => {
