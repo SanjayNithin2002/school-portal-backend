@@ -8,6 +8,7 @@ var Exams = require('../models/Exams');
 var Answers = require('../models/Answers');
 var checkAuth = require('../middleware/checkAuth');
 var makeUrlFriendly = require('../middleware/makeUrlFriendly');
+var timeToString = require('../middleware/timeToString');
 var router = express.Router();
 
 var storage = multer.diskStorage({
@@ -178,7 +179,7 @@ router.get('/exams/:teacherID', (req, res) => {
                             endTime: timeToString(doc.endTime),
                             maxMarks: doc.maxMarks,
                             //weightageMarks: doc.weightageMarks,
-                            //examName: doc.examName,
+                            examName: doc.examName.name + " - " + doc.examName.sequence,
                             subject: doc.class.subject,
                             standard: doc.class.standard,
                             section: doc.class.section
@@ -193,7 +194,8 @@ router.get('/exams/:teacherID', (req, res) => {
                 })
                 .catch(err => {
                     res.status(500).json({
-                        error: err
+                        error: err,
+                        seq : 1 
                     })
                 });
         })
