@@ -33,7 +33,7 @@ router.get("/:id", checkAuth, (req, res) => {
         }
         )
 });
-router.get("/admin/:adminID", checkAuth, (req, res) => {
+router.get("/admins/:adminID", checkAuth, (req, res) => {
     AdminAttendance.find({ admin: req.params.adminID }).exec()
         .then(docs => {
             res.status(200).json({
