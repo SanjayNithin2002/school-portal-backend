@@ -41,7 +41,7 @@ var teacherSchema = mongoose.Schema({
     }],
     designation : String,
     experience : Number,
-    subjects : [String],
+    primarySubject : String,
     salaryDetails : {
         basic : Number,
         hra : Number,

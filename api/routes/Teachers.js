@@ -117,7 +117,7 @@ router.post("/signup", checkAuth, (req, res, next) => {
                 qualification: req.body.qualification,
                 designation : req.body.designation,
                 experience: req.body.experience,
-                subjects: req.body.subjects,
+                primarySubject : req.body.primarySubject,
                 salaryDetails: {
                     basic: req.body.salaryDetails.basic,
                     hra: req.body.salaryDetails.hra,
