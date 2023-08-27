@@ -164,6 +164,30 @@ router.get("/exams/:examID", checkAuth, (req, res) => {
         );
 });
 
+router.get("/classes/:id", (req, res) => {
+    Marks.find().populate([{ path: "assessment"}, { path: "exam" }, { path: "student" }]).exec()
+        .then(docs => {
+            console.log(docs)
+            var assessmentMarks = docs.filter(doc => doc.assessment != null && doc.assessment.class == req.params.id);
+            var examMarks = docs.filter(doc => doc.exam != null && doc.exam.class == req.params.id);
+            console.log(assessmentMarks);
+            console.log(examMarks);
+            res.status(200).json({
+                docs: {
+                    assessmentMarks: assessmentMarks,
+                    examMarks: examMarks
+                }
+            });
+        }
+        )
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        }
+        );
+});
+
 router.post("/", checkAuth, (req, res) => {
     if (req.body.type === "assessment") {
         Assessments.findById(req.body.assessment).exec()

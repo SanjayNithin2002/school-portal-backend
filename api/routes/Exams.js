@@ -113,7 +113,7 @@ router.post("/", checkAuth, (req, res) => {
         startTime: req.body.startTime,
         endTime: req.body.endTime,
         maxMarks: req.body.maxMarks,
-        weightageMarks: req.body.weightageMarks,
+        weightageMarks: req.body.weightageMarks ? req.body.weightageMarks : req.body.maxMarks,
         examName: req.body.examName
     });
     exam.save()
