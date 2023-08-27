@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var express = require('express');
 var Payments = require('../models/Payments');
+var Students = require('../models/Students');
 var checkAuth = require('../middleware/checkAuth');
 var router = express.Router();
 
@@ -30,7 +31,7 @@ router.get("/:id", checkAuth, (req, res) => {
         });
 });
 
-router.get("/students/:studentID",checkAuth, (req, res) => {
+router.get("/students/:studentID", checkAuth, (req, res) => {
     Payments.find({ student: req.params.studentID }).exec()
         .then(doc => {
             res.status(200).json({
@@ -64,6 +65,18 @@ router.post("/", checkAuth, (req, res) => {
         });
 });
 
+router.post('/standard/:standard', (req, res) => {
+    Students.find({ standard: req.params.standard }).exec()
+        .then({
+
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+})
+
 router.patch("/:id", checkAuth, (req, res) => {
     var id = req.params.id;
     var updateOps = {};
@@ -82,6 +95,8 @@ router.patch("/:id", checkAuth, (req, res) => {
             });
         });
 });
+
+
 
 router.delete("/:id", checkAuth, (req, res) => {
     Payments.findByIdAndDelete(req.params.id).exec()

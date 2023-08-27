@@ -79,12 +79,26 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
 router.get("/standard/:standard", checkAuth, (req, res) => {
     Exams.find().populate('class').exec()
         .then(docs => {
-            console.log(docs);
             var docs = docs.filter(doc => doc.class.standard == req.params.standard);
             res.status(200).json({
                 docs: docs
             });
         }).catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+});
+
+router.get('/teachers/:id', checkAuth, (req, res) => {
+    Exams.find().populate('class').exec()
+        .then(docs => {
+            var docs = docs.filter(doc => doc.class.teacher == req.params.id && doc.class.teacher != null);
+            res.status(200).json({
+                docs: docs
+            });
+        })
+        .catch(err => {
             res.status(500).json({
                 error: err
             })
