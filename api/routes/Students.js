@@ -296,7 +296,7 @@ router.get("/class/:classID", checkAuth, (req, res, next) => {
     })
 });
 
-router.get("/marks/generatecsv/:standard/:section", checkAuth, (req, res, next) => {
+router.get("/marks/generatecsv/:standard/:section",  (req, res, next) => {
     var filePath = "public/marks/" + req.params.standard + req.params.section + ".csv";
     fs.access(filePath, fs.constants.F_OK, (error) => {
         if (error) {
@@ -326,7 +326,7 @@ router.get("/marks/generatecsv/:standard/:section", checkAuth, (req, res, next) 
                         });
                         csvWriter
                             .writeRecords(studentArray)
-                            .then(() => res.sendFile(path.join(__dirname, "../../public/marks/" + req.params.standard + req.params.section + ".csv")))
+                            .then(() => res.download(path.join(__dirname, "../../public/marks/" + req.params.standard + req.params.section + ".csv")))
                             .catch((error) => console.error(error));
                     }
                 })
@@ -372,7 +372,7 @@ router.get("/generatecsv/:standard", checkAuth, (req, res, next) => {
                         });
                         csvWriter
                             .writeRecords(studentArray)
-                            .then(() => res.sendFile(path.join(__dirname, "../../public/students/" + req.params.standard + ".csv")))
+                            .then(() => res.download(path.join(__dirname, "../../public/students/" + req.params.standard + ".csv")))
                             .catch((error) => console.error(error));
                     }
                 })
