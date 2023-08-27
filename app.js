@@ -46,7 +46,8 @@ var job = schedule.scheduleJob('*/5 * * * *', () => {
     clearDirectory('./marks/')
     clearDirectory('./answers/')
     clearDirectory('./records/')
-    console.log("Cleared Assessment, Bonafide, Marks and Answers Directories");
+    clearDirectory('./attendances/')
+    console.log("Cleared Assessment, Bonafide, Marks, Attendances and Answers Directories");
 });
 
 //Middleware

@@ -3,6 +3,39 @@ var express = require('express');
 var router = express.Router();
 var TeacherAttendance = require('../models/TeacherAttendance');
 var checkAuth = require('../middleware/checkAuth');
+var multer = require('multer');
+var fs = require('fs');
+var csv = require('csv-parser');
+
+
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "./attendances/");
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + "-" + file.originalname)
+
+    }
+});
+
+var fileFilter = (req, file, cb) => {
+    //accept
+    if (file.mimetype === 'text/csv') {
+        cb(null, true);
+    }
+    //reject
+    else {
+        cb(null, false);
+    }
+}
+
+var upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 1024 * 1024 * 10
+    },
+    fileFilter: fileFilter
+});
 
 router.get("/", checkAuth, (req, res) => {
     TeacherAttendance.find().populate("teacher").exec()
@@ -90,12 +123,44 @@ router.post("/postmany", checkAuth, (req, res) => {
             docs: result
         })
     }
-    ).catch(err => {    
+    ).catch(err => {
         res.status(500).json({
             error: err
         })
     }
     )
+});
+
+router.post("/fileupload", checkAuth, upload.single("attendances"), (req, res) => {
+    var attendances = [];
+    fs.createReadStream(req.file.path)
+        .pipe(csv())
+        .on('data', (data) => {
+            attendances.push(data);
+        })
+        .on('end', () => {
+            console.log('CSV file successfully processed');
+            console.log(attendances);
+            TeacherAttendance.insertMany(attendances.map(attendance => {
+                return {
+                    _id: new mongoose.Types.ObjectId(),
+                    teacher: attendance.id,
+                    status: attendance.Status,
+                    date: req.body.date
+                }
+            }))
+                .then(results => {
+                    res.status(201).json({
+                        message: "Attendance Uploaded Successfully",
+                        docs: results
+                    });
+                })
+                .catch(err => {
+                    res.status(500).json({
+                        error: err
+                    })
+                });
+        });
 });
 
 router.delete("/:id", checkAuth, (req, res) => {

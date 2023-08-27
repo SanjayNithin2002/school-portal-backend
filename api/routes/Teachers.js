@@ -221,6 +221,52 @@ router.get("/", checkAuth, (req, res, next) => {
             })
         })
 });
+router.get("/generatecsv", (req, res, next) => {
+    var filePath = "public/teachers/teachers.csv";
+    fs.access(filePath, fs.constants.F_OK, (error) => {
+        if (error) {
+            Teachers.find().exec()
+                .then(docs => {
+                    if (docs.length < 1) {
+                        res.status(404).json({
+                            message: "No Teachers Found"
+                        })
+                    } else {
+                        var csvWriter = createCsvWriter({
+                            path: "public/teachers/teachers.csv",
+                            header: [
+                                { id: '_id', title: 'id' },
+                                { id: 'name', title: 'Name' },
+                                { id : 'empid', title: 'EmployeeID'},
+                                { id: 'status', title: 'Status' }
+                            ]
+                        });
+                        var teacherArray = docs.map(doc => {
+                            return {
+                                _id : doc._id,
+                                name: doc.firstName + " " + doc.lastName,
+                                empid : doc.empID,
+                                status: null
+
+                            }
+                        });
+                        csvWriter
+                            .writeRecords(teacherArray)
+                            .then(() => res.download(path.join(__dirname, "../../public/teachers/teachers.csv")))
+                            .catch((error) => console.error(error));
+                    }
+                })
+                .catch(err => {
+                    res.status(500).json({
+                        error: err
+                    })
+                });
+        } else {
+            res.download(path.join(__dirname, "../../public/teachers/teachers.csv"));
+        }
+    });
+
+});
 
 router.get("/:id", checkAuth, (req, res, next) => {
     Teachers.findById(req.params.id).exec()
@@ -235,55 +281,6 @@ router.get("/:id", checkAuth, (req, res, next) => {
             })
         })
 });
-
-router.get("generatecsv", checkAuth, (req, res, next) => {
-    var filePath = "public/csv/teachers.csv";
-    fs.access(filePath, fs.varants.F_OK, (error) => {
-        if (error) {
-            Teachers.find().exec()
-                .then(docs => {
-                    if (docs.length < 1) {
-                        res.status(404).json({
-                            message: "No Teachers Found"
-                        })
-                    } else {
-                        var csvWriter = createCsvWriter({
-                            path: "public/csv/teachers.csv",
-                            header: [
-                                { id: '_id', title: 'id' },
-                                { id: 'name', title: 'Name' },
-                                { id : 'empid', title: 'EmployeeID'},
-                                { id: 'status', title: 'Status' }
-                            ]
-                        });
-                        var teacherArray = docs.map(doc => {
-                            return {
-                                _id : doc._id,
-                                name: doc.firstName + " " + doc.lastName,
-                                empid : doc.empid,
-                                status: null
-
-                            }
-                        })
-                        csvWriter
-                            .writeRecords(studentArray)
-                            .then(() => res.sendFile(path.join(__dirname, "../../public/csv/teachers.csv")))
-                            .catch((error) => console.error(error));
-                    }
-                })
-                .catch(err => {
-                    res.status(500).json({
-                        error: err
-                    })
-                });
-        } else {
-            res.sendFile(path.join(__dirname, "../../public/csv/teachers.csv"));
-        }
-    });
-
-});
-
-
 
 router.patch("/changeuserid", checkAuth, (req, res) => {
     var id = req.body.id;
