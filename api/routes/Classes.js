@@ -190,7 +190,7 @@ router.post("/postmany", checkAuth, (req, res) => {
         });
 });
 
-router.patch('/patchmany', async (req, res) => {
+router.patch('/patchmany', checkAuth, async (req, res) => {
     try {
         var results = await updateMultipleRecords(req.body);
 

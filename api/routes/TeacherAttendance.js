@@ -7,6 +7,23 @@ var multer = require('multer');
 var fs = require('fs');
 var csv = require('csv-parser');
 
+async function updateMultipleRecords(updatesArray) {
+    var updatePromises = updatesArray.map(async (update) => {
+        try {
+            var { _id, ...updateData } = update;
+            var result = await TeacherAttendance.updateOne({ _id }, updateData);
+            return result;
+        } catch (error) {
+            res.status(500).json({
+                error: err
+            });
+            console.error(`Error updating document with _id ${update._id}:`, error);
+        }
+    });
+
+    var results = await Promise.all(updatePromises);
+    console.log('Documents updated successfully:', results);
+}
 
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -162,6 +179,40 @@ router.post("/fileupload", checkAuth, upload.single("attendances"), (req, res) =
                 });
         });
 });
+
+router.patch('/patchmany', checkAuth, async (req, res) => {
+    try {
+        var results = await updateMultipleRecords(req.body);
+
+        res.status(200).json({
+            message: 'Updated the teacher attendances records',
+            docs: results,
+        });
+    } catch (err) {
+        res.status(500).json({
+            error: err.message || 'Internal server error',
+        });
+    }
+});
+router.patch("/:id", checkAuth, (req, res) => {
+    var updateOps = {};
+    for (var ops of req.body) {
+        updateOps[ops.propName] = ops.value;
+    }
+    TeacherAttendance.findByIdAndUpdate(req.params.id, updateOps).exec()
+        .then(doc => {
+            res.status(200).json({
+                message: "Teacher Attendance Updated",
+                docs: doc
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+});
+
 
 router.delete("/:id", checkAuth, (req, res) => {
     TeacherAttendance.findByIdAndDelete(req.params.id).exec()

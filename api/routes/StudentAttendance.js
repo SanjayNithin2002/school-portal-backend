@@ -4,6 +4,24 @@ var router = express.Router();
 var StudentAttendance = require('../models/StudentAttendance');
 var checkAuth = require('../middleware/checkAuth');
 
+async function updateMultipleRecords(updatesArray) {
+    var updatePromises = updatesArray.map(async (update) => {
+        try {
+            var { _id, ...updateData } = update;
+            var result = await StudentAttendance.updateOne({ _id }, updateData);
+            return result;
+        } catch (error) {
+            res.status(500).json({
+                error: err
+            });
+            console.error(`Error updating document with _id ${update._id}:`, error);
+        }
+    });
+
+    var results = await Promise.all(updatePromises);
+    console.log('Documents updated successfully:', results);
+}
+
 router.get("/", (req, res) => {
     (async () => {
         try {
@@ -173,6 +191,41 @@ router.post("/postmany", checkAuth, (req, res) => {
     }
     )
 });
+
+router.patch('/patchmany', checkAuth, async (req, res) => {
+    try {
+        var results = await updateMultipleRecords(req.body);
+
+        res.status(200).json({
+            message: 'Updated the student attendances records',
+            docs: results,
+        });
+    } catch (err) {
+        res.status(500).json({
+            error: err.message || 'Internal server error',
+        });
+    }
+});
+
+router.patch("/:id", checkAuth, (req, res) => {
+    var updateOps = {};
+    for (var ops of req.body) {
+        updateOps[ops.propName] = ops.value;
+    }
+    StudentAttendance.findByIdAndUpdate(req.params.id, updateOps).exec()
+        .then(doc => {
+            res.status(200).json({
+                message: "Student Attendance Updated",
+                docs: doc
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+});
+
 
 router.delete("/:id", checkAuth, (req, res) => {
     StudentAttendance.findByIdAndDelete(req.params.id).exec()
