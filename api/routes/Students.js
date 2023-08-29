@@ -215,7 +215,7 @@ router.post("/login", (req, res, next) => {
         .then(docs => {
             if (docs.length < 1) {
                 res.status(401).json({
-                    message: "Auth Failed"
+                    message: "UserID Not Found"
                 });
             } else {
                 bcrypt.compare(req.body.password, docs[0].password, (err, response) => {
@@ -238,7 +238,7 @@ router.post("/login", (req, res, next) => {
                         });
                     } else {
                         res.status(401).json({
-                            message: "Auth Failed"
+                            message: "Invalid Password"
                         });
                     }
                 })
@@ -393,7 +393,7 @@ router.patch("/changeuserid", checkAuth, (req, res, next) => {
     var id = req.body.id;
     if (req.userData._id !== id) {
         res.status(401).json({
-            message: "Auth Failed"
+            message: "Invalid UserID"
         })
     }
     else {
@@ -415,7 +415,7 @@ router.patch("/changeuserid", checkAuth, (req, res, next) => {
                                 })
                             } else if (doc.userID !== currentUserID) {
                                 res.status(401).json({
-                                    message: "Auth Failed"
+                                    message: "Invalid UserID"
                                 })
                             }
                             else {
@@ -440,7 +440,7 @@ router.patch("/changeuserid", checkAuth, (req, res, next) => {
                                             })
                                     } else {
                                         res.status(401).json({
-                                            message: "Auth Failed"
+                                            message: "Invalid Password"
                                         });
                                     }
                                 })
@@ -458,7 +458,7 @@ router.patch("/changeuserid", checkAuth, (req, res, next) => {
 router.patch("/changepassword", checkAuth, (req, res) => {
     if (req.userData._id !== req.body.id) {
         res.status(401).json({
-            message: "Auth Failed"
+            message: "Invalid UserID"
         });
     } else {
         var id = req.body.id;
@@ -488,7 +488,7 @@ router.patch("/changepassword", checkAuth, (req, res) => {
                         });
                     } else {
                         res.status(401).json({
-                            message: "Auth Failed"
+                            message: "Invalid Password"
                         });
                     }
                 })
