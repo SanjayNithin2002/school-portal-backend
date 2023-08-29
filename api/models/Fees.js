@@ -1,15 +1,15 @@
 var mongoose = require('mongoose');
 var feesSchema = mongoose.Schema({
-    _id: mongoose.SchemaTypes,
+    _id: mongoose.SchemaTypes.ObjectId,
     amount: Number,
     due: {
         type: Date,
         default: null
     },
-    standard: {
-        type: Number,
-        default: null
-    },
-    type: String
+    type: {
+        main: String,
+        category: String
+    }
 });
 
+module.exports = mongoose.model('Fees', feesSchema);

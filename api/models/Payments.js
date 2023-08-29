@@ -2,8 +2,10 @@ var mongoose = require('mongoose');
 
 var paymentSchema = mongoose.Schema({
     _id : mongoose.SchemaTypes.ObjectId,
-    amount : Number, 
-    due : Date,
+    fees: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: 'Fees'
+    },
     status : String,
     student : {
         type : mongoose.SchemaTypes.ObjectId,

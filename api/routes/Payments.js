@@ -6,8 +6,9 @@ var checkAuth = require('../middleware/checkAuth');
 var router = express.Router();
 
 router.get("/", checkAuth, (req, res) => {
-    Payments.find().exec()
+    Payments.find().populate('fees').exec()
         .then(docs => {
+            var docs = docs.filter(doc => doc.fees.due != null);
             res.status(200).json({
                 docs: docs
             });
@@ -19,7 +20,7 @@ router.get("/", checkAuth, (req, res) => {
 });
 
 router.get("/:id", checkAuth, (req, res) => {
-    Payments.findById(req.params.id).exec()
+    Payments.findById(req.params.id).populate('fees').exec()
         .then(doc => {
             res.status(200).json({
                 docs: doc
@@ -32,10 +33,11 @@ router.get("/:id", checkAuth, (req, res) => {
 });
 
 router.get("/students/:studentID", checkAuth, (req, res) => {
-    Payments.find({ student: req.params.studentID }).exec()
-        .then(doc => {
+    Payments.find({ student: req.params.studentID }).populate('fees').exec()
+        .then(docs => {
+            var docs = docs.filter(doc => doc.fees.due != null);
             res.status(200).json({
-                docs: doc
+                docs: docs
             });
         }).catch(err => {
             res.status(500).json({
@@ -47,8 +49,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
 router.post("/", checkAuth, (req, res) => {
     var payment = new Payments({
         _id: new mongoose.Types.ObjectId(),
-        amount: req.body.amount,
-        due: req.body.due,
+        fees: req.body.fees,
         status: req.body.status,
         student: req.body.student
     });
@@ -65,17 +66,6 @@ router.post("/", checkAuth, (req, res) => {
         });
 });
 
-router.post('/standard/:standard', (req, res) => {
-    Students.find({ standard: req.params.standard }).exec()
-        .then({
-
-        })
-        .catch(err => {
-            res.status(500).json({
-                error: err
-            })
-        });
-})
 
 router.patch("/:id", checkAuth, (req, res) => {
     var id = req.params.id;

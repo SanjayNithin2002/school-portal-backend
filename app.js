@@ -25,15 +25,13 @@ var downloadFileRoutes = require('./api/routes/DownloadFile');
 var answerRoutes = require('./api/routes/Answers');
 var personalMessagesRoutes = require('./api/routes/PersonalMessages');
 var timetableRoutes = require('./api/routes/Timetable');
-var extracurricularRoutes = require('./api/routes/Extracurricular');
 var busRoutes = require('./api/routes/Buses');
 var paymentRoutes = require('./api/routes/Payments');
-var hostelRoomsRoutes = require('./api/routes/HostelRooms');
-var hostelMessRoutes = require('./api/routes/HostelMess');
 var recordRoutes = require('./api/routes/Records');
 var workerRoutes = require('./api/routes/Workers');
 var spotlightRoutes = require('./api/routes/Spotlight');
 var transactionRoutes = require('./api/routes/Transactions');
+var feesRoutes = require('./api/routes/Fees');
 
 var app = express();
 
@@ -95,15 +93,13 @@ app.use('/downloadfile', downloadFileRoutes);
 app.use('/answers', answerRoutes);
 app.use('/personalmessages', personalMessagesRoutes);
 app.use('/timetables', timetableRoutes);
-app.use('/extracurricular', extracurricularRoutes);
 app.use('/buses', busRoutes);
 app.use('/payments', paymentRoutes);
-app.use('/hostelrooms', hostelRoomsRoutes);
-app.use('/hostelmess', hostelMessRoutes);
 app.use('/records', recordRoutes);
 app.use('/workers', workerRoutes);
 app.use('/spotlight', spotlightRoutes);
 app.use('/transactions', transactionRoutes);
+app.use('/fees', feesRoutes);
 app.get('/', (req, res) => {
     res.status(200).json({
         message: "Welcome to School Management API"

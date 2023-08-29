@@ -55,11 +55,11 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
 
 router.post("/razorpay", checkAuth, async (req, res) => {
     var paymentID = req.body.payment;
-    Payments.findById(paymentID).exec()
+    Payments.findById(paymentID).populate('fees').exec()
         .then(async (docs) => {
             try {
                 const options = {
-                    amount: docs.amount * 100,
+                    amount: docs.fees.amount * 100,
                     currency: "INR",
                     receipt: shortid.generate(),
                     partial_payment: false
