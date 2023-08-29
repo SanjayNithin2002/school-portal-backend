@@ -50,17 +50,6 @@ var teacherSchema = mongoose.Schema({
         pf : Number,
         pt : Number,
     },
-    busDetails : {
-        isNeeded : Boolean,
-        busStopArea : String,
-        busStop : String,
-        availableBus : String
-    },
-    hostelDetails : {
-        isNeeded : Boolean,
-        roomType : String,
-        foodType : String
-    },
     casualLeave : {
         type : Number,
         default : 12

@@ -6,10 +6,7 @@ var feesSchema = mongoose.Schema({
         type: Date,
         default: null
     },
-    type: {
-        main: String,
-        category: String
-    }
+    standard: Number
 });
 
 module.exports = mongoose.model('Fees', feesSchema);

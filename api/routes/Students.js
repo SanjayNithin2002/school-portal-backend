@@ -217,17 +217,6 @@ router.post("/signup", checkAuth, upload.single("profile"), (req, res, next) => 
                             phoneNumber: (req.body.guardian ? req.body.guardian.phoneNumber : "NA"),
                             email: (req.body.guardian ? req.body.guardian.email : "NA")
                         },
-                        busDetails: {
-                            isNeeded: (req.body.busDetails ? req.body.busDetails.isNeeded : false),
-                            busStopArea: (req.body.busDetails ? req.body.busDetails.busStopArea : "NA"),
-                            busStop: (req.body.busDetails ? req.body.busDetails.busStop : "NA"),
-                            availableBus: (req.body.busDetails ? req.body.busDetails.availableBus : "NA")
-                        },
-                        hostelDetails: {
-                            isNeeded: (req.body.hostelDetails ? req.body.hostelDetails.isNeeded : false),
-                            roomType: (req.body.hostelDetails ? req.body.hostelDetails.roomType : "NA"),
-                            foodType: (req.body.hostelDetails ? req.body.hostelDetails.foodType : "NA"),
-                        },
                         profile: req.file ? 'profiles/' + makeUrlFriendly(req.file.filename) : null,
                     });
                     student.save()

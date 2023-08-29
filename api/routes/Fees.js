@@ -40,109 +40,13 @@ router.post("/", checkAuth, (req, res) => {
         _id: new mongoose.Types.ObjectId(),
         amount: req.body.amount,
         due: null,
-        type: {
-            main: req.body.type.main,
-            category: req.body.type.category
-        }
+        standard: req.body.standard
     });
     fee.save()
         .then(docs => {
-            if (docs.type.main === "Academics") {
-                Students.find({ standard: docs.type.category }).select('_id').exec()
+            if (docs.standard) {
+                Students.find({ standard: docs.standard }).select('_id').exec()
                     .then(students => {
-                        var payments = students.map(student => {
-                            return {
-                                _id: new mongoose.Types.ObjectId(),
-                                student: student._id,
-                                status: "Pending",
-                                fees: docs._id
-                            }
-                        });
-                        Payments.insertMany(payments)
-                            .then(docs => {
-                                res.status(201).json({
-                                    message: "Fees Posted and Payment Requests Created Successfully",
-                                    docs: docs
-                                })
-                            })
-                            .catch(err => {
-                                res.status(500).json({
-                                    error: err
-                                })
-                            });
-                    })
-                    .catch(err => {
-                        res.status(500).json({
-                            error: err
-                        })
-                    });
-            }
-            else if (docs.type.main === "Hostel") {
-                Students.find({ 'hostelDetails.roomType' : docs.type.category }).select('_id').exec()
-                    .then(students => {
-                        console.log(students)
-                        var payments = students.map(student => {
-                            return {
-                                _id: new mongoose.Types.ObjectId(),
-                                student: student._id,
-                                status: "Pending",
-                                fees: docs._id
-                            }
-                        });
-                        Payments.insertMany(payments)
-                            .then(docs => {
-                                res.status(201).json({
-                                    message: "Fees Posted and Payment Requests Created Successfully",
-                                    docs: docs
-                                })
-                            })
-                            .catch(err => {
-                                res.status(500).json({
-                                    error: err
-                                })
-                            });
-                    })
-                    .catch(err => {
-                        res.status(500).json({
-                            error: err
-                        })
-                    });
-            }
-            else if (docs.type.main === "Mess") {
-                Students.find({ 'hostelDetails.foodType' : docs.type.category }).select('_id').exec()
-                    .then(students => {
-                        console.log(students)
-                        var payments = students.map(student => {
-                            return {
-                                _id: new mongoose.Types.ObjectId(),
-                                student: student._id,
-                                status: "Pending",
-                                fees: docs._id
-                            }
-                        });
-                        Payments.insertMany(payments)
-                            .then(docs => {
-                                res.status(201).json({
-                                    message: "Fees Posted and Payment Requests Created Successfully",
-                                    docs: docs
-                                })
-                            })
-                            .catch(err => {
-                                res.status(500).json({
-                                    error: err
-                                })
-                            });
-                    })
-                    .catch(err => {
-                        res.status(500).json({
-                            error: err
-                        })
-                    });
-            }
-            else if (docs.type.main === "Bus") {
-                Students.find({ 'busDetails.busStopArea' : docs.type.category }).select('_id').exec()
-                    .then(students => {
-                        console.log(students)
                         var payments = students.map(student => {
                             return {
                                 _id: new mongoose.Types.ObjectId(),

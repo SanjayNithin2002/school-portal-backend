@@ -60,17 +60,6 @@ var studentSchema = mongoose.Schema({
         phoneNumber : String,
         email : String
     },
-    busDetails : {
-        isNeeded : Boolean,
-        busStopArea : String,
-        busStop : String,
-        availableBus : String
-    },
-    hostelDetails : {
-        isNeeded : Boolean,
-        roomType : String,
-        foodType : String
-    },
     profile: {
         type: String,
         default: null
