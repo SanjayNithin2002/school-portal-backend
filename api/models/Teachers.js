@@ -29,7 +29,7 @@ var teacherSchema = mongoose.Schema({
         line2 : String,
         city : String,
         state : String,
-        pincode : Number
+        pincode : String
     },
     phoneNumber : String,
     qualification : [{

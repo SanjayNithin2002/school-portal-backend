@@ -100,7 +100,7 @@ router.post("/forgotpassword", (req, res, next) => {
                             error: err
                         });
                     } else {
-                        Teachers.findByIdAndUpdate(docs[0]._id, { $set: { password: hash} }).exec()
+                        Teachers.findByIdAndUpdate(docs[0]._id, { $set: { password: hash } }).exec()
                             .then(docs => {
                                 res.status(201).json({
                                     message: "Password Updated Successfully"
@@ -125,7 +125,7 @@ router.post("/forgotpassword", (req, res, next) => {
         });
 });
 
-router.post("/signup", checkAuth, (req, res, next) => {
+router.post("/signup", checkAuth, upload.single("profile"), (req, res, next) => {
     var email = req.body.email;
     var firstName = req.body.firstName;
     var lastName = req.body.lastName;
@@ -159,24 +159,24 @@ router.post("/signup", checkAuth, (req, res, next) => {
                 aadharNumber: req.body.aadharNumber,
                 motherTongue: req.body.motherTongue,
                 address: {
-                    line1: req.body.address.line1,
-                    line2: req.body.address.line2,
-                    city: req.body.address.city,
-                    state: req.body.address.state,
-                    pincode: req.body.address.pincode
+                    line1: req.body.address ? req.body.address.line1 : "NA",
+                    line2: req.body.address ? req.body.address.line2 : "NA",
+                    city: req.body.address ? req.body.address.city : "NA",
+                    state: req.body.address ? req.body.address.state : "NA",
+                    pincode: req.body.address ? req.body.address.pincode : "NA",
                 },
                 phoneNumber: req.body.phoneNumber,
                 qualification: req.body.qualification,
-                designation : req.body.designation,
+                designation: req.body.designation,
                 experience: req.body.experience,
-                primarySubject : req.body.primarySubject,
+                primarySubject: req.body.primarySubject,
                 salaryDetails: {
-                    basic: req.body.salaryDetails.basic,
-                    hra: req.body.salaryDetails.hra,
-                    conveyance: req.body.salaryDetails.conveyance,
-                    pa: req.body.salaryDetails.pa,
-                    pf: req.body.salaryDetails.pf,
-                    pt: req.body.salaryDetails.pt,
+                    basic: req.body.salaryDetails ? req.body.salaryDetails.basic : 0,
+                    hra: req.body.salaryDetails ? req.body.salaryDetails.hra : 0,
+                    conveyance: req.body.salaryDetails ? req.body.salaryDetails.conveyance: 0,
+                    pa: req.body.salaryDetails ? req.body.salaryDetails.pa : 0,
+                    pf: req.body.salaryDetails ? req.body.salaryDetails.pf : 0,
+                    pt: req.body.salaryDetails ? req.body.salaryDetails.pt : 0,
                 },
                 busDetails: {
                     isNeeded: (req.body.busDetails ? req.body.busDetails.isNeeded : false),
@@ -186,27 +186,61 @@ router.post("/signup", checkAuth, (req, res, next) => {
                 },
                 hostelDetails: {
                     isNeeded: (req.body.hostelDetails ? req.body.hostelDetails.isNeeded : false),
-                    roomType: (req.body.hostelDetails  ? req.body.hostelDetails.roomType : "NA"),
-                    foodType: (req.body.hostelDetails  ? req.body.hostelDetails.foodType : "NA"),
-                }
+                    roomType: (req.body.hostelDetails ? req.body.hostelDetails.roomType : "NA"),
+                    foodType: (req.body.hostelDetails ? req.body.hostelDetails.foodType : "NA"),
+                },
+                profile: req.file ? 'profiles/' + makeUrlFriendly(req.file.filename) : null
             });
             teacher.save()
-                .then(doc => {
-                    var transporter = nodemailer.createTransport({
-                        service: 'gmail',
-                        auth: {
-                            user: process.env.NODEMAIL,
-                            pass: process.env.NODEMAIL_PASSWORD
+                .then(docs => {
+                    if (docs.profile !== null) {
+                        bucket.upload(req.file.path, {
+                            destination: 'profiles/' + makeUrlFriendly(req.file.filename),
+                            metadata: {
+                                contentType: req.file.mimetype
+                            }
+                        }, (err, file) => {
+                            if (err) {
+                                res.status(500).json({
+                                    error: err
+                                });
+                            }
+                            else {
+                                var transporter = nodemailer.createTransport({
+                                    service: 'gmail',
+                                    auth: {
+                                        user: process.env.NODEMAIL,
+                                        pass: process.env.NODEMAIL_PASSWORD
+                                    }
+                                }).sendMail(mailOptions, (error, info) => {
+                                    if (error) {
+                                        console.log(error);
+                                    } else {
+                                        res.status(201).json({
+                                            message: "User Created and Mail Sent"
+                                        });
+                                    }
+                                });
+                            }
                         }
-                    }).sendMail(mailOptions, function (error, info) {
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            res.status(201).json({
-                                message: "User Created and Mail Sent Successfully"
-                            });
-                        }
-                    });
+                        )
+                    } else {
+                        var transporter = nodemailer.createTransport({
+                            service: 'gmail',
+                            auth: {
+                                user: process.env.NODEMAIL,
+                                pass: process.env.NODEMAIL_PASSWORD
+                            }
+                        }).sendMail(mailOptions, (error, info) => {
+                            if (error) {
+                                console.log(error);
+                            } else {
+                                res.status(201).json({
+                                    message: "User Created and Mail Sent"
+                                });
+                            }
+                        });
+                    }
                 })
                 .catch(err => {
                     res.status(500).json({
@@ -239,11 +273,36 @@ router.post("/login", (req, res, next) => {
                         }, process.env.JWT_KEY, {
                             expiresIn: "24h"
                         });
-                        res.status(200).json({
-                            message: "Auth Successful",
-                            docs: docs[0],
-                            token: token
-                        });
+                        if (docs[0].profile) {
+                            var file = bucket.file(docs[0].profile);
+                            var options = {
+                                version: 'v4',
+                                action: 'read',
+                                expires: Date.now() + 1000 * 60 * 60 * 24 * 7 // one week
+                            };
+                            file.getSignedUrl(options)
+                                .then(url => {
+                                    res.status(200).json({
+                                        message: "Auth Successful",
+                                        docs: docs[0],
+                                        token: token,
+                                        profile: url
+                                    });
+                                }
+                                ).catch(err => {
+                                    res.status(500).json({
+                                        error: err
+                                    });
+                                }
+                                );
+                        }
+                        else {
+                            res.status(200).json({
+                                message: "Auth Successful",
+                                docs: docs[0],
+                                token: token
+                            });
+                        }
                     } else {
                         res.status(401).json({
                             message: "Invalid Password"
@@ -289,15 +348,15 @@ router.get("/generatecsv", (req, res, next) => {
                             header: [
                                 { id: '_id', title: 'id' },
                                 { id: 'name', title: 'Name' },
-                                { id : 'empid', title: 'EmployeeID'},
+                                { id: 'empid', title: 'EmployeeID' },
                                 { id: 'status', title: 'Status' }
                             ]
                         });
                         var teacherArray = docs.map(doc => {
                             return {
-                                _id : doc._id,
+                                _id: doc._id,
                                 name: doc.firstName + " " + doc.lastName,
-                                empid : doc.empID,
+                                empid: doc.empID,
                                 status: null
 
                             }
@@ -322,10 +381,33 @@ router.get("/generatecsv", (req, res, next) => {
 
 router.get("/:id", checkAuth, (req, res, next) => {
     Teachers.findById(req.params.id).exec()
-        .then(docs => {
-            res.status(200).json({
-                docs: docs
-            })
+        .then(doc => {
+            if (doc.profile) {
+                var file = bucket.file(doc.profile);
+                var options = {
+                    version: 'v4',
+                    action: 'read',
+                    expires: Date.now() + 1000 * 60 * 60 * 24 * 7 // one week
+                };
+                file.getSignedUrl(options)
+                    .then(url => {
+                        res.status(200).json({
+                            docs: doc,
+                            profile: url
+                        });
+                    }
+                    ).catch(err => {
+                        res.status(500).json({
+                            error: err
+                        });
+                    }
+                    );
+            }
+            else {
+                res.status(200).json({
+                    docs: doc
+                })
+            }
         })
         .catch(err => {
             res.status(500).json({
