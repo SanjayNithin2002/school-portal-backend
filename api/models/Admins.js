@@ -41,7 +41,7 @@ var adminSchema = mongoose.Schema({
         line2: String,
         city: String,
         state: String,
-        pincode: Number
+        pincode: String
     },
     phoneNumber: String,
     salaryDetails: {
@@ -74,7 +74,8 @@ var adminSchema = mongoose.Schema({
     sickLeave: {
         type: Number,
         default: 12
-    }
+    },
+    profile: String
 });
 
 module.exports = mongoose.model("Admins", adminSchema);

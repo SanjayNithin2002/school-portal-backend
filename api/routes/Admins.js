@@ -6,8 +6,62 @@ var nodemailer = require("nodemailer");
 var bcrypt = require("bcrypt");
 var fs = require('fs');
 var path = require('path');
+var multer = require('multer');
+var admin = require("firebase-admin");
 var jwt = require("jsonwebtoken");
 var checkAuth = require('../middleware/checkAuth');
+var makeUrlFriendly = require('../middleware/makeUrlFriendly');
+
+
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "./profiles/");
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + "-" + file.originalname)
+
+    }
+});
+
+var fileFilter = (req, file, cb) => {
+    //accept
+    if (file.mimetype === 'image/jpeg') {
+        cb(null, true);
+    }
+    //reject
+    else {
+        cb(null, false);
+    }
+}
+
+var upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 1024 * 1024 * 10
+    },
+    fileFilter: fileFilter
+});
+
+var serviceAccount = {
+    type: process.env.type,
+    project_id: process.env.project_id,
+    private_key_id: process.env.private_key_id,
+    private_key: process.env.private_key.replace(/\\n/g, '\n'),
+    client_email: process.env.client_email,
+    client_id: process.env.client_id,
+    auth_uri: process.env.auth_uri,
+    token_uri: process.env.token_uri,
+    auth_provider_x509_cert_url: process.env.auth_provider_x509_cert_url,
+    client_x509_cert_url: process.env.client_x509_cert_url,
+    universe_domain: process.env.universe_domain
+}
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: process.env.BUCKET_URL
+}, "admins");
+
+var bucket = admin.storage().bucket();
 
 router.post("/sendotp", (req, res, next) => {
     var otp = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
@@ -71,7 +125,7 @@ router.post("/forgotpassword", (req, res, next) => {
         });
 });
 
-router.post("/signup", checkAuth, (req, res, next) => {
+router.post("/signup", checkAuth, upload.single("profile"), (req, res, next) => {
     var email = req.body.email;
     var firstName = req.body.firstName;
     var lastName = req.body.lastName;
@@ -107,20 +161,20 @@ router.post("/signup", checkAuth, (req, res, next) => {
                 qualification : req.body.qualification,
                 experience: req.body.experience,
                 address: {
-                    line1: (req.body.address ? req.body.address.line1 : "NA"),
-                    line2: (req.body.address  ? req.body.address.line2 : "NA"),
-                    city: (req.body.address ? req.body.address.city : "NA"),
-                    state: (req.body.address  ? req.body.address.state : "NA"),
-                    pincode: (req.body.address ? req.body.address.pincode : 0)
+                    line1: req.body.address ? req.body.address.line1 : "NA",
+                    line2: req.body.address ? req.body.address.line2 : "NA",
+                    city: req.body.address ? req.body.address.city : "NA",
+                    state: req.body.address ? req.body.address.state : "NA",
+                    pincode: req.body.address ? req.body.address.pincode : "NA",
                 },
                 phoneNumber: req.body.phoneNumber,
                 salaryDetails: {
-                    basic: (req.body.salaryDetails ? req.body.salaryDetails.basic : 0),
-                    hra: (req.body.salaryDetails ? req.body.salaryDetails.hra : 0),
-                    conveyance: (req.body.salaryDetails  ? req.body.salaryDetails.conveyance : 0),
-                    pa: (req.body.salaryDetails  ? req.body.salaryDetails.pa : 0),
-                    pf: (req.body.salaryDetails ? req.body.salaryDetails.pf : 0),
-                    pt: (req.body.salaryDetails  ? req.body.salaryDetails.pt : 0),
+                    basic: req.body.salaryDetails ? req.body.salaryDetails.basic : 0,
+                    hra: req.body.salaryDetails ? req.body.salaryDetails.hra : 0,
+                    conveyance: req.body.salaryDetails ? req.body.salaryDetails.conveyance: 0,
+                    pa: req.body.salaryDetails ? req.body.salaryDetails.pa : 0,
+                    pf: req.body.salaryDetails ? req.body.salaryDetails.pf : 0,
+                    pt: req.body.salaryDetails ? req.body.salaryDetails.pt : 0,
                 },
                 busDetails: {
                     isNeeded: (req.body.busDetails  ? req.body.busDetails.isNeeded : false),
@@ -132,27 +186,59 @@ router.post("/signup", checkAuth, (req, res, next) => {
                     isNeeded: (req.body.hostelDetails  ? req.body.hostelDetails.isNeeded : false),
                     roomType: (req.body.hostelDetails ? req.body.hostelDetails.roomType : "NA"),
                     foodType: (req.body.hostelDetails  ? req.body.hostelDetails.foodType : "NA"),
-                }
+                },
+                profile: req.file ? 'profiles/' + makeUrlFriendly(req.file.filename) : null
             });
             admin.save()
-                .then(doc => {
-                    var transporter = nodemailer.createTransport({
-                        service: 'gmail',
-                        auth: {
-                            user: process.env.NODEMAIL,
-                            pass: process.env.NODEMAIL_PASSWORD
+                .then(docs => {
+                    if (docs.profile !== null) {
+                        bucket.upload(req.file.path, {
+                            destination: 'profiles/' + makeUrlFriendly(req.file.filename),
+                            metadata: {
+                                contentType: req.file.mimetype
+                            }
+                        }, (err, file) => {
+                            if (err) {
+                                res.status(500).json({
+                                    error: err
+                                });
+                            }
+                            else {
+                                var transporter = nodemailer.createTransport({
+                                    service: 'gmail',
+                                    auth: {
+                                        user: process.env.NODEMAIL,
+                                        pass: process.env.NODEMAIL_PASSWORD
+                                    }
+                                }).sendMail(mailOptions, (error, info) => {
+                                    if (error) {
+                                        console.log(error);
+                                    } else {
+                                        res.status(201).json({
+                                            message: "User Created and Mail Sent"
+                                        });
+                                    }
+                                });
+                            }
                         }
-                    }).sendMail(mailOptions, function (error, info) {
-                        if (error) {
-                            res.status(500).json({
-                                error: error
-                            });
-                        } else {
-                            res.status(201).json({
-                                message: "User Created and Mail Sent Successfully"
-                            });
-                        }
-                    });
+                        )
+                    } else {
+                        var transporter = nodemailer.createTransport({
+                            service: 'gmail',
+                            auth: {
+                                user: process.env.NODEMAIL,
+                                pass: process.env.NODEMAIL_PASSWORD
+                            }
+                        }).sendMail(mailOptions, (error, info) => {
+                            if (error) {
+                                console.log(error);
+                            } else {
+                                res.status(201).json({
+                                    message: "User Created and Mail Sent"
+                                });
+                            }
+                        });
+                    }
                 })
                 .catch(err => {
                     res.status(500).json({
@@ -185,11 +271,36 @@ router.post("/login", (req, res, next) => {
                         }, process.env.JWT_KEY, {
                             expiresIn: "24h"
                         });
-                        res.status(200).json({
-                            message: "Auth Successful",
-                            docs: docs[0],
-                            token: token
-                        });
+                        if (docs[0].profile) {
+                            var file = bucket.file(docs[0].profile);
+                            var options = {
+                                version: 'v4',
+                                action: 'read',
+                                expires: Date.now() + 1000 * 60 * 60 * 24 * 7 // one week
+                            };
+                            file.getSignedUrl(options)
+                                .then(url => {
+                                    res.status(200).json({
+                                        message: "Auth Successful",
+                                        docs: docs[0],
+                                        token: token,
+                                        profile: url
+                                    });
+                                }
+                                ).catch(err => {
+                                    res.status(500).json({
+                                        error: err
+                                    });
+                                }
+                                );
+                        }
+                        else {
+                            res.status(200).json({
+                                message: "Auth Successful",
+                                docs: docs[0],
+                                token: token
+                            });
+                        }
                     } else {
                         res.status(401).json({
                             message: "Invalid Password"
@@ -205,7 +316,6 @@ router.post("/login", (req, res, next) => {
 
 
 });
-
 
 router.get("/", checkAuth, (req, res, next) => {
     Admins.find().exec()
@@ -223,10 +333,33 @@ router.get("/", checkAuth, (req, res, next) => {
 
 router.get("/:id", checkAuth, (req, res, next) => {
     Admins.findById(req.params.id).exec()
-        .then(docs => {
-            res.status(200).json({
-                docs: docs
-            })
+        .then(doc => {
+            if (doc.profile) {
+                var file = bucket.file(doc.profile);
+                var options = {
+                    version: 'v4',
+                    action: 'read',
+                    expires: Date.now() + 1000 * 60 * 60 * 24 * 7 // one week
+                };
+                file.getSignedUrl(options)
+                    .then(url => {
+                        res.status(200).json({
+                            docs: doc,
+                            profile: url
+                        });
+                    }
+                    ).catch(err => {
+                        res.status(500).json({
+                            error: err
+                        });
+                    }
+                    );
+            }
+            else {
+                res.status(200).json({
+                    docs: doc
+                })
+            }
         })
         .catch(err => {
             res.status(500).json({
