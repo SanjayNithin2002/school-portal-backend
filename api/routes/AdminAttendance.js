@@ -40,7 +40,7 @@ router.get("/:id", checkAuth, (req, res) => {
     AdminAttendance.findById(req.params.id).exec()
         .then(docs => {
             res.status(200).json({
-                docs : docs
+                docs: docs
             })
         }
         ).catch(err => {
@@ -54,7 +54,7 @@ router.get("/admins/:adminID", checkAuth, (req, res) => {
     AdminAttendance.find({ admin: req.params.adminID }).exec()
         .then(docs => {
             res.status(200).json({
-               docs: docs
+                docs: docs
             })
         }
         ).catch(err => {
@@ -63,6 +63,19 @@ router.get("/admins/:adminID", checkAuth, (req, res) => {
             })
         }
         )
+});
+router.get("/date/:date", checkAuth, (req, res) => {
+    AdminAttendance.find({ date: new Date(req.params.date) }).populate('admin').exec()
+        .then(docs => {
+            res.status(200).json({
+                docs: docs
+            })
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
 });
 
 router.post("/", checkAuth, (req, res) => {
@@ -85,7 +98,7 @@ router.post("/", checkAuth, (req, res) => {
     })
 
 });
-  
+
 router.post("/postmany", checkAuth, (req, res) => {
     var date = req.body.date;
     var time = req.body.time;

@@ -141,6 +141,19 @@ router.get("/standard/:standard/section/:section/date/:date/", checkAuth, (req, 
         )
 });
 
+router.get("/date/:date", checkAuth, (req, res) => {
+    StudentAttendance.find({ date: new Date(req.params.date) }).populate('student').exec()
+        .then(docs => {
+            res.status(200).json({
+                docs: docs
+            })
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+});
 
 router.post("/", (req, res) => {
     var studentAttendance = new StudentAttendance({

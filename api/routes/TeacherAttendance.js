@@ -99,6 +99,20 @@ router.get("/teachers/:teacherID", checkAuth, (req, res) => {
         )
 });
 
+router.get("/date/:date", checkAuth, (req, res) => {
+    TeacherAttendance.find({ date: new Date(req.params.date) }).populate('teacher').exec()
+        .then(docs => {
+            res.status(200).json({
+                docs: docs
+            })
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+});
+
 router.post("/", checkAuth, (req, res) => {
     var teacherAttendance = new TeacherAttendance({
         _id: new mongoose.Types.ObjectId(),
