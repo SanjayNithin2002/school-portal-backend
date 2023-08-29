@@ -55,7 +55,7 @@ var serviceAccount = {
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     storageBucket: process.env.BUCKET_URL
-});
+}, "assessments");
 
 var bucket = admin.storage().bucket();
 

@@ -41,11 +41,12 @@ var clearDirectory = require('./api/middleware/clearDirectory');
 var job = schedule.scheduleJob('*/5 * * * *', () => {
     clearDirectory('./assessments/');
     clearDirectory('./bonafides/');
-    clearDirectory('./marks/')
-    clearDirectory('./answers/')
-    clearDirectory('./records/')
-    clearDirectory('./attendances/')
-    console.log("Cleared Assessment, Bonafide, Marks, Attendances and Answers Directories");
+    clearDirectory('./marks/');
+    clearDirectory('./answers/');
+    clearDirectory('./records/');
+    clearDirectory('./attendances/');
+    clearDirectory('./profiles/');
+    console.log("Cleared Assessment, Bonafide, Marks, Attendances, Answers and Profiles Directories");
 });
 
 //Middleware

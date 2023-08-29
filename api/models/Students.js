@@ -31,7 +31,7 @@ var studentSchema = mongoose.Schema({
         line2 : String,
         city : String,
         state : String,
-        pincode : Number
+        pincode : String
     },
     father : {
         name : String,
@@ -70,6 +70,10 @@ var studentSchema = mongoose.Schema({
         isNeeded : Boolean,
         roomType : String,
         foodType : String
+    },
+    profile: {
+        type: String,
+        default: null
     }
 });
 

@@ -6,10 +6,62 @@ var nodemailer = require("nodemailer");
 var bcrypt = require("bcrypt");
 var fs = require('fs');
 var path = require('path');
+var multer = require('multer');
+var admin = require("firebase-admin");
 var createCsvWriter = require('csv-writer').createObjectCsvWriter;
 var jwt = require("jsonwebtoken");
 var checkAuth = require('../middleware/checkAuth');
+var makeUrlFriendly = require('../middleware/makeUrlFriendly');
 
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "./profiles/");
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + "-" + file.originalname)
+
+    }
+});
+
+var fileFilter = (req, file, cb) => {
+    //accept
+    if (file.mimetype === 'image/jpeg') {
+        cb(null, true);
+    }
+    //reject
+    else {
+        cb(null, false);
+    }
+}
+
+var upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 1024 * 1024 * 10
+    },
+    fileFilter: fileFilter
+});
+
+var serviceAccount = {
+    type: process.env.type,
+    project_id: process.env.project_id,
+    private_key_id: process.env.private_key_id,
+    private_key: process.env.private_key.replace(/\\n/g, '\n'),
+    client_email: process.env.client_email,
+    client_id: process.env.client_id,
+    auth_uri: process.env.auth_uri,
+    token_uri: process.env.token_uri,
+    auth_provider_x509_cert_url: process.env.auth_provider_x509_cert_url,
+    client_x509_cert_url: process.env.client_x509_cert_url,
+    universe_domain: process.env.universe_domain
+}
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: process.env.BUCKET_URL
+}, "teachers");
+
+var bucket = admin.storage().bucket();
 
 router.post("/sendotp", (req, res, next) => {
     var otp = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);

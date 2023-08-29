@@ -174,8 +174,6 @@ router.post("/", checkAuth, (req, res) => {
         });
 });
 
-
-
 router.patch("/:id", checkAuth, upload.single("bonafide"), (req, res) => {
     updateOps = {
         requestedFile: req.file ? 'bonafides/' + makeUrlFriendly(req.file.filename) : null,

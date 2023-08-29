@@ -72,7 +72,8 @@ var teacherSchema = mongoose.Schema({
     sickLeave : {
         type : Number,
         default : 12
-    }
+    },
+    profile: String
 });
 
 module.exports = mongoose.model("Teachers", teacherSchema);
