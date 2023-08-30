@@ -11,9 +11,28 @@ var admin = require("firebase-admin");
 var createCsvWriter = require('csv-writer').createObjectCsvWriter;
 var Students = require('../models/Students');
 var Classes = require('../models/Classes');
+var Fees = require('../models/Fees');
+var Payments = require('../models/Payments');
 var checkAuth = require('../middleware/checkAuth');
 var makeUrlFriendly = require('../middleware/makeUrlFriendly');
 
+async function addPayments(studDoc) {
+    Fees.find({ standard: studDoc.standard }).select('_id').exec()
+        .then(fees => {
+            var payments = fees.map(fee => {
+                return {
+                    _id: new mongoose.Types.ObjectId(),
+                    fees: fee._id,
+                    student: studDoc._id,
+                    status: "Pending"
+                }
+            });
+            Payments.insertMany(payments)
+            .then(docs => console.log(docs))
+            .catch(err => console.log(err));
+        })
+        .catch(err => console.log(err));
+}
 async function updateMultipleRecords(updatesArray) {
     var updatePromises = updatesArray.map(async (update) => {
         try {
@@ -144,7 +163,7 @@ router.post("/forgotpassword", (req, res, next) => {
         });
 });
 
-router.post("/signup", checkAuth, upload.single("profile"), (req, res, next) => {
+router.post("/signup", checkAuth, upload.single("profile"), async (req, res, next) => {
     var firstName = req.body.firstName;
     var lastName = req.body.lastName;
     var dob = new Date(req.body.dob);
@@ -219,8 +238,10 @@ router.post("/signup", checkAuth, upload.single("profile"), (req, res, next) => 
                         },
                         profile: req.file ? 'profiles/' + makeUrlFriendly(req.file.filename) : null,
                     });
+
                     student.save()
-                        .then(docs => {
+                        .then(async (studDoc) => {
+                            var results = await addPayments(studDoc);
                             if (docs.profile !== null) {
                                 bucket.upload(req.file.path, {
                                     destination: 'profiles/' + makeUrlFriendly(req.file.filename),

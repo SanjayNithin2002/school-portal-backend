@@ -39,7 +39,8 @@ router.post("/", checkAuth, (req, res) => {
     var fee = new Fees({
         _id: new mongoose.Types.ObjectId(),
         amount: req.body.amount,
-        due: null,
+        due: req.body.due? req.body.due : null,
+        description: req.body.description,
         standard: req.body.standard
     });
     fee.save()

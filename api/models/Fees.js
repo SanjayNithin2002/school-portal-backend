@@ -6,6 +6,7 @@ var feesSchema = mongoose.Schema({
         type: Date,
         default: null
     },
+    description: String,
     standard: Number
 });
 
