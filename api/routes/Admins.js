@@ -250,7 +250,7 @@ router.post("/login", (req, res, next) => {
                 bcrypt.compare(req.body.password, docs[0].password, (err, response) => {
                     if (err) {
                         res.status(401).json({
-                            message: "Auth Failed"
+                            message: "Invalid UserID and Password"
                         });
                     }
                     if (response) {
@@ -292,7 +292,7 @@ router.post("/login", (req, res, next) => {
                         }
                     } else {
                         res.status(401).json({
-                            message: "Invalid Password"
+                            message: "Invalid UserID and Password"
                         });
                     }
                 })
@@ -409,7 +409,7 @@ router.patch("/changeuserid", checkAuth, (req, res, next) => {
     var id = req.body.id;
     if (req.userData._id !== id) {
         res.status(401).json({
-            message: "Invalid UserID"
+            message: "Invalid UserID and Password"
         })
     }
     else {
@@ -431,14 +431,14 @@ router.patch("/changeuserid", checkAuth, (req, res, next) => {
                                 })
                             } else if (doc.userID !== currentUserID) {
                                 res.status(401).json({
-                                    message: "Invalid UserID"
+                                    message: "Invalid UserID and Password"
                                 })
                             }
                             else {
                                 bcrypt.compare(password, doc.password, (err, response) => {
                                     if (err) {
                                         res.status(401).json({
-                                            message: "Auth Failed"
+                                            message: "Invalid UserID and Password"
                                         });
                                     }
                                     if (response) {
@@ -456,7 +456,7 @@ router.patch("/changeuserid", checkAuth, (req, res, next) => {
                                             })
                                     } else {
                                         res.status(401).json({
-                                            message: "Invalid Password"
+                                            message: "Invalid UserID and Password"
                                         });
                                     }
                                 })
@@ -474,7 +474,7 @@ router.patch("/changeuserid", checkAuth, (req, res, next) => {
 router.patch("/changepassword", checkAuth, (req, res) => {
     if (req.userData._id !== req.body.id) {
         res.status(401).json({
-            message: "Invalid UserID"
+            message: "Invalid UserID and Password"
         });
     } else {
         var id = req.body.id;
@@ -485,7 +485,7 @@ router.patch("/changepassword", checkAuth, (req, res) => {
                 bcrypt.compare(currentPassword, doc.password, (err, response) => {
                     if (err) {
                         res.status(401).json({
-                            message: "Auth Failed"
+                            message: "Invalid UserID and Password"
                         });
                     }
                     if (response) {
@@ -504,7 +504,7 @@ router.patch("/changepassword", checkAuth, (req, res) => {
                         });
                     } else {
                         res.status(401).json({
-                            message: "Invalid Password"
+                            message: "Invalid UserID and Password"
                         });
                     }
                 })

@@ -130,6 +130,34 @@ router.post("/", checkAuth, (req, res) => {
         });
 });
 
+router.post("/postmany", checkAuth, (req, res) => {
+    var exams = req.body;
+    var exams = exams.map(exam => {
+        return {
+            _id: new mongoose.Types.ObjectId(),
+            class: exam.class,
+            date: exam.date,
+            startTime: exam.startTime,
+            endTime: exam.endTime,
+            maxMarks: exam.maxMarks,
+            weightageMarks: exam.weightageMarks ? exam.weightageMarks : exam.maxMarks,
+            examName: exam.examName
+        }
+    });
+    Exams.insertMany(exams)
+        .then(docs => {
+            res.status(201).json({
+                message: "Exam Records Posted Successfully",
+                docs: docs
+            });
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+});
+
 router.patch("/:id", checkAuth, (req, res) => {
     var updateOps = {};
     for (var ops of req.body) {
