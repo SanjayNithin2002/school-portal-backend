@@ -128,7 +128,7 @@ router.post("/", checkAuth, (req, res, next) => {
                             startDate: req.body.startDate,
                             endDate: req.body.endDate,
                             reason: req.body.reason,
-                            postedOn: new Date().toJSON().slice(0, 10),
+                            postedOn: new Date().toJSON(),
                         });
                         leave.save()
                             .then(docs => {
@@ -183,7 +183,7 @@ router.post("/", checkAuth, (req, res, next) => {
                             startDate: req.body.startDate,
                             endDate: req.body.endDate,
                             reason: req.body.reason,
-                            postedOn: new Date().toJSON().slice(0, 10),
+                            postedOn: new Date().toJSON(),
                         });
                         leave.save()
                             .then(docs => {

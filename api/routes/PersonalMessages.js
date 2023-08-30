@@ -104,7 +104,7 @@ router.post("/", checkAuth, (req, res) => {
         postedBy: req.body.postedBy,
         student: req.body.student,
         message: req.body.message,
-        postedOn: req.body.postedOn ? req.body.postedOn : new Date().toJSON().slice(0, 10)
+        postedOn: req.body.postedOn ? req.body.postedOn : new Date().toJSON()
     });
     personalMessages.save()
         .then(result => {

@@ -175,7 +175,7 @@ router.post("/", checkAuth, upload.single('answerFile'), (req, res) => {
         assessment: req.body.assessment,
         student: req.body.student,
         answerFile: 'answers/' + makeUrlFriendly(req.file.filename),
-        postedOn: new Date().toJSON().slice(0, 10)
+        postedOn: new Date().toJSON()
     });
     answer.save()
         .then(doc => {

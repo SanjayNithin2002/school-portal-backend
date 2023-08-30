@@ -96,7 +96,7 @@ router.post("/", checkAuth, (req, res) => {
         class: req.body.class,
         message: req.body.message,
         postedBy: req.body.postedBy,
-        postedOn: new Date().toJSON().slice(0, 10)
+        postedOn: new Date().toJSON()
     });
     classMessages.save()
         .then(docs => {

@@ -212,7 +212,7 @@ router.post("/", checkAuth, upload.single('questionPaper'), (req, res) => {
         _id: new mongoose.Types.ObjectId(),
         maxMarks: req.body.maxMarks,
         weightageMarks: req.body.weightageMarks,
-        postedOn: new Date().toJSON().slice(0, 10),
+        postedOn: new Date().toJSON(),
         lastDate: req.body.lastDate,
         title: req.body.title,
         description: req.body.description,

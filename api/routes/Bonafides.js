@@ -159,7 +159,7 @@ router.post("/", checkAuth, (req, res) => {
             description: (req.body.tc) ? req.body.TC.description : "NA"
         },
         requestedFile: null,
-        postedOn: new Date().toJSON().slice(0, 10)
+        postedOn: new Date().toJSON()
     });
     bonafide.save()
         .then(doc => {

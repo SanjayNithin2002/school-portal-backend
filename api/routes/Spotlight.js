@@ -42,7 +42,7 @@ router.post("/", checkAuth, (req, res) => {
         title: req.body.title,
         description: req.body.description,
         users: req.body.users,
-        postedOn: req.body.postedOn ? req.body.postedOn : new Date().toJSON().slice(0, 10)
+        postedOn: req.body.postedOn ? req.body.postedOn : new Date().toJSON()
     });
     spotlight.save()
         .then(docs => {
