@@ -7,6 +7,20 @@ var multer = require('multer');
 var fs = require('fs');
 var csv = require('csv-parser');
 
+async function deleteMultipleRecords(updatesArray) {
+    var updatePromises = updatesArray.map(async (update) => {
+        try {
+            var result = await TeacherAttendance.findByIdAndDelete(update);
+            return result;
+        } catch (error) {
+            console.error(`Error deleting document with _id ${update._id}:`, error);
+        }
+    });
+
+    var results = await Promise.all(updatePromises);
+    console.log('Documents deleted successfully:', results);
+}
+
 async function updateMultipleRecords(updatesArray) {
     var updatePromises = updatesArray.map(async (update) => {
         try {
@@ -225,6 +239,20 @@ router.patch("/:id", checkAuth, (req, res) => {
                 error: err
             })
         });
+});
+
+router.delete("/deletemany", async (req, res) => {
+    try {
+        var results = await deleteMultipleRecords(req.body);
+        res.status(200).json({
+            message: 'Deleted the admin attendances records',
+            docs: results,
+        });
+    } catch (err) {
+        res.status(500).json({
+            error: err.message || 'Internal server error',
+        });
+    }
 });
 
 

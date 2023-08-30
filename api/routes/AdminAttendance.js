@@ -4,6 +4,20 @@ var router = express.Router();
 var AdminAttendance = require('../models/AdminAttendance');
 var checkAuth = require('../middleware/checkAuth');
 
+async function deleteMultipleRecords(updatesArray) {
+    var updatePromises = updatesArray.map(async (update) => {
+        try {
+            var result = await AdminAttendance.findByIdAndDelete(update);
+            return result;
+        } catch (error) {
+            console.error(`Error deleting document with _id ${update._id}:`, error);
+        }
+    });
+
+    var results = await Promise.all(updatePromises);
+    console.log('Documents deleted successfully:', results);
+}
+
 async function updateMultipleRecords(updatesArray) {
     var updatePromises = updatesArray.map(async (update) => {
         try {
@@ -11,9 +25,6 @@ async function updateMultipleRecords(updatesArray) {
             var result = await AdminAttendance.updateOne({ _id }, updateData);
             return result;
         } catch (error) {
-            res.status(500).json({
-                error: err
-            });
             console.error(`Error updating document with _id ${update._id}:`, error);
         }
     });
@@ -159,6 +170,20 @@ router.patch("/:id", checkAuth, (req, res) => {
                 error: err
             })
         });
+});
+
+router.delete("/deletemany", async (req, res) => {
+    try {
+        var results = await deleteMultipleRecords(req.body);
+        res.status(200).json({
+            message: 'Deleted the admin attendances records',
+            docs: results,
+        });
+    } catch (err) {
+        res.status(500).json({
+            error: err.message || 'Internal server error',
+        });
+    }
 });
 
 router.delete("/:id", checkAuth, (req, res) => {
