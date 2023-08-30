@@ -125,6 +125,7 @@ router.post("/", checkAuth, (req, res) => {
             });
         });
 });
+
 router.delete("/:id", checkAuth, (req, res) => {
     PersonalMessages.findByIdAndDelete(req.params.id)
         .then(result => {

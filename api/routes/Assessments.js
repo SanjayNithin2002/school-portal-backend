@@ -211,7 +211,7 @@ router.post("/", checkAuth, upload.single('questionPaper'), (req, res) => {
     var assessment = new Assessments({
         _id: new mongoose.Types.ObjectId(),
         maxMarks: req.body.maxMarks,
-        weightageMarks: req.body.weightageMarks,
+        weightageMarks: req.body.weightageMarks ? req.body.weightageMarks: req.body.maxMarks,
         postedOn: new Date().toJSON(),
         lastDate: req.body.lastDate,
         title: req.body.title,
