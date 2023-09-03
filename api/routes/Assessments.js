@@ -195,7 +195,7 @@ router.get('/exams/:teacherID', (req, res) => {
                 .catch(err => {
                     res.status(500).json({
                         error: err,
-                        seq : 1 
+                        seq: 1
                     })
                 });
         })
@@ -211,7 +211,7 @@ router.post("/", checkAuth, upload.single('questionPaper'), (req, res) => {
     var assessment = new Assessments({
         _id: new mongoose.Types.ObjectId(),
         maxMarks: req.body.maxMarks,
-        weightageMarks: req.body.weightageMarks ? req.body.weightageMarks: req.body.maxMarks,
+        weightageMarks: req.body.weightageMarks ? req.body.weightageMarks : req.body.maxMarks,
         postedOn: new Date().toJSON(),
         lastDate: req.body.lastDate,
         title: req.body.title,
@@ -266,26 +266,34 @@ router.patch("/questionPaper/:id", checkAuth, upload.single('questionPaper'), (r
                     var newFilePath = 'assessments/' + makeUrlFriendly(req.file.filename);
                     var newFile = bucket.file(newFilePath);
 
-                    newFile.save(req.file.buffer, {
+                    bucket.upload(req.file.path, {
+                        destination: 'assessments/' + makeUrlFriendly(req.file.filename),
                         metadata: {
-                            contentType: req.file.mimetype,
-                        },
-                    })
-                        .then(() => {
-                            assessment.questionPaper = newFilePath;
-                            return assessment.save();
-                        })
-                        .then(updatedAssessment => {
-                            res.status(200).json({
-                                message: "Assessment Updated Successfully",
-                                docs: updatedAssessment
-                            });
-                        })
-                        .catch(err => {
+                            contentType: req.file.mimetype
+                        }
+                    }, (err, file) => {
+                        if (err) {
                             res.status(500).json({
-                                error: "Error uploading new file to Firebase Storage: " + err.message,
+                                error: err
                             });
-                        });
+                        }
+                        else {
+                            assessment.questionPaper = newFilePath;
+                            assessment.save()
+                                .then(updatedAssessment => {
+                                    res.status(200).json({
+                                        message: "Assessment Updated Successfully",
+                                        docs: updatedAssessment
+                                    });
+                                })
+                                .catch(err => {
+                                    res.status(500).json({
+                                        error: "Error uploading new file to Firebase Storage: " + err.message,
+                                    });
+                                });
+                        }
+                    }
+                    );
                 })
                 .catch(err => {
                     res.status(500).json({

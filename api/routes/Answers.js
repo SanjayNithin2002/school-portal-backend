@@ -159,7 +159,7 @@ router.get("/teachers/:teacherID", checkAuth, (req, res) => {
             });
             res.status(200).json({
                 count: docs.length,
-                docs : answers
+                docs: answers
             });
         })
         .catch(err => {
@@ -207,7 +207,6 @@ router.post("/", checkAuth, upload.single('answerFile'), (req, res) => {
 });
 
 router.patch("/:id", checkAuth, upload.single("answerFile"), (req, res) => {
-
     var id = req.params.id;
     Answers.findById(id)
         .exec()
@@ -225,26 +224,34 @@ router.patch("/:id", checkAuth, upload.single("answerFile"), (req, res) => {
                     var newFilePath = 'answers/' + makeUrlFriendly(req.file.filename);
                     var newFile = bucket.file(newFilePath);
 
-                    newFile.save(req.file.buffer, {
+                    bucket.upload(req.file.path, {
+                        destination: 'answers/' + makeUrlFriendly(req.file.filename),
                         metadata: {
-                            contentType: req.file.mimetype,
-                        },
-                    })
-                        .then(() => {
-                            answer.answerFile = newFilePath;
-                            return answer.save();
-                        })
-                        .then(updatedAnswer => {
-                            res.status(200).json({
-                                message: "Answer Updated Successfully",
-                                docs: updatedAnswer
-                            });
-                        })
-                        .catch(err => {
+                            contentType: req.file.mimetype
+                        }
+                    }, (err, file) => {
+                        if (err) {
                             res.status(500).json({
-                                error: "Error uploading new file to Firebase Storage: " + err.message,
+                                error: err
                             });
-                        });
+                        }
+                        else {
+                            answer.answerFile = newFilePath;
+                            answer.save()
+                                .then(updatedAnswer => {
+                                    res.status(200).json({
+                                        message: "Answer Updated Successfully",
+                                        docs: updatedAnswer
+                                    });
+                                })
+                                .catch(err => {
+                                    res.status(500).json({
+                                        error: "Error uploading new file to Firebase Storage: " + err.message,
+                                    });
+                                });
+                        }
+                    }
+                    );
                 })
                 .catch(err => {
                     res.status(500).json({
@@ -261,41 +268,41 @@ router.patch("/:id", checkAuth, upload.single("answerFile"), (req, res) => {
 
 router.delete("/:id", checkAuth, (req, res) => {
     var answerId = req.params.id;
-  
+
     Answers.findById(answerId)
-      .exec()
-      .then(answer => {
-        if (!answer) {
-          return res.status(404).json({
-            message: "Answer not found",
-          });
-        }
-  
-        var filePath = answer.answerFile;
-        var file = bucket.file(filePath);
-  
-        file.delete()
-          .then(() => {
-            return Answers.findByIdAndDelete(answerId).exec();
-          })
-          .then(() => {
-            res.status(200).json({
-              message: "Answer and associated file deleted successfully",
-              doc: answer,
-            });
-          })
-          .catch(err => {
+        .exec()
+        .then(answer => {
+            if (!answer) {
+                return res.status(404).json({
+                    message: "Answer not found",
+                });
+            }
+
+            var filePath = answer.answerFile;
+            var file = bucket.file(filePath);
+
+            file.delete()
+                .then(() => {
+                    return Answers.findByIdAndDelete(answerId).exec();
+                })
+                .then(() => {
+                    res.status(200).json({
+                        message: "Answer and associated file deleted successfully",
+                        doc: answer,
+                    });
+                })
+                .catch(err => {
+                    res.status(500).json({
+                        error: "Error deleting file from Firebase Storage: " + err.message,
+                    });
+                });
+        })
+        .catch(err => {
             res.status(500).json({
-              error: "Error deleting file from Firebase Storage: " + err.message,
+                error: err.message,
             });
-          });
-      })
-      .catch(err => {
-        res.status(500).json({
-          error: err.message,
         });
-      });
-  });
-  
+});
+
 
 module.exports = router;
