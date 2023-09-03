@@ -10,7 +10,7 @@ router.get("/", checkAuth, (req, res) => {
             var personalMessages = docs.map(doc => {
                 return {
                     _id: doc._id,
-                    teacher: doc.postedBy,
+                    postedBy: doc.postedBy,
                     student: doc.student,
                     message: doc.message,
                     date: doc.postedOn
@@ -32,7 +32,7 @@ router.get("/:id", checkAuth, (req, res) => {
             if (doc) {
                 res.status(200).json({
                     _id: doc._id,
-                    teacher: doc.postedBy,
+                    postedBy: doc.postedBy,
                     student: doc.student,
                     message: doc.message,
                     date: doc.postedOn
@@ -56,7 +56,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
             var personalMessages = docs.map(doc => {
                 return {
                     _id: doc._id,
-                    teacher: doc.postedBy,
+                    postedBy: doc.postedBy,
                     student: doc.student,
                     message: doc.message,
                     date: doc.postedOn
@@ -80,7 +80,7 @@ router.get("/teachers/:teacherID", checkAuth, (req, res) => {
             var personalMessages = docs.map(doc => {
                 return {
                     _id: doc._id,
-                    teacher: doc.postedBy,
+                    postedBy: doc.postedBy,
                     student: doc.student,
                     message: doc.message,
                     date: doc.postedOn
@@ -112,7 +112,7 @@ router.post("/", checkAuth, (req, res) => {
                 message: "Created personalMessages successfully",
                 docs: {
                     _id: result._id,
-                    teacher: result.postedBy,
+                    postedBy: result.postedBy,
                     student: result.student,
                     message: result.message,
                     postedOn: result.postedOn
@@ -133,7 +133,7 @@ router.delete("/:id", checkAuth, (req, res) => {
                 message: "PersonalMessages deleted",
                 docs : {
                     _id: result._id,
-                    teacher: result.teacher,
+                    postedBy: result.postedBy,
                     student: result.student,
                     message: result.message,
                     date: result.date

@@ -39,7 +39,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
                             var personalMessages = docs.map(doc => {
                                 return {
                                     _id: doc._id,
-                                    teacher: doc.postedBy,
+                                    postedBy: doc.postedBy,
                                     student: doc.student,
                                     message: doc.message,
                                     date: doc.postedOn
