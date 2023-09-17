@@ -278,7 +278,7 @@ router.post("/postmany/fileupload", checkAuth, upload.single("marks"), (req, res
                                 [req.body.type]: req.body[req.body.type],
                                 scoredMarks: mark.scoredMarks,
                                 weightageScoredMarks: (mark.scoredMarks / maxMarks) * weightageMarks,
-                                remarks: mark.Remarks
+                                remarks: mark.remarks
                             }
                         }))
                             .then(results => {
@@ -320,7 +320,7 @@ router.post("/postmany/fileupload", checkAuth, upload.single("marks"), (req, res
                                 [req.body.type]: req.body[req.body.type],
                                 scoredMarks: mark.scoredMarks,
                                 weightageScoredMarks: (mark.scoredMarks / maxMarks) * weightageMarks,
-                                remarks: mark.Remarks
+                                remarks: mark.remarks
                             }
                         }))
                             .then(results => {
@@ -347,17 +347,17 @@ router.post("/postmany", checkAuth, (req, res) => {
     if (req.body.type === "assessment") {
         Assessments.findById(req.body.assessment).exec()
             .then(doc => {
-                var marks = [];
+                const marks = req.body.marks.filter(mark => mark.scoredMarks != "");
                 var maxMarks = doc.maxMarks;
                 var weightageMarks = doc.weightageMarks;
-                Marks.insertMany(req.body.marks.map(mark => {
+                Marks.insertMany(marks.map(mark => {
                     return {
                         _id: new mongoose.Types.ObjectId(),
                         student: mark.student,
                         [req.body.type]: req.body[req.body.type],
                         scoredMarks: mark.scoredMarks,
                         weightageScoredMarks: (mark.scoredMarks / maxMarks) * weightageMarks,
-                        remarks: mark.Remarks
+                        remarks: mark.remarks
                     }
                 }))
                     .then(results => {
@@ -376,16 +376,17 @@ router.post("/postmany", checkAuth, (req, res) => {
     if (req.body.type === "exam") {
         Exams.findById(req.body.exam).exec()
             .then(doc => {
+                const marks = req.body.marks.filter(mark => mark.scoredMarks != "");
                 var maxMarks = doc.maxMarks;
                 var weightageMarks = doc.weightageMarks;
-                Marks.insertMany(req.body.marks.map(mark => {
+                Marks.insertMany(marks.map(mark => {
                     return {
                         _id: new mongoose.Types.ObjectId(),
                         student: mark.student,
                         [req.body.type]: req.body[req.body.type],
                         scoredMarks: mark.scoredMarks,
                         weightageScoredMarks: (mark.scoredMarks / maxMarks) * weightageMarks,
-                        remarks: mark.Remarks
+                        remarks: mark.remarks
                     }
                 }))
                     .then(results => {
