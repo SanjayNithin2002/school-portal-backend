@@ -353,7 +353,7 @@ router.post("/postmany", checkAuth, (req, res) => {
                 Marks.insertMany(req.body.marks.map(mark => {
                     return {
                         _id: new mongoose.Types.ObjectId(),
-                        student: mark.id,
+                        student: mark.student,
                         [req.body.type]: req.body[req.body.type],
                         scoredMarks: mark.scoredMarks,
                         weightageScoredMarks: (mark.scoredMarks / maxMarks) * weightageMarks,
@@ -378,10 +378,10 @@ router.post("/postmany", checkAuth, (req, res) => {
             .then(doc => {
                 var maxMarks = doc.maxMarks;
                 var weightageMarks = doc.weightageMarks;
-                Marks.insertMany(marks.map(mark => {
+                Marks.insertMany(req.body.marks.map(mark => {
                     return {
                         _id: new mongoose.Types.ObjectId(),
-                        student: mark.id,
+                        student: mark.student,
                         [req.body.type]: req.body[req.body.type],
                         scoredMarks: mark.scoredMarks,
                         weightageScoredMarks: (mark.scoredMarks / maxMarks) * weightageMarks,
