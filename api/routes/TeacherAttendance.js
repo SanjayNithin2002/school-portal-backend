@@ -222,6 +222,21 @@ router.patch('/patchmany', checkAuth, async (req, res) => {
         });
     }
 });
+
+router.patch("/deletemany", async (req, res) => {
+    try {
+        var results = await deleteMultipleRecords(req.body);
+        res.status(200).json({
+            message: 'Deleted the admin attendances records',
+            docs: results,
+        });
+    } catch (err) {
+        res.status(500).json({
+            error: err.message || 'Internal server error',
+        });
+    }
+});
+
 router.patch("/:id", checkAuth, (req, res) => {
     var updateOps = {};
     for (var ops of req.body) {
@@ -240,21 +255,6 @@ router.patch("/:id", checkAuth, (req, res) => {
             })
         });
 });
-
-router.delete("/deletemany", async (req, res) => {
-    try {
-        var results = await deleteMultipleRecords(req.body);
-        res.status(200).json({
-            message: 'Deleted the admin attendances records',
-            docs: results,
-        });
-    } catch (err) {
-        res.status(500).json({
-            error: err.message || 'Internal server error',
-        });
-    }
-});
-
 
 router.delete("/:id", checkAuth, (req, res) => {
     TeacherAttendance.findByIdAndDelete(req.params.id).exec()

@@ -4,7 +4,7 @@ var Spotlight = require('../models/Spotlight');
 var checkAuth = require('../middleware/checkAuth');
 var router = express.Router();
 
-router.get("/", checkAuth, (req, res) => {
+router.get("/", (req, res) => {
     Spotlight.find().exec()
         .then(docs => {
             res.status(200).json({
@@ -17,7 +17,7 @@ router.get("/", checkAuth, (req, res) => {
         });
 });
 
-router.get("/:id", checkAuth, (req, res) => {
+router.get("/:id", (req, res) => {
     Spotlight.findById(req.params.id).exec()
         .then(docs => {
             if (!docs) {
