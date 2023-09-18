@@ -302,9 +302,9 @@ router.patch("/", checkAuth, (req, res, next) => {
 
 });
 
-router.delete("/", checkAuth, (req, res, next) => {
-    if (req.body.user === "teacher") {
-        Leave.findByIdAndRemove(req.body.id).exec()
+router.delete("/:user/:id", checkAuth, (req, res, next) => {
+    if (req.params.user === "teacher") {
+        Leave.findByIdAndRemove(req.params.id).exec()
             .then(docs => {
                 Teachers.findByIdAndUpdate(docs.teacher, { $inc: { [docs.type]: dateDiffInDays(docs.startDate, docs.endDate) } }, { new: true }).exec()
                     .then(doc => {
@@ -325,8 +325,8 @@ router.delete("/", checkAuth, (req, res, next) => {
                 })
             })
     }
-    if (req.body.user === "admin") {
-        Leave.findByIdAndRemove(req.body.id).exec()
+    if (req.params.user === "admin") {
+        Leave.findByIdAndRemove(req.params.id).exec()
             .then(docs => {
                 Admins.findByIdAndUpdate(docs.admin, { $inc: { [docs.type]: dateDiffInDays(docs.startDate, docs.endDate) } }, { new: true }).exec()
                     .then(doc => {

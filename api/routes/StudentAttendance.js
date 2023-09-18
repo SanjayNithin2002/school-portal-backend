@@ -224,7 +224,7 @@ router.patch("/:id", checkAuth, (req, res) => {
         });
 });
 
-router.delete("/deletemany", async (req, res) => {
+router.patch("/deletemany", async (req, res) => {
     try {
         console.log(req.body);
         var results = await deleteMultipleRecords(req.body.deleteArray);
