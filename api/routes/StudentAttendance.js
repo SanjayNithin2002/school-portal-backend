@@ -37,47 +37,17 @@ async function updateMultipleRecords(updatesArray) {
 }
 
 router.get("/", (req, res) => {
-    (async () => {
-        try {
-            var results = await StudentAttendance.aggregate([
-                {
-                    $group: {
-                        _id: {
-                            student: '$student',
-                            date: '$date'
-                        },
-                        count: {
-                            $sum: {
-                                $cond: [
-                                    {
-                                        $or: [
-                                            { $eq: ['$status', 'Present'] }
-                                        ]
-                                    },
-                                    1,
-                                    0
-                                ]
-                            }
-                        }
-                    }
-                }
-            ]);
+    StudentAttendance.find().exec()
+        .then(docs => {
             res.status(200).json({
-                docs: results.map(result => {
-                    return {
-                        student: result._id.student,
-                        date: new Date(result._id.date).toISOString().split('T')[0],
-                        count: result.count
-                    }
-                })
+                docs: docs
             })
-        } catch (err) {
+        })
+        .catch(err => {
             res.status(500).json({
                 error: err
             })
-        }
-    })();
-
+        });
 });
 
 router.get("/:id", (req, res) => {
@@ -140,14 +110,15 @@ router.get("/students/:studentID", (req, res) => {
 });
 
 router.get("/standard/:standard/section/:section/date/:date/", checkAuth, (req, res) => {
-    StudentAttendance.find({date : new Date(req.params.date)}).populate('student').exec()
+    StudentAttendance.find({ date: new Date(req.params.date) }).populate('student').exec()
         .then(docs => {
-            var docs = docs.filter(doc => doc.student.standard == req.params.standard && doc.student.section == req.params.section );
+            var docs = docs.filter(doc => doc.student.standard == req.params.standard && doc.student.section == req.params.section);
             res.status(200).json({
-                docs : docs
+                docs: docs
             })
         })
-        .catch(err => {~
+        .catch(err => {
+            ~
             res.status(500).json({
                 error: err
             })
@@ -257,7 +228,7 @@ router.delete("/deletemany", async (req, res) => {
     try {
         var results = await deleteMultipleRecords(req.body);
         res.status(200).json({
-            message: 'Deleted the admin attendances records',
+            message: 'Deleted the student attendances records',
             docs: results,
         });
     } catch (err) {

@@ -42,7 +42,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
                                     postedBy: doc.postedBy,
                                     student: doc.student,
                                     message: doc.message,
-                                    date: doc.postedOn
+                                    postedOn: doc.postedOn
                                 }
                             });
                             res.status(200).json({
