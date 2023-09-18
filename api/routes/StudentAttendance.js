@@ -226,6 +226,7 @@ router.patch("/:id", checkAuth, (req, res) => {
 
 router.delete("/deletemany", async (req, res) => {
     try {
+        console.log(req.body);
         var results = await deleteMultipleRecords(req.body.deleteArray);
         res.status(200).json({
             message: 'Deleted the student attendances records',
