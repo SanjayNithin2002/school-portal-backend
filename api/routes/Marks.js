@@ -278,7 +278,7 @@ router.post("/postmany/fileupload", checkAuth, upload.single("marks"), (req, res
                                 [req.body.type]: req.body[req.body.type],
                                 scoredMarks: mark.scoredMarks,
                                 weightageScoredMarks: (mark.scoredMarks / maxMarks) * weightageMarks,
-                                remarks: mark.remarks
+                                remarks: mark.Remarks
                             }
                         }))
                             .then(results => {
@@ -320,7 +320,7 @@ router.post("/postmany/fileupload", checkAuth, upload.single("marks"), (req, res
                                 [req.body.type]: req.body[req.body.type],
                                 scoredMarks: mark.scoredMarks,
                                 weightageScoredMarks: (mark.scoredMarks / maxMarks) * weightageMarks,
-                                remarks: mark.remarks
+                                remarks: mark.Remarks
                             }
                         }))
                             .then(results => {
