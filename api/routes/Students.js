@@ -176,6 +176,7 @@ router.post("/signup", checkAuth, upload.single("profile"), async (req, res, nex
         subject: 'Login Credentials for School Portal',
         text: `Login into your account using the following credentials:\nUserID: ${userID}\nPassword: ${password}\n\nPlease change your password after logging in.`
     };
+    
     Students.find({ userID: userID }).exec()
         .then(docs => {
             if (docs.length > 0) {

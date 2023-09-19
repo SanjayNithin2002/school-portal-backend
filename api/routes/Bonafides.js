@@ -58,7 +58,7 @@ admin.initializeApp({
 var bucket = admin.storage().bucket();
 
 router.get("/", checkAuth, (req, res) => {
-    Bonafides.find().exec()
+    Bonafides.find().populate("student").exec()
         .then(docs => {
             var bonafides = docs.map(doc => {
                 return {
