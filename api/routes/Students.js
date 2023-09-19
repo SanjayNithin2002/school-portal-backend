@@ -243,7 +243,8 @@ router.post("/signup", checkAuth, upload.single("profile"), async (req, res, nex
                     student.save()
                         .then(async (studDoc) => {
                             var results = await addPayments(studDoc);
-                            if (docs.profile !== null) {
+                            if (req.file) {
+                                console.log("hi");
                                 bucket.upload(req.file.path, {
                                     destination: 'profiles/' + makeUrlFriendly(req.file.filename),
                                     metadata: {

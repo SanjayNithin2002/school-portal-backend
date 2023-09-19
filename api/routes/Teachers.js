@@ -182,7 +182,7 @@ router.post("/signup", checkAuth, upload.single("profile"), (req, res, next) => 
             });
             teacher.save()
                 .then(docs => {
-                    if (docs.profile !== null) {
+                    if (req.file) {
                         bucket.upload(req.file.path, {
                             destination: 'profiles/' + makeUrlFriendly(req.file.filename),
                             metadata: {
