@@ -10,7 +10,7 @@ var checkAuth = require('../middleware/checkAuth');
 
 
 router.get("/", checkAuth, (req, res, next) => {
-    Leave.find().exec()
+    Leave.find().populate("teacher admin").exec()
         .then(docs => {
             res.status(200).json({
                 docs: docs.map(doc => {
