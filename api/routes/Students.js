@@ -28,8 +28,8 @@ async function addPayments(studDoc) {
                 }
             });
             Payments.insertMany(payments)
-            .then(docs => console.log(docs))
-            .catch(err => console.log(err));
+                .then(docs => console.log(docs))
+                .catch(err => console.log(err));
         })
         .catch(err => console.log(err));
 }
@@ -176,7 +176,7 @@ router.post("/signup", checkAuth, upload.single("profile"), async (req, res, nex
         subject: 'Login Credentials for School Portal',
         text: `Login into your account using the following credentials:\nUserID: ${userID}\nPassword: ${password}\n\nPlease change your password after logging in.`
     };
-    
+
     Students.find({ userID: userID }).exec()
         .then(docs => {
             if (docs.length > 0) {
@@ -244,7 +244,6 @@ router.post("/signup", checkAuth, upload.single("profile"), async (req, res, nex
                         .then(async (studDoc) => {
                             var results = await addPayments(studDoc);
                             if (req.file) {
-                                console.log("hi");
                                 bucket.upload(req.file.path, {
                                     destination: 'profiles/' + makeUrlFriendly(req.file.filename),
                                     metadata: {
@@ -367,6 +366,42 @@ router.post("/login", (req, res, next) => {
                 })
             }
         }).catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+});
+
+router.post("/profile/:id", checkAuth, upload.single("profile"), (req, res) => {
+    Students.findByIdAndUpdate(req.params.id, { profile: req.file ? 'profiles/' + makeUrlFriendly(req.file.filename) : null }).exec()
+        .then(docs => {
+            if (req.file) {
+                bucket.upload(req.file.path, {
+                    destination: 'profiles/' + makeUrlFriendly(req.file.filename),
+                    metadata: {
+                        contentType: req.file.mimetype
+                    }
+                }, (err, file) => {
+                    if (err) {
+                        res.status(500).json({
+                            error: err
+                        });
+                    }
+                    else {
+                        res.status(201).json({
+                            "message": "Profile Picture Added Successfuly!"
+                        })
+                    }
+                }
+                )
+            }
+            else{
+                res.status(400).json({
+                    "message": "Profile Picture Not Uploaded!"
+                })
+            }
+        })
+        .catch(err => {
             res.status(500).json({
                 error: err
             })

@@ -308,6 +308,42 @@ router.post("/login", (req, res, next) => {
 
 });
 
+router.post("/profile/:id", checkAuth, upload.single("profile"), (req, res) => {
+    Teachers.findByIdAndUpdate(req.params.id, { profile: req.file ? 'profiles/' + makeUrlFriendly(req.file.filename) : null }).exec()
+        .then(docs => {
+            if (req.file) {
+                bucket.upload(req.file.path, {
+                    destination: 'profiles/' + makeUrlFriendly(req.file.filename),
+                    metadata: {
+                        contentType: req.file.mimetype
+                    }
+                }, (err, file) => {
+                    if (err) {
+                        res.status(500).json({
+                            error: err
+                        });
+                    }
+                    else {
+                        res.status(201).json({
+                            "message": "Profile Picture Added Successfuly!"
+                        })
+                    }
+                }
+                )
+            }
+            else{
+                res.status(400).json({
+                    "message": "Profile Picture Not Uploaded!"
+                })
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+});
+
 router.get("/", checkAuth, (req, res, next) => {
     Teachers.find().exec()
         .then(docs => {
