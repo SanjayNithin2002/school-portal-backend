@@ -96,7 +96,6 @@ router.get("/standard/:standard", (req, res, next) => {
         .then(studDocs => {
             var sections = studDocs.map(doc => doc.section);
             var uniqueSections = [...new Set(sections)];
-            // section wise boys and girls count
             var count = {};
             uniqueSections.forEach(section => {
                 count[section] = {
@@ -107,13 +106,15 @@ router.get("/standard/:standard", (req, res, next) => {
             studDocs.forEach(doc => {
                 count[doc.section][doc.gender]++;
             });
+            delete count.undefined;
             Classes.find({ standard: req.params.standard }).populate('teacher').exec()
                 .then(docs => {
                     var subjects = docs.map(doc => doc.subject);
                     var uniqueSubjects = [...new Set(subjects)];
+                    var uniqueSubjects = uniqueSubjects.filter(subject => subject !== "Class Teacher")
                     res.status(200).json({
                         subjects: uniqueSubjects,
-                        sections: uniqueSections,
+                        sections: uniqueSections.filter(section => section !== undefined),
                         count: count
                     })
                 })
