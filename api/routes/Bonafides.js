@@ -158,7 +158,7 @@ router.post("/", checkAuth, (req, res) => {
     var bonafide = new Bonafides({
         _id: new mongoose.Types.ObjectId(),
         service: req.body.service,
-        // check bonafide models 
+        //check bonafide models 
         student: req.body.student,
         passport: {
             description: (req.body.passport) ? req.body.passport.description : "NA"

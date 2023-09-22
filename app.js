@@ -1,12 +1,12 @@
-// Import required libraries and modules
-var express = require("express"); // Express.js framework
-var morgan = require("morgan"); // Logging middleware
-var mongoose = require("mongoose"); // MongoDB ODM library
-var bodyParser = require("body-parser"); // Middleware for parsing request bodies
-var schedule = require('node-schedule'); // Schedule tasks
-var cors = require('cors'); // Cross-origin resource sharing middleware
+//Import required libraries and modules
+var express = require("express"); //Express.js framework
+var morgan = require("morgan"); //Logging middleware
+var mongoose = require("mongoose"); //MongoDB ODM library
+var bodyParser = require("body-parser"); //Middleware for parsing request bodies
+var schedule = require('node-schedule'); //Schedule tasks
+var cors = require('cors'); //Cross-origin resource sharing middleware
 
-// Import route modules
+//Import route modules
 var classRoutes = require('./api/routes/Classes');
 var studentRoutes = require('./api/routes/Students');
 var teacherRoutes = require('./api/routes/Teachers');
@@ -32,10 +32,10 @@ var spotlightRoutes = require('./api/routes/Spotlight');
 var transactionRoutes = require('./api/routes/Transactions');
 var feesRoutes = require('./api/routes/Fees');
 
-// Create an Express application
+//Create an Express application
 var app = express();
 
-// Schedule a job to clear directories at regular intervals
+//Schedule a job to clear directories at regular intervals (every 5 minutes)
 var clearDirectory = require('./api/middleware/clearDirectory');
 var job = schedule.scheduleJob('*/5 * * * *', () => {
     clearDirectory('./assessments/');
@@ -48,13 +48,13 @@ var job = schedule.scheduleJob('*/5 * * * *', () => {
     console.log("Cleared Assessment, Bonafide, Marks, Attendances, Answers, and Profiles Directories");
 });
 
-// Middleware configuration
-app.use(morgan("dev")); // Logging middleware for development
-app.use(bodyParser.json()); // Parse JSON request bodies
-app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded request bodies
-app.use(cors()); // Enable Cross-Origin Resource Sharing
+//Middleware configuration
+app.use(morgan("dev")); //Logging middleware for development
+app.use(bodyParser.json()); //Parse JSON request bodies
+app.use(bodyParser.urlencoded({ extended: true })); //Parse URL-encoded request bodies
+app.use(cors()); //Enable Cross-Origin Resource Sharing
 
-// Configure CORS headers to allow requests from any origin
+//Configure CORS headers to allow requests from any origin
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
@@ -71,17 +71,17 @@ app.use((req, res, next) => {
     next();
 });
 
-// Serve static files from the 'public' directory
+//Serve static files from the 'public' directory
 app.use('/public', express.static('public'));
 
-// Connect to MongoDB Atlas
-mongoose.connect("mongodb+srv://sanjaynithin2002:" + process.env.MONGODB_PASSWORD + "@cluster0.kgz6ota.mongodb.net/?retryWrites=true&w=majority",
+//Connect to MongoDB Atlas
+mongoose.connect(process.env.MONGODB_URL,
 {
     dbName: process.env.school || "test"
 });
 console.log("Connected to MongoDB Atlas");
 
-// Define routes for different API endpoints
+//Define routes for different API endpoints
 app.use('/classes', classRoutes);
 app.use('/students', studentRoutes);
 app.use('/teachers', teacherRoutes);
@@ -107,14 +107,14 @@ app.use('/spotlight', spotlightRoutes);
 app.use('/transactions', transactionRoutes);
 app.use('/fees', feesRoutes);
 
-// Define a root route that returns a welcome message
+//Define a root route that returns a welcome message
 app.get('/', (req, res) => {
     res.status(200).json({
         message: "Welcome to School Management API"
     });
 });
 
-// Error handling middleware for "Not Found" errors
+//Error handling middleware for "Not Found" errors
 app.use((req, res, next) => {
     var error = new Error("Not Found");
     error.status = 404;
@@ -129,5 +129,5 @@ app.use((error, req, res, next) => {
     });
 });
 
-// Export the Express app for use in other modules
+//Export the Express app for use in other modules
 module.exports = app;

@@ -367,7 +367,7 @@ files. */
 router.delete("/:id", checkAuth, (req, res) => {
     var assessmentId = req.params.id;
 
-    // Find the assessment in the database
+    //Find the assessment in the database
     Assessments.findById(assessmentId)
         .exec()
         .then(assessment => {

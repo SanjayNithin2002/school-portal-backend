@@ -72,7 +72,7 @@ admin.initializeApp({
 
 var bucket = admin.storage().bucket();
 
-// API Routes
+//API Routes
 router.get("/", checkAuth, (req, res) => {
     Answers.find().populate([{ path: "assessment", populate: { path: "class" } }, { path: "student" }]).exec()
         .then(docs => {

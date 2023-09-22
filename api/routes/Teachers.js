@@ -269,7 +269,7 @@ router.post("/login", (req, res, next) => {
                             var options = {
                                 version: 'v4',
                                 action: 'read',
-                                expires: Date.now() + 1000 * 60 * 60 * 24 * 7 // one week
+                                expires: Date.now() + 1000 * 60 * 60 * 24 * 7 //one week
                             };
                             file.getSignedUrl(options)
                                 .then(url => {
@@ -423,7 +423,7 @@ router.get("/:id", checkAuth, (req, res, next) => {
                 var options = {
                     version: 'v4',
                     action: 'read',
-                    expires: Date.now() + 1000 * 60 * 60 * 24 * 7 // one week
+                    expires: Date.now() + 1000 * 60 * 60 * 24 * 7 //one week
                 };
                 file.getSignedUrl(options)
                     .then(url => {
