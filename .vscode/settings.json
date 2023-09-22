@@ -1,3 +1,7 @@
 {
-    "docify.commentService.docstringFormat": "Doxygen"
+    "docify.commentService.docstringFormat": "Doxygen",
+    "docwriter.progress.trackClasses": true,
+    "docwriter.progress.trackFunctions": false,
+    "docwriter.progress.trackMethods": false,
+    "docwriter.style": "reST"
 }

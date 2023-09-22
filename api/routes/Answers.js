@@ -7,6 +7,11 @@ var checkAuth = require('../middleware/checkAuth');
 var makeUrlFriendly = require('../middleware/makeUrlFriendly');
 var router = express.Router();
 
+
+/* The code `var storage = multer.diskStorage({ destination: function (req, file, cb) { cb(null,
+"./answers/"); }, filename: function (req, file, cb) { cb(null, Date.now() + "-" +
+file.originalname) } });` is configuring the storage settings for multer, a middleware used for
+handling file uploads in Node.js. */
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "./answers/");
@@ -17,6 +22,8 @@ var storage = multer.diskStorage({
     }
 });
 
+/* The `fileFilter` function is used as a filter for the multer middleware to determine which files
+should be accepted or rejected during the file upload process. */
 var fileFilter = (req, file, cb) => {
     //accept
     if (file.mimetype === 'application/pdf') {
@@ -28,6 +35,9 @@ var fileFilter = (req, file, cb) => {
     }
 }
 
+/* The code `var upload = multer({ storage: storage, limits: { fileSize: 1024 * 1024 * 10 },
+fileFilter: fileFilter });` is creating an instance of the multer middleware with the specified
+configuration options. */
 var upload = multer({
     storage: storage,
     limits: {
@@ -35,6 +45,13 @@ var upload = multer({
     },
     fileFilter: fileFilter
 });
+
+/* The following code is initializing a Firebase Admin SDK service account and creating a storage bucket.
+It is using environment variables to set the necessary credentials and configuration for the service
+account. The service account is used to authenticate and authorize access to Firebase services, such
+as storage. The code initializes the Firebase Admin SDK with the service account credentials and
+sets the storage bucket URL. Finally, it creates a bucket object that can be used to interact with
+the storage bucket. */
 var serviceAccount = {
     type: process.env.type,
     project_id: process.env.project_id,
@@ -55,6 +72,7 @@ admin.initializeApp({
 
 var bucket = admin.storage().bucket();
 
+// API Routes
 router.get("/", checkAuth, (req, res) => {
     Answers.find().populate([{ path: "assessment", populate: { path: "class" } }, { path: "student" }]).exec()
         .then(docs => {
@@ -79,6 +97,12 @@ router.get("/", checkAuth, (req, res) => {
         });
 });
 
+/* The following code is defining a route handler for a GET request with a dynamic parameter ":id". It
+first calls the "checkAuth" middleware function to authenticate the request. Then, it uses the
+"findById" method to find a document in the "Answers" collection based on the provided "id". The
+found document is then populated with related data from the "assessment" and "student" collections
+using the "populate" method. Finally, the response is sent with the retrieved data, including the
+"_id", "assessment", "student", "answerFile" (with a modified URL), and " */
 router.get("/:id", checkAuth, (req, res) => {
     Answers.findById(req.params.id).populate([{ path: "assessment", populate: { path: "class" } }, { path: "student" }]).exec()
         .then(doc => {
@@ -97,6 +121,9 @@ router.get("/:id", checkAuth, (req, res) => {
         })
 });
 
+/* The following code is defining a route in a JavaScript router that handles a GET request to
+"/assessments/:assID". It first checks if the user is authenticated using the "checkAuth"
+middleware. */
 router.get("/assessments/:assID", checkAuth, (req, res) => {
     Answers.find({ assessment: req.params.assID }).populate([{ path: "assessment", populate: { path: "class" } }, { path: "student" }]).exec()
         .then(docs => {
@@ -121,6 +148,8 @@ router.get("/assessments/:assID", checkAuth, (req, res) => {
         });
 });
 
+/* The following code is defining a route in a JavaScript router that handles a GET request to
+"/students/:studentID". It uses the checkAuth middleware to authenticate the request. */
 router.get("/students/:studentID", checkAuth, (req, res) => {
     Answers.find({ student: req.params.studentID }).populate([{ path: "assessment", populate: { path: "class" } }, { path: "student" }]).exec()
         .then(docs => {
@@ -145,6 +174,8 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
         });
 });
 
+/* The following code is defining a route handler for GET requests to "/teachers/:teacherID". It first
+checks for authentication using the "checkAuth" middleware. */
 router.get("/teachers/:teacherID", checkAuth, (req, res) => {
     Answers.find().populate([{ path: "assessment", populate: { path: "class", populate: { path: "teacher" } } }, { path: "student" }]).exec()
         .then(docs => {
@@ -168,6 +199,8 @@ router.get("/teachers/:teacherID", checkAuth, (req, res) => {
             });
         });
 });
+/* The following code is a route handler for a POST request. It is used to handle the uploading of an
+answer file for a specific assessment by a student. */
 
 router.post("/", checkAuth, upload.single('answerFile'), (req, res) => {
     var answer = new Answers({
@@ -205,6 +238,9 @@ router.post("/", checkAuth, upload.single('answerFile'), (req, res) => {
             })
         });
 });
+/* The following code is a route handler for a PATCH request to update an answer in a database. It first
+checks if the answer exists by finding it using the provided ID. If the answer is not found, it
+returns a 404 error. */
 
 router.patch("/:id", checkAuth, upload.single("answerFile"), (req, res) => {
     var id = req.params.id;
@@ -265,6 +301,9 @@ router.patch("/:id", checkAuth, upload.single("answerFile"), (req, res) => {
             });
         });
 });
+/* The following code is a route handler for a DELETE request to delete an answer and its associated file.
+It first retrieves the answer by its ID using the `findById` method. If the answer is not found, it
+returns a 404 status with a message. */
 
 router.delete("/:id", checkAuth, (req, res) => {
     var answerId = req.params.id;

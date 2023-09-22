@@ -8,10 +8,18 @@ var Payments = require('../models/Payments');
 var checkAuth = require('../middleware/checkAuth');
 var router = express.Router();
 
+/* The code `var razorpay = new Razorpay({ key_id: process.env.rpy_key, key_secret:
+process.env.rpy_key_secret });` is creating a new instance of the Razorpay object. It is using the
+`Razorpay` module and passing in the `key_id` and `key_secret` values from the environment variables
+`process.env.rpy_key` and `process.env.rpy_key_secret` respectively. These values are used to
+authenticate and authorize the API requests made to the Razorpay payment gateway. */
 var razorpay = new Razorpay({
     key_id: process.env.rpy_key,
     key_secret: process.env.rpy_key_secret
 });
+
+/* This code is defining a GET route for the root URL ("/"). It is using the Express router to handle
+the request. */
 router.get("/", checkAuth, (req, res) => {
     Transactions.find().exec()
         .then(docs => {
@@ -26,6 +34,8 @@ router.get("/", checkAuth, (req, res) => {
         });
 });
 
+/* This code defines a GET route with a dynamic parameter `/:id`. It uses the Express router to handle
+the request. */
 router.get("/:id", checkAuth, (req, res) => {
     Transactions.findById(req.params.id).exec()
         .then(docs => {
@@ -39,6 +49,9 @@ router.get("/:id", checkAuth, (req, res) => {
         });
 });
 
+/* The code `router.get("/students/:studentID", checkAuth, (req, res) => { ... })` defines a GET route
+with a dynamic parameter `/:studentID`. This route is used to fetch transactions related to a
+specific student. */
 router.get("/students/:studentID", checkAuth, (req, res) => {
     Transactions.find().populate('paymentID').exec()
         .then(docs => {
@@ -53,6 +66,8 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
 });
 
 
+/* The code `router.post("/razorpay", checkAuth, async (req, res) => { ... })` defines a POST route for
+the "/razorpay" endpoint. This route is used to create a new Razorpay order and initiate a payment. */
 router.post("/razorpay", checkAuth, async (req, res) => {
     var paymentID = req.body.payment;
     Payments.findById(paymentID).populate('fees').exec()
@@ -93,6 +108,9 @@ router.post("/razorpay", checkAuth, async (req, res) => {
         });
 });
 
+/* The `router.post('/verification', async (req, res) => { ... })` code defines a POST route for the
+"/verification" endpoint. This route is used to handle the verification of a payment webhook from
+Razorpay. */
 router.post('/verification', async (req, res) => {
     const secret = process.env.rpy_webhook_secret;
     const shasum = crypto.createHmac('sha256', secret)

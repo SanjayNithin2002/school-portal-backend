@@ -32,17 +32,6 @@ var workerSchema = mongoose.Schema({
         pa : Number,
         pf : Number,
         pt : Number,
-    },
-    busDetails : {
-        isNeeded : Boolean,
-        busStopArea : String,
-        busStop : String,
-        availableBus : String
-    },
-    hostelDetails : {
-        isNeeded : Boolean,
-        roomType : String,
-        foodType : String
     }
 });
 

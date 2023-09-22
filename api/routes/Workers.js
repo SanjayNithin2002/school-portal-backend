@@ -4,6 +4,9 @@ var checkAuth = require('../middleware/checkAuth');
 var express = require('express');
 var router = express.Router();
 
+/* This code is defining a GET route for the root URL ("/") of the server. When a GET request is made
+to this route, it first checks if the user is authenticated by calling the `checkAuth` middleware
+function. If the user is authenticated, it executes the callback function `(req, res) => {...}`. */
 router.get("/", checkAuth, (req, res) => {
     Workers.find().exec()
         .then(docs => {
@@ -18,7 +21,9 @@ router.get("/", checkAuth, (req, res) => {
         });
 });
 
-
+/* This code defines a GET route for the URL "/:id" of the server. When a GET request is made to this
+route, it first checks if the user is authenticated by calling the `checkAuth` middleware function.
+If the user is authenticated, it executes the callback function `(req, res) => {...}`. */
 router.get("/:id", checkAuth, (req, res) => {
     const workerId = req.params.id;
     Workers.findById(workerId).exec()
@@ -38,6 +43,10 @@ router.get("/:id", checkAuth, (req, res) => {
         });
 });
 
+/* The code `router.post("/", checkAuth, (req, res) => {...})` is defining a POST route for the root
+URL ("/") of the server. When a POST request is made to this route, it first checks if the user is
+authenticated by calling the `checkAuth` middleware function. If the user is authenticated, it
+executes the callback function `(req, res) => {...}`. */
 router.post("/", checkAuth, (req, res) => {
     var worker = new Workers({
         _id: new mongoose.Types.ObjectId(),
@@ -68,17 +77,6 @@ router.post("/", checkAuth, (req, res) => {
             pa: req.body.salaryDetails.pa,
             pf: req.body.salaryDetails.pf,
             pt: req.body.salaryDetails.pt,
-        },
-        busDetails: {
-            isNeeded: (req.body.busDetails ? req.body.busDetails.isNeeded : false),
-            busStopArea: (req.body.busDetails ? req.body.busDetails.busStopArea : "NA"),
-            busStop: (req.body.busDetails ? req.body.busDetails.busStop : "NA"),
-            availableBus: (req.body.busDetails ? req.body.busDetails.availableBus : "NA")
-        },
-        hostelDetails: {
-            isNeeded: (req.body.hostelDetails ? req.body.hostelDetails.isNeeded : false),
-            roomType: (req.body.hostelDetails ? req.body.hostelDetails.roomType : "NA"),
-            foodType: (req.body.hostelDetails ? req.body.hostelDetails.foodType : "NA"),
         }
     });
     worker.save()
@@ -94,6 +92,10 @@ router.post("/", checkAuth, (req, res) => {
         });
 });
 
+/* The `router.patch("/:id", checkAuth, checkAuth, (req, res, next) => {...})` code is defining a PATCH
+route for the URL "/:id" of the server. When a PATCH request is made to this route, it first checks
+if the user is authenticated by calling the `checkAuth` middleware function. If the user is
+authenticated, it executes the callback function `(req, res, next) => {...}`. */
 router.patch("/:id", checkAuth, checkAuth, (req, res, next) => {
     var id = req.params.id;
     var updateOps = {};
@@ -114,6 +116,10 @@ router.patch("/:id", checkAuth, checkAuth, (req, res, next) => {
         });
 });
 
+/* The code `router.delete("/:id", checkAuth, (req, res, next) => {...})` is defining a DELETE route
+for the URL "/:id" of the server. When a DELETE request is made to this route, it first checks if
+the user is authenticated by calling the `checkAuth` middleware function. If the user is
+authenticated, it executes the callback function `(req, res, next) => {...}`. */
 router.delete("/:id", checkAuth, (req, res, next) => {
     var id = req.params.id;
     Workers.findByIdAndDelete(req.params.id)

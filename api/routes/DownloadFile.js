@@ -3,6 +3,9 @@ var express = require('express');
 var router = express.Router();
 var checkAuth = require('../middleware/checkAuth');
 
+/* The `serviceAccount` object is used to configure the Firebase Admin SDK with the necessary
+credentials to access Firebase services. It contains various properties that are required for
+authentication and authorization. */
 var serviceAccount = {
     type: process.env.type,
     project_id: process.env.project_id,
@@ -17,13 +20,19 @@ var serviceAccount = {
     universe_domain: "googleapis.com"
 }
 
+/* The `admin.initializeApp()` function is used to initialize the Firebase Admin SDK with the necessary
+credentials and configuration. */
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     storageBucket: process.env.BUCKET_URL
 }, "downloadFile");
 
+/* `var bucket = admin.storage().bucket();` is creating a reference to the default Cloud Storage bucket
+associated with the Firebase project. This allows you to perform various operations on the bucket,
+such as uploading files, downloading files, deleting files, etc. */
 var bucket = admin.storage().bucket();
 
+/* The code block you provided is defining a route handler for a GET request to a specific URL pattern. */
 router.get("/:location/:filename", checkAuth, (req, res) => {
     var location = req.params.location;
     var filename = req.params.filename;

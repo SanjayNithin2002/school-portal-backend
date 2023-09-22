@@ -6,6 +6,12 @@ var Classes = require('../models/Classes');
 var Students = require('../models/Students');
 var checkAuth = require('../middleware/checkAuth');
 
+/**
+ * The function `updateMultipleRecords` updates multiple records in a MongoDB collection based on an
+ * array of updates.
+ * @param updatesArray - An array of objects containing the updates to be made to multiple records.
+ * Each object in the array should have the following properties:
+ */
 async function updateMultipleRecords(updatesArray) {
     var updatePromises = updatesArray.map(async (update) => {
         try {
@@ -24,6 +30,10 @@ async function updateMultipleRecords(updatesArray) {
     console.log('Documents updated successfully:', results);
 }
 
+/* This code is defining a GET route for the root URL ("/") of the server. When a GET request is made
+to this route, it first checks if the user is authenticated by calling the `checkAuth` middleware
+function. If the user is authenticated, it executes the callback function `(req, res, next) =>
+{...}`. */
 router.get("/", checkAuth, (req, res, next) => {
     Classes.find().populate('teacher').exec()
         .then(docs => {
@@ -38,6 +48,9 @@ router.get("/", checkAuth, (req, res, next) => {
         });
 });
 
+/* This code defines a GET route for the URL "/:id" of the server. When a GET request is made to this
+route, it first checks if the user is authenticated by calling the `checkAuth` middleware function.
+If the user is authenticated, it executes the callback function `(req, res, next) => {...}`. */
 router.get("/:id", checkAuth, (req, res, next) => {
     Classes.findById(req.params.id).populate('teacher').exec()
         .then(docs => {
@@ -52,6 +65,8 @@ router.get("/:id", checkAuth, (req, res, next) => {
         });
 });
 
+/* The `router.get("/students/:studentID", ...)` route is used to retrieve the classes of a specific
+student. */
 router.get("/students/:studentID", (req, res, next) => {
     Students.findById(req.params.studentID).exec()
         .then(studDoc => {
@@ -77,6 +92,10 @@ router.get("/students/:studentID", (req, res, next) => {
         });
 });
 
+/* This code defines a GET route for the URL "/teachers/:teacherID" of the server. When a GET request
+is made to this route, it first checks if the user is authenticated by calling the `checkAuth`
+middleware function. If the user is authenticated, it executes the callback function `(req, res,
+next) => {...}`. */
 router.get("/teachers/:teacherID", checkAuth, (req, res, next) => {
     Classes.find({ teacher: req.params.teacherID }).populate('teacher').exec()
         .then(docs => {
@@ -91,6 +110,8 @@ router.get("/teachers/:teacherID", checkAuth, (req, res, next) => {
         });
 });
 
+/* The `router.get("/standard/:standard", ...)` route is used to retrieve information about classes
+based on a specific standard. */
 router.get("/standard/:standard", (req, res, next) => {
     Students.find({ standard: req.params.standard }).exec()
         .then(studDocs => {
@@ -129,8 +150,12 @@ router.get("/standard/:standard", (req, res, next) => {
                 error: err
             })
         });
-})
+});
 
+/* The code block you provided is defining a POST route for the root URL ("/") of the server. When a
+POST request is made to this route, it first checks if the user is authenticated by calling the
+`checkAuth` middleware function. If the user is authenticated, it executes the callback function
+`(req, res, next) => {...}`. */
 router.post("/", checkAuth, (req, res, next) => {
     var classes = new Classes({
         _id: new mongoose.Types.ObjectId(),
@@ -159,6 +184,8 @@ router.post("/", checkAuth, (req, res, next) => {
         });
 });
 
+/* The `router.post("/postmany", checkAuth, (req, res) => {...})` route is used to create multiple
+class records at once. */
 router.post("/postmany", checkAuth, (req, res) => {
     var classes = req.body.map(classrec => {
         return new Classes({
@@ -191,6 +218,8 @@ router.post("/postmany", checkAuth, (req, res) => {
         });
 });
 
+/* The `router.patch('/patchmany', checkAuth, async (req, res) => {...})` route is used to update
+multiple class records at once. */
 router.patch('/patchmany', checkAuth, async (req, res) => {
     try {
         var results = await updateMultipleRecords(req.body);
@@ -206,6 +235,10 @@ router.patch('/patchmany', checkAuth, async (req, res) => {
     }
 });
 
+/* The code `router.patch("/:id", checkAuth, (req, res) => {...})` defines a PATCH route for the URL
+"/:id" of the server. When a PATCH request is made to this route, it first checks if the user is
+authenticated by calling the `checkAuth` middleware function. If the user is authenticated, it
+executes the callback function `(req, res) => {...}`. */
 router.patch("/:id", checkAuth, (req, res) => {
     console.log("NO");
     var id = req.params.id;
@@ -227,10 +260,9 @@ router.patch("/:id", checkAuth, (req, res) => {
         })
 });
 
-
-
-
-
+/* The code `router.delete("/:id", (req, res) => {...})` defines a DELETE route for the URL "/:id" of
+the server. When a DELETE request is made to this route, it executes the callback function `(req,
+res) => {...}`. */
 router.delete("/:id", (req, res) => {
     Classes.findByIdAndDelete(req.params.id).exec()
         .then(docs => {

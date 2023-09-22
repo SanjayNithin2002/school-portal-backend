@@ -1,12 +1,12 @@
-var express = require("express");
-var morgan = require("morgan");
-var mongoose = require("mongoose");
-var bodyParser = require("body-parser");
-var schedule = require('node-schedule');
-var cors = require('cors');
+// Import required libraries and modules
+var express = require("express"); // Express.js framework
+var morgan = require("morgan"); // Logging middleware
+var mongoose = require("mongoose"); // MongoDB ODM library
+var bodyParser = require("body-parser"); // Middleware for parsing request bodies
+var schedule = require('node-schedule'); // Schedule tasks
+var cors = require('cors'); // Cross-origin resource sharing middleware
 
-
-//importing routes
+// Import route modules
 var classRoutes = require('./api/routes/Classes');
 var studentRoutes = require('./api/routes/Students');
 var teacherRoutes = require('./api/routes/Teachers');
@@ -32,10 +32,10 @@ var spotlightRoutes = require('./api/routes/Spotlight');
 var transactionRoutes = require('./api/routes/Transactions');
 var feesRoutes = require('./api/routes/Fees');
 
+// Create an Express application
 var app = express();
 
-//Schedule Job to clear Assessment and Bonafide Directories
-
+// Schedule a job to clear directories at regular intervals
 var clearDirectory = require('./api/middleware/clearDirectory');
 var job = schedule.scheduleJob('*/5 * * * *', () => {
     clearDirectory('./assessments/');
@@ -45,39 +45,43 @@ var job = schedule.scheduleJob('*/5 * * * *', () => {
     clearDirectory('./records/');
     clearDirectory('./attendances/');
     clearDirectory('./profiles/');
-    console.log("Cleared Assessment, Bonafide, Marks, Attendances, Answers and Profiles Directories");
+    console.log("Cleared Assessment, Bonafide, Marks, Attendances, Answers, and Profiles Directories");
 });
 
-//Middleware
-app.use(morgan("dev"));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+// Middleware configuration
+app.use(morgan("dev")); // Logging middleware for development
+app.use(bodyParser.json()); // Parse JSON request bodies
+app.use(bodyParser.urlencoded({ extended: true })); // Parse URL-encoded request bodies
+app.use(cors()); // Enable Cross-Origin Resource Sharing
 
-
+// Configure CORS headers to allow requests from any origin
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header(
         "Access-Control-Allow-Headers",
-        "Origin, X-Requested-With, Accept, Authorization, Content-Type");
+        "Origin, X-Requested-With, Accept, Authorization, Content-Type"
+    );
     if (req.method === 'OPTIONS') {
         res.header(
             "Access-Control-Allow-Methods",
-            "PUT, POST, PATCH, DELETE, GET");
+            "PUT, POST, PATCH, DELETE, GET"
+        );
         return res.status(200).json({});
     }
     next();
 });
 
+// Serve static files from the 'public' directory
 app.use('/public', express.static('public'));
 
-//Mongo DB connection
+// Connect to MongoDB Atlas
 mongoose.connect("mongodb+srv://sanjaynithin2002:" + process.env.MONGODB_PASSWORD + "@cluster0.kgz6ota.mongodb.net/?retryWrites=true&w=majority",
 {
     dbName: process.env.school || "test"
-})
+});
 console.log("Connected to MongoDB Atlas");
-//routes
+
+// Define routes for different API endpoints
 app.use('/classes', classRoutes);
 app.use('/students', studentRoutes);
 app.use('/teachers', teacherRoutes);
@@ -102,13 +106,15 @@ app.use('/workers', workerRoutes);
 app.use('/spotlight', spotlightRoutes);
 app.use('/transactions', transactionRoutes);
 app.use('/fees', feesRoutes);
+
+// Define a root route that returns a welcome message
 app.get('/', (req, res) => {
     res.status(200).json({
         message: "Welcome to School Management API"
     });
 });
 
-// handling "Not Found" errors
+// Error handling middleware for "Not Found" errors
 app.use((req, res, next) => {
     var error = new Error("Not Found");
     error.status = 404;
@@ -123,5 +129,5 @@ app.use((error, req, res, next) => {
     });
 });
 
+// Export the Express app for use in other modules
 module.exports = app;
-

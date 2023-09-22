@@ -3,6 +3,8 @@ var express = require('express');
 var router = express.Router();
 var checkAuth = require('../middleware/checkAuth');
 
+/* The code `router.post("/", checkAuth, (req, res, next) => { ... })` is defining a route handler for
+a POST request to the root URL ("/"). */
 router.post("/", checkAuth, (req, res, next) => {
     var mailOptions = {
         from: req.body.email,

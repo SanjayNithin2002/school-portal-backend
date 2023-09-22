@@ -13,6 +13,10 @@ var checkAuth = require('../middleware/checkAuth');
 var makeUrlFriendly = require('../middleware/makeUrlFriendly');
 
 
+/* The following code is configuring the storage options for handling file uploads using the multer library
+in JavaScript. It sets the destination folder for storing the uploaded files to "./profiles/" and
+generates a unique filename for each uploaded file using the current timestamp and the original
+filename. */
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "./profiles/");
@@ -23,6 +27,8 @@ var storage = multer.diskStorage({
     }
 });
 
+/* The following code is a JavaScript function called `fileFilter` that is used as a filter for accepting
+or rejecting files based on their mimetype. */
 var fileFilter = (req, file, cb) => {
     //accept
     if (file.mimetype === 'image/jpeg') {
@@ -34,6 +40,8 @@ var fileFilter = (req, file, cb) => {
     }
 }
 
+/* The following code is configuring the multer middleware in a Node.js application. Multer is a middleware
+used for handling file uploads in Node.js. */
 var upload = multer({
     storage: storage,
     limits: {
@@ -42,6 +50,11 @@ var upload = multer({
     fileFilter: fileFilter
 });
 
+/* The following code is defining a JavaScript object called `serviceAccount`. This object contains various
+properties that are used for authentication and authorization purposes when interacting with Google
+APIs. The values for these properties are being retrieved from environment variables using
+`process.env`. The `private_key` property is being modified by replacing any occurrences of `\n`
+with actual newline characters `\n`. */
 var serviceAccount = {
     type: process.env.type,
     project_id: process.env.project_id,
@@ -56,39 +69,22 @@ var serviceAccount = {
     universe_domain: "googleapis.com"
 }
 
+/* The following code is initializing the Firebase Admin SDK in a JavaScript environment. It is using the
+`admin.initializeApp()` method to configure the SDK with the necessary credentials and storage
+bucket URL. The `credential` parameter is being set with the `admin.credential.cert()` method, which
+takes a service account object as an argument. The `storageBucket` parameter is being set with the
+`process.env.BUCKET_URL` environment variable. The initialization is being done under the name
+"admins" to allow for multiple Firebase projects to be used in the same application. */
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     storageBucket: process.env.BUCKET_URL
 }, "admins");
 
+/* The following code is creating a variable named "bucket" and assigning it the value of the storage
+bucket object from the admin module. */
 var bucket = admin.storage().bucket();
-
-router.post("/sendotp", (req, res, next) => {
-    var otp = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
-    var mailOptions = {
-        from: 'schoolportal@vit.edu.in',
-        to: req.body.email,
-        subject: 'Verify your OTP for School Portal',
-        text: 'Your OTP for the school portal is ' + otp
-    };
-    var transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.NODEMAIL,
-            pass: process.env.NODEMAIL_PASSWORD
-        }
-    })
-        .sendMail(mailOptions, function (error, info) {
-            if (error) {
-                console.log(error);
-            } else {
-                res.status(201).json({
-                    message: "OTP Sent Successfully",
-                    otp: otp
-                });
-            }
-        });
-});
+/* The following code is a route handler for a POST request to "/forgotpassword". It is used to handle the
+logic for resetting a forgotten password for an admin user. */
 
 router.post("/forgotpassword", (req, res, next) => {
     Admins.find({ email: req.body.email }).exec()
@@ -124,6 +120,9 @@ router.post("/forgotpassword", (req, res, next) => {
             })
         });
 });
+
+/* The following code is a route handler for the "/signup" endpoint. It is used to handle the signup
+functionality for a user. */
 
 router.post("/signup", checkAuth, upload.single("profile"), (req, res, next) => {
     var email = req.body.email;
@@ -239,6 +238,11 @@ router.post("/signup", checkAuth, upload.single("profile"), (req, res, next) => 
 
 });
 
+/* The following code is implementing a login functionality in a router for a web application. When a POST
+request is made to the "/login" endpoint, it searches for an Admin document in the database that
+matches the provided userID. If a matching document is found, it then compares the provided password
+with the hashed password stored in the document using bcrypt. If the passwords match, it generates a
+JSON Web Token (JWT) containing the userID and _id of the admin, and signs it using a secret key. */
 router.post("/login", (req, res, next) => {
     Admins.find({ userID : req.body.userID}).exec()
         .then(docs => {
@@ -305,6 +309,8 @@ router.post("/login", (req, res, next) => {
 
 
 });
+/* The following code is a route handler for a POST request to update a user's profile picture. It uses the
+Express.js router to handle the request. */
 
 router.post("/profile/:id", checkAuth, upload.single("profile"), (req, res) => {
     Admins.findByIdAndUpdate(req.params.id, { profile: req.file ? 'profiles/' + makeUrlFriendly(req.file.filename) : null }).exec()
@@ -341,6 +347,8 @@ router.post("/profile/:id", checkAuth, upload.single("profile"), (req, res) => {
             })
         });
 });
+/* The following code is defining a route handler for a GET request to the root URL ("/"). It uses the
+`checkAuth` middleware function to authenticate the request. */
 
 router.get("/", checkAuth, (req, res, next) => {
     Admins.find().exec()
@@ -355,6 +363,8 @@ router.get("/", checkAuth, (req, res, next) => {
             })
         })
 });
+/* The following code is defining a route handler for a GET request with a dynamic parameter ":id". It
+first checks for authentication using the "checkAuth" middleware. */
 
 router.get("/:id", checkAuth, (req, res, next) => {
     Admins.findById(req.params.id).exec()
@@ -392,8 +402,10 @@ router.get("/:id", checkAuth, (req, res, next) => {
             })
         })
 });
+/* The following code is a route handler for generating a CSV file. It is using the Express router to
+handle a GET request to the "/generatecsv" endpoint. */
 
-router.get("generatecsv", checkAuth, (req, res, next) => {
+router.get("/generatecsv", checkAuth, (req, res, next) => {
     var filePath = "public/csv/admins.csv";
     fs.access(filePath, fs.varants.F_OK, (error) => {
         if (error) {
@@ -440,6 +452,9 @@ router.get("generatecsv", checkAuth, (req, res, next) => {
 
 });
 
+/* The following code is defining a PATCH route for changing a user ID in a router. It first checks if the
+user is authenticated using the checkAuth middleware. Then, it retrieves the current user ID, new
+user ID, and password from the request body. */
 
 router.patch("/changeuserid", checkAuth, (req, res, next) => {
     var id = req.body.id;
@@ -506,6 +521,9 @@ router.patch("/changeuserid", checkAuth, (req, res, next) => {
             })
     }
 });
+/* The following code is a route handler for a PATCH request to change the password of an admin user. It
+first checks if the user ID in the request body matches the user ID in the authenticated user data.
+If they don't match, it returns a 401 Unauthorized response. */
 
 router.patch("/changepassword", checkAuth, (req, res) => {
     if (req.userData._id !== req.body.id) {
@@ -552,6 +570,9 @@ router.patch("/changepassword", checkAuth, (req, res) => {
     }
 });
 
+/* The following code is a patch route handler for updating an admin in a database. It first extracts the
+admin ID from the request parameters. Then, it creates an empty object called `updateOps` to store
+the update operations. */
 
 router.patch("/:id", checkAuth, (req, res, next) => {
     var id = req.params.id;
@@ -572,6 +593,12 @@ router.patch("/:id", checkAuth, (req, res, next) => {
             })
         })
 });
+/* The following code is defining a DELETE route for a router. It requires authentication using the
+checkAuth middleware. When a DELETE request is made to the specified route ("/:id"), it finds and
+deletes an admin document from the database based on the provided id. If the deletion is successful,
+it sends a response with a status code of 200 and a JSON object containing a success message and the
+deleted admin document. If there is an error, it sends a response with a status code of 500 and a
+JSON object containing the error message. */
 
 router.delete("/:id", checkAuth, (req, res, next) => {
     var id = req.params.id;

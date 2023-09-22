@@ -16,6 +16,15 @@ var Payments = require('../models/Payments');
 var checkAuth = require('../middleware/checkAuth');
 var makeUrlFriendly = require('../middleware/makeUrlFriendly');
 
+/**
+ * The function `addPayments` retrieves fees based on the student's standard, creates payment objects
+ * with the retrieved fees and student ID, sets the status to "Pending", and inserts the payment
+ * objects into the Payments collection.
+ * 
+ * :param studDoc: The `studDoc` parameter is an object that represents a student document. It likely
+ * contains properties such as `standard` and `_id` which are used in the function to retrieve fees and
+ * create payment documents
+ */
 async function addPayments(studDoc) {
     Fees.find({ standard: studDoc.standard }).select('_id').exec()
         .then(fees => {
@@ -33,6 +42,15 @@ async function addPayments(studDoc) {
         })
         .catch(err => console.log(err));
 }
+
+/**
+ * The function `updateMultipleRecords` updates multiple records in a database using an array of update
+ * objects.
+ * 
+ * :param updatesArray: The `updatesArray` parameter is an array of objects. Each object represents an
+ * update operation for a document in the `Students` collection. The objects in the array should have
+ * the following structure:
+ */
 async function updateMultipleRecords(updatesArray) {
     var updatePromises = updatesArray.map(async (update) => {
         try {
@@ -51,6 +69,9 @@ async function updateMultipleRecords(updatesArray) {
     console.log('Documents updated successfully:', results);
 }
 
+/* The above code is configuring the storage options for file uploads using the multer library in
+JavaScript. It sets the destination folder for uploaded files to "./profiles/" and generates a
+unique filename for each uploaded file using the current timestamp and the original filename. */
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "./profiles/");
@@ -61,6 +82,8 @@ var storage = multer.diskStorage({
     }
 });
 
+/* The above code is a JavaScript function called `fileFilter` that is used as a filter for accepting
+or rejecting files based on their mimetype. */
 var fileFilter = (req, file, cb) => {
     //accept
     if (file.mimetype === 'image/jpeg') {
@@ -72,6 +95,8 @@ var fileFilter = (req, file, cb) => {
     }
 }
 
+/* The above code is configuring the multer middleware in a Node.js application. Multer is a middleware
+used for handling file uploads in Node.js. */
 var upload = multer({
     storage: storage,
     limits: {
@@ -80,6 +105,11 @@ var upload = multer({
     fileFilter: fileFilter
 });
 
+/* The above code is defining a JavaScript object called `serviceAccount`. This object contains various
+properties that are used for authentication and authorization purposes when interacting with Google
+APIs. The values for these properties are being retrieved from environment variables using
+`process.env`. The `private_key` property is being modified by replacing any occurrences of `\n`
+with actual newline characters `\n`. */
 var serviceAccount = {
     type: process.env.type,
     project_id: process.env.project_id,
@@ -94,40 +124,22 @@ var serviceAccount = {
     universe_domain: "googleapis.com"
 }
 
+/* The above code is initializing the Firebase Admin SDK in a JavaScript environment. It is using the
+`admin.initializeApp()` function to configure the SDK with the necessary credentials and storage
+bucket URL. The `credential` parameter is used to provide the service account credentials required
+for authentication, and the `storageBucket` parameter is used to specify the URL of the Firebase
+Storage bucket. */
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     storageBucket: process.env.BUCKET_URL
 });
 
+/* The above code is creating a variable named "bucket" and assigning it the value of the storage
+bucket object from the admin module. */
 var bucket = admin.storage().bucket();
 
-router.post("/sendotp", (req, res, next) => {
-    var otp = Math.floor(Math.random() * (999999 - 100000 + 1) + 100000);
-    var mailOptions = {
-        from: 'schoolportal@vit.edu.in',
-        to: req.body.email,
-        subject: 'Verify your OTP for School Portal',
-        text: 'Your OTP for the school portal is ' + otp
-    };
-    var transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.NODEMAIL,
-            pass: process.env.NODEMAIL_PASSWORD
-        }
-    })
-        .sendMail(mailOptions, function (error, info) {
-            if (error) {
-                console.log(error);
-            } else {
-                res.status(201).json({
-                    message: "OTP Sent Successfully",
-                    otp: otp
-                });
-            }
-        });
-});
-
+/* The above code is a route handler for the "/forgotpassword" endpoint. It is used to handle a POST
+request to reset a student's password. */
 router.post("/forgotpassword", (req, res, next) => {
     Students.find({ email: req.body.email }).exec()
         .then(docs => {
@@ -163,6 +175,8 @@ router.post("/forgotpassword", (req, res, next) => {
         });
 });
 
+/* The above code is a route handler for the "/signup" endpoint. It is used to handle the signup
+process for a user. Here is a breakdown of what the code is doing: */
 router.post("/signup", checkAuth, upload.single("profile"), async (req, res, next) => {
     var firstName = req.body.firstName;
     var lastName = req.body.lastName;
@@ -307,6 +321,8 @@ router.post("/signup", checkAuth, upload.single("profile"), async (req, res, nex
         });
 });
 
+/* The above code is implementing a login functionality in a router using the Express framework in
+JavaScript. */
 router.post("/login", (req, res, next) => {
     Students.find({ userID: req.body.userID }).exec()
         .then(docs => {
@@ -372,6 +388,8 @@ router.post("/login", (req, res, next) => {
         });
 });
 
+/* The above code is a route handler for a POST request to update a student's profile picture. It uses
+the Express router to handle the request. */
 router.post("/profile/:id", checkAuth, upload.single("profile"), (req, res) => {
     Students.findByIdAndUpdate(req.params.id, { profile: req.file ? 'profiles/' + makeUrlFriendly(req.file.filename) : null }).exec()
         .then(docs => {
@@ -408,7 +426,8 @@ router.post("/profile/:id", checkAuth, upload.single("profile"), (req, res) => {
         });
 });
 
-
+/* The above code is defining a route handler for a GET request to the root URL ("/"). It uses the
+`checkAuth` middleware function to authenticate the request. */
 router.get("/", checkAuth, (req, res, next) => {
     Students.find().exec()
         .then(docs => {
@@ -423,6 +442,8 @@ router.get("/", checkAuth, (req, res, next) => {
         })
 });
 
+/* The above code is defining a route handler for a GET request with a dynamic parameter ":id". It
+first checks for authentication using the "checkAuth" middleware. */
 router.get("/:id", checkAuth, (req, res, next) => {
     Students.findById(req.params.id).exec()
         .then(doc => {
@@ -460,6 +481,12 @@ router.get("/:id", checkAuth, (req, res, next) => {
         })
 });
 
+/* The above code is defining a route in a JavaScript router. When a GET request is made to
+"/class/:classID", the code first checks if the user is authenticated using the checkAuth
+middleware. If the user is authenticated, the code then finds a class document in the database based
+on the classID parameter. It then finds all the students in the same standard and section as the
+class document. Finally, it sends a JSON response with the found student documents or an error if
+there was a problem with the database query. */
 router.get("/class/:classID", checkAuth, (req, res, next) => {
     Classes.findById(req.params.classID).exec()
         .then(docs => {
@@ -477,6 +504,8 @@ router.get("/class/:classID", checkAuth, (req, res, next) => {
         })
 });
 
+/* The above code is defining a route in a Node.js Express router. This route is accessed via a GET
+request to "/marks/generatecsv/:standard/:section". */
 router.get("/marks/generatecsv/:standard/:section", checkAuth, (req, res, next) => {
     var filePath = "public/marks/" + req.params.standard + req.params.section + ".csv";
     fs.access(filePath, fs.constants.F_OK, (error) => {
@@ -520,9 +549,10 @@ router.get("/marks/generatecsv/:standard/:section", checkAuth, (req, res, next) 
             res.download(path.join(__dirname, "../../public/marks/" + req.params.standard + req.params.section + ".csv"));
         }
     });
-
 });
 
+/* The above code is defining a route in a Node.js Express router. The route is for generating and
+downloading a CSV file based on a given standard. */
 router.get("/generatecsv/:standard", checkAuth, (req, res, next) => {
     var filePath = "public/students/" + req.params.standard + ".csv";
     fs.access(filePath, fs.varants.F_OK, (error) => {
@@ -566,10 +596,14 @@ router.get("/generatecsv/:standard", checkAuth, (req, res, next) => {
             res.download(path.join(__dirname, "../../public/students/" + req.params.standard + req.params.section + ".csv"));
         }
     });
-
 });
 
-
+/* The above code is implementing a PATCH route in a router for changing a user's ID. It first checks
+if the authenticated user's ID matches the provided ID. If not, it returns a 401 Unauthorized
+response. If the IDs match, it then checks if the new user ID already exists in the database. If it
+does, it returns a 409 Conflict response. If the new user ID doesn't exist, it finds the student
+with the provided ID and checks if the current user ID matches the one provided. If not, it returns
+a 401 Unauthorized response. If the current user ID matches */
 router.patch("/changeuserid", checkAuth, (req, res, next) => {
     var id = req.body.id;
     if (req.userData._id !== id) {
@@ -636,6 +670,9 @@ router.patch("/changeuserid", checkAuth, (req, res, next) => {
     }
 });
 
+/* The above code is a route handler for a PATCH request to change a user's password. It first checks
+if the user ID in the request body matches the user ID in the authenticated user's data. If they
+don't match, it returns a 401 Unauthorized response. */
 router.patch("/changepassword", checkAuth, (req, res) => {
     if (req.userData._id !== req.body.id) {
         res.status(401).json({
@@ -681,6 +718,10 @@ router.patch("/changepassword", checkAuth, (req, res) => {
     }
 });
 
+/* The above code is defining a PATCH route handler for the '/patchmany' endpoint. When a PATCH request
+is made to this endpoint, it will execute the 'updateMultipleRecords' function with the request body
+as an argument. The function is expected to update multiple student records based on the provided
+data. */
 router.patch('/patchmany', async (req, res) => {
     try {
         var results = await updateMultipleRecords(req.body);
@@ -697,6 +738,8 @@ router.patch('/patchmany', async (req, res) => {
 });
 
 
+/* The above code is a patch route handler for updating a student record in a database. It requires
+authentication (checkAuth) before allowing the update operation. */
 router.patch("/:id", checkAuth, (req, res, next) => {
     var id = req.params.id;
     var updateOps = {};
@@ -718,6 +761,10 @@ router.patch("/:id", checkAuth, (req, res, next) => {
         })
 });
 
+/* The above code is defining a DELETE route for a router in a Node.js application. The route is
+defined with the path "/:id", which means it expects an id parameter in the URL. The route also uses
+the checkAuth middleware function to ensure that the user is authenticated before allowing the
+deletion of a student. */
 router.delete("/:id", checkAuth, (req, res, next) => {
     var id = req.params.id;
     Students.findByIdAndDelete(id).exec()

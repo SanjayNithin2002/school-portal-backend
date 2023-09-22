@@ -4,6 +4,8 @@ var Spotlight = require('../models/Spotlight');
 var checkAuth = require('../middleware/checkAuth');
 var router = express.Router();
 
+/* This code is defining a GET route for the root URL ("/"). When a GET request is made to this route,
+it will execute the callback function. */
 router.get("/", (req, res) => {
     Spotlight.find().exec()
         .then(docs => {
@@ -17,6 +19,9 @@ router.get("/", (req, res) => {
         });
 });
 
+/* This code is defining a GET route for the URL "/:id", where ":id" is a dynamic parameter that
+represents the ID of a specific spotlight. When a GET request is made to this route, it will execute
+the callback function. */
 router.get("/:id", (req, res) => {
     Spotlight.findById(req.params.id).exec()
         .then(docs => {
@@ -36,6 +41,8 @@ router.get("/:id", (req, res) => {
         });
 });
 
+/* The `router.post("/", checkAuth, (req, res) => { ... })` code is defining a POST route for the root
+URL ("/"). When a POST request is made to this route, it will execute the callback function. */
 router.post("/", checkAuth, (req, res) => {
     var spotlight = new Spotlight({
         _id: new mongoose.Types.ObjectId(),
@@ -57,6 +64,9 @@ router.post("/", checkAuth, (req, res) => {
         });
 });
 
+/* The `router.patch("/:id", checkAuth, (req, res) => { ... })` code is defining a PATCH route for the
+URL "/:id", where ":id" is a dynamic parameter that represents the ID of a specific spotlight. When
+a PATCH request is made to this route, it will execute the callback function. */
 router.patch("/:id", checkAuth, (req, res) => {
     var id = req.params.id;
     var updateOps = {};
@@ -77,6 +87,9 @@ router.patch("/:id", checkAuth, (req, res) => {
         });
 });
 
+/* The `router.delete("/:id", checkAuth, (req, res) => { ... })` code is defining a DELETE route for
+the URL "/:id", where ":id" is a dynamic parameter that represents the ID of a specific spotlight.
+When a DELETE request is made to this route, it will execute the callback function. */
 router.delete("/:id", checkAuth, (req, res) => {
     Spotlight.findByIdAndDelete(req.params.id).exec()
         .then(docs => {
@@ -89,7 +102,5 @@ router.delete("/:id", checkAuth, (req, res) => {
             })
         });
 });
-
-
 
 module.exports = router;

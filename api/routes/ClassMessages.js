@@ -7,6 +7,9 @@ var router = express.Router();
 var checkAuth = require('../middleware/checkAuth');
 
 
+/* This code is defining a GET route for the root URL ("/"). When a GET request is made to this route,
+it first checks if the user is authenticated using the `checkAuth` middleware. If the user is
+authenticated, it executes the code inside the route handler function. */
 router.get("/", checkAuth, (req, res) => {
     ClassMessages.find().populate('postedBy').exec()
         .then(docs => {
@@ -22,6 +25,9 @@ router.get("/", checkAuth, (req, res) => {
 });
 
 
+/* This code defines a GET route for the URL "/students/:studentID". When a GET request is made to this
+route, it first checks if the user is authenticated using the `checkAuth` middleware. If the user is
+authenticated, it executes the code inside the route handler function. */
 router.get("/students/:studentID", checkAuth, (req, res) => {
     Students.findById(req.params.studentID).exec()
         .then(student => {
@@ -67,6 +73,9 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
 });
 
 
+/* The code you provided is defining a GET route for the URL "/teachers/:teacherID". When a GET request
+is made to this route, it first checks if the user is authenticated using the `checkAuth`
+middleware. If the user is authenticated, it executes the code inside the route handler function. */
 router.get("/teachers/:teacherID", checkAuth, (req, res) => {
     var teacherID = req.params.teacherID;
     ClassMessages.find({ postedBy: teacherID }).populate([{ path: "postedBy" }, { path: "class" }]).exec()
@@ -90,6 +99,9 @@ router.get("/teachers/:teacherID", checkAuth, (req, res) => {
 
 
 
+/* The code you provided is defining a POST route for the root URL ("/"). When a POST request is made
+to this route, it first checks if the user is authenticated using the `checkAuth` middleware. If the
+user is authenticated, it executes the code inside the route handler function. */
 router.post("/", checkAuth, (req, res) => {
     var classMessages = new ClassMessages({
         _id: new mongoose.Types.ObjectId(),
@@ -111,6 +123,10 @@ router.post("/", checkAuth, (req, res) => {
         });
 });
 
+/* The code `router.delete("/:id", checkAuth, (req, res) => { ... })` is defining a DELETE route for
+the URL "/:id". When a DELETE request is made to this route, it first checks if the user is
+authenticated using the `checkAuth` middleware. If the user is authenticated, it executes the code
+inside the route handler function. */
 router.delete("/:id", checkAuth, (req, res) => {
     ClassMessages.findByIdAndDelete(req.params.id).exec()
         .then(docs => {

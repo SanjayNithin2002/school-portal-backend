@@ -7,6 +7,14 @@ var multer = require('multer');
 var fs = require('fs');
 var csv = require('csv-parser');
 
+/**
+ * The function `deleteMultipleRecords` deletes multiple records from a database using an array of
+ * updates.
+ * 
+ * :param updatesArray: The `updatesArray` parameter is an array of objects that contain the updates to
+ * be made. Each object in the array represents a record to be deleted and should have a property `_id`
+ * which represents the unique identifier of the record to be deleted
+ */
 async function deleteMultipleRecords(updatesArray) {
     var updatePromises = updatesArray.map(async (update) => {
         try {
@@ -21,6 +29,13 @@ async function deleteMultipleRecords(updatesArray) {
     console.log('Documents deleted successfully:', results);
 }
 
+/**
+ * The function `updateMultipleRecords` updates multiple records in the TeacherAttendance collection in
+ * a MongoDB database.
+ * 
+ * :param updatesArray: An array of objects containing the updates to be made to the TeacherAttendance
+ * collection. Each object should have the following structure:
+ */
 async function updateMultipleRecords(updatesArray) {
     var updatePromises = updatesArray.map(async (update) => {
         try {
@@ -39,6 +54,8 @@ async function updateMultipleRecords(updatesArray) {
     console.log('Documents updated successfully:', results);
 }
 
+/* The code `var storage = multer.diskStorage({ ... })` is configuring the storage options for multer,
+a middleware used for handling file uploads in Node.js. */
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "./attendances/");
@@ -49,6 +66,12 @@ var storage = multer.diskStorage({
     }
 });
 
+/* The `fileFilter` function is used as a filter for the uploaded files. It checks the `mimetype`
+property of the file object to determine if the file is a CSV file. If the mimetype is `'text/csv'`,
+it calls the callback function `cb` with `null` as the first argument (indicating no error) and
+`true` as the second argument (indicating that the file should be accepted). If the mimetype is not
+`'text/csv'`, it calls the callback function with `null` as the first argument and `false` as the
+second argument (indicating that the file should be rejected). */
 var fileFilter = (req, file, cb) => {
     //accept
     if (file.mimetype === 'text/csv') {
@@ -60,6 +83,9 @@ var fileFilter = (req, file, cb) => {
     }
 }
 
+/* The code `var upload = multer({ storage: storage, limits: { fileSize: 1024 * 1024 * 10 },
+fileFilter: fileFilter });` is configuring the multer middleware for handling file uploads in
+Node.js. */
 var upload = multer({
     storage: storage,
     limits: {
@@ -68,6 +94,8 @@ var upload = multer({
     fileFilter: fileFilter
 });
 
+/* This code is defining a GET route for the root URL ("/") of the server. When a GET request is made
+to this route, it will execute the callback function `(req, res) => { ... }`. */
 router.get("/", checkAuth, (req, res) => {
     TeacherAttendance.find().populate("teacher").exec()
         .then(docs => {
@@ -83,6 +111,8 @@ router.get("/", checkAuth, (req, res) => {
         )
 });
 
+/* This code defines a GET route for the URL "/:id" of the server. When a GET request is made to this
+route, it executes the callback function `(req, res) => { ... }`. */
 router.get("/:id", checkAuth, (req, res) => {
     TeacherAttendance.findById(req.params.id).populate("teacher").exec()
         .then(docs => {
@@ -98,6 +128,8 @@ router.get("/:id", checkAuth, (req, res) => {
         )
 });
 
+/* The code `router.get("/teachers/:teacherID", checkAuth, (req, res) => { ... })` defines a GET route
+for the URL "/teachers/:teacherID" of the server. */
 router.get("/teachers/:teacherID", checkAuth, (req, res) => {
     TeacherAttendance.find({ teacher: req.params.teacherID }).exec()
         .then(docs => {
@@ -113,6 +145,8 @@ router.get("/teachers/:teacherID", checkAuth, (req, res) => {
         )
 });
 
+/* The code `router.get("/date/:date", checkAuth, (req, res) => { ... })` defines a GET route for the
+URL "/date/:date" of the server. */
 router.get("/date/:date", checkAuth, (req, res) => {
     TeacherAttendance.find({ date: new Date(req.params.date) }).populate('teacher').exec()
         .then(docs => {
@@ -127,6 +161,9 @@ router.get("/date/:date", checkAuth, (req, res) => {
         });
 });
 
+/* The code `router.post("/", checkAuth, (req, res) => { ... })` is defining a POST route for the root
+URL ("/") of the server. When a POST request is made to this route, it executes the callback
+function `(req, res) => { ... }`. */
 router.post("/", checkAuth, (req, res) => {
     var teacherAttendance = new TeacherAttendance({
         _id: new mongoose.Types.ObjectId(),
@@ -148,6 +185,8 @@ router.post("/", checkAuth, (req, res) => {
 
 });
 
+/* The `router.post("/postmany", checkAuth, (req, res) => { ... })` function is defining a POST route
+for the URL "/postmany" of the server. */
 router.post("/postmany", checkAuth, (req, res) => {
     var date = req.body.date;
     var time = req.body.time;
@@ -176,6 +215,8 @@ router.post("/postmany", checkAuth, (req, res) => {
     )
 });
 
+/* The code `router.post("/fileupload", checkAuth, upload.single("attendances"), (req, res) => { ...
+})` defines a POST route for the URL "/fileupload" of the server. */
 router.post("/fileupload", checkAuth, upload.single("attendances"), (req, res) => {
     var attendances = [];
     fs.createReadStream(req.file.path)
@@ -208,6 +249,9 @@ router.post("/fileupload", checkAuth, upload.single("attendances"), (req, res) =
         });
 });
 
+/* The code `router.patch('/patchmany', checkAuth, async (req, res) => { ... })` defines a PATCH route
+for the URL "/patchmany" of the server. When a PATCH request is made to this route, it executes the
+callback function `(req, res) => { ... }`. */
 router.patch('/patchmany', checkAuth, async (req, res) => {
     try {
         var results = await updateMultipleRecords(req.body);
@@ -223,6 +267,9 @@ router.patch('/patchmany', checkAuth, async (req, res) => {
     }
 });
 
+/* The code `router.patch("/deletemany", async (req, res) => { ... })` defines a PATCH route for the
+URL "/deletemany" of the server. When a PATCH request is made to this route, it executes the
+callback function `(req, res) => { ... }`. */
 router.patch("/deletemany", async (req, res) => {
     try {
         var results = await deleteMultipleRecords(req.body);
@@ -237,6 +284,9 @@ router.patch("/deletemany", async (req, res) => {
     }
 });
 
+/* The code `router.patch("/:id", checkAuth, (req, res) => { ... })` defines a PATCH route for the URL
+"/:id" of the server. When a PATCH request is made to this route, it executes the callback function
+`(req, res) => { ... }`. */
 router.patch("/:id", checkAuth, (req, res) => {
     var updateOps = {};
     for (var ops of req.body) {
@@ -256,6 +306,9 @@ router.patch("/:id", checkAuth, (req, res) => {
         });
 });
 
+/* The code `router.delete("/:id", checkAuth, (req, res) => { ... })` is defining a DELETE route for
+the URL "/:id" of the server. When a DELETE request is made to this route, it executes the callback
+function `(req, res) => { ... }`. */
 router.delete("/:id", checkAuth, (req, res) => {
     TeacherAttendance.findByIdAndDelete(req.params.id).exec()
         .then(docs => {

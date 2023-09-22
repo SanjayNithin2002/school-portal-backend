@@ -7,6 +7,8 @@ var checkAuth = require('../middleware/checkAuth');
 var makeUrlFriendly = require('../middleware/makeUrlFriendly');
 var router = express.Router();
 
+/* The code `var storage = multer.diskStorage({ ... })` is creating a storage engine for Multer, a
+middleware for handling file uploads in Node.js. */
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "./bonafides/");
@@ -17,6 +19,8 @@ var storage = multer.diskStorage({
     }
 });
 
+/* The `fileFilter` function is a callback function used by Multer to determine whether to accept or
+reject a file during the file upload process. */
 var fileFilter = (req, file, cb) => {
     //accept
     if (file.mimetype === 'application/pdf') {
@@ -28,6 +32,8 @@ var fileFilter = (req, file, cb) => {
     }
 }
 
+/* The code `var upload = multer({ storage: storage, limits: { fileSize: 1024 * 1024 * 10 },
+fileFilter: fileFilter });` is creating an instance of Multer middleware with the specified options. */
 var upload = multer({
     storage: storage,
     limits: {
@@ -36,6 +42,9 @@ var upload = multer({
     fileFilter: fileFilter
 });
 
+/* The `serviceAccount` object is used to configure the credentials for accessing the Firebase Admin
+SDK. It contains various properties that are required for authentication and authorization purposes
+when interacting with Firebase services. */
 var serviceAccount = {
     type: process.env.type,
     project_id: process.env.project_id,
@@ -50,13 +59,20 @@ var serviceAccount = {
     universe_domain: "googleapis.com"
 }
 
+/* The `admin.initializeApp()` function is used to initialize the Firebase Admin SDK. It takes an
+object as an argument with two properties: */
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     storageBucket: process.env.BUCKET_URL
 }, "bonafides");
 
+/* `var bucket = admin.storage().bucket();` is creating a reference to the default storage bucket in
+Firebase Storage. This allows you to perform various operations on the bucket, such as uploading
+files, downloading files, deleting files, etc. */
 var bucket = admin.storage().bucket();
 
+/* The code `router.get("/", checkAuth, (req, res) => { ... })` is defining a route for handling GET
+requests to the root URL ("/"). */
 router.get("/", checkAuth, (req, res) => {
     Bonafides.find().populate("student").exec()
         .then(docs => {
@@ -82,6 +98,9 @@ router.get("/", checkAuth, (req, res) => {
         });
 });
 
+/* The code `router.get("/:id", checkAuth, (req, res) => { ... })` is defining a route for handling GET
+requests to the URL "/:id", where ":id" is a dynamic parameter that represents the ID of a specific
+bonafide request. */
 router.get("/:id", checkAuth, (req, res) => {
     Bonafides.findById(req.params.id).populate("student").exec()
         .then(doc => {
@@ -104,6 +123,9 @@ router.get("/:id", checkAuth, (req, res) => {
         });
 });
 
+/* The code `router.get("/students/:studentID", checkAuth, (req, res) => { ... })` is defining a route
+for handling GET requests to the URL "/students/:studentID", where ":studentID" is a dynamic
+parameter that represents the ID of a specific student. */
 router.get("/students/:studentID", checkAuth, (req, res) => {
     Bonafides.find({ student: req.params.studentID }).populate("student").exec()
         .then(docs => {
@@ -130,6 +152,8 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
         });
 });
 
+/* The code `router.post("/", checkAuth, (req, res) => { ... })` is defining a route for handling POST
+requests to the root URL ("/"). */
 router.post("/", checkAuth, (req, res) => {
     var bonafide = new Bonafides({
         _id: new mongoose.Types.ObjectId(),
@@ -174,6 +198,9 @@ router.post("/", checkAuth, (req, res) => {
         });
 });
 
+/* The code `router.patch("/:id", checkAuth, upload.single("bonafide"), (req, res) => { ... })` is
+defining a route for handling PATCH requests to the URL "/:id", where ":id" is a dynamic parameter
+that represents the ID of a specific bonafide request. */
 router.patch("/:id", checkAuth, upload.single("bonafide"), (req, res) => {
     updateOps = {
         requestedFile: req.file ? 'bonafides/' + makeUrlFriendly(req.file.filename) : null,
@@ -216,6 +243,9 @@ router.patch("/:id", checkAuth, upload.single("bonafide"), (req, res) => {
         });
 });
 
+/* The code `router.delete("/:id", checkAuth, (req, res) => { ... })` is defining a route for handling
+DELETE requests to the URL "/:id", where ":id" is a dynamic parameter that represents the ID of a
+specific bonafide request. */
 router.delete("/:id", checkAuth, (req, res) => {
     Bonafides.findByIdAndDelete(req.params.id).exec()
         .then(doc => {

@@ -7,6 +7,8 @@ var Students = require('../models/Students');
 var Payments = require('../models/Payments');
 
 
+/* This code is defining a GET route for the root URL ("/") of the server. It is using the `checkAuth`
+middleware function to authenticate the request. */
 router.get("/", checkAuth, (req, res) => {
     Fees.find().exec()
         .then(docs => {
@@ -21,6 +23,8 @@ router.get("/", checkAuth, (req, res) => {
         });
 });
 
+/* This code is defining a GET route for the URL "/:id" of the server. It is using the `checkAuth`
+middleware function to authenticate the request. */
 router.get("/:id", checkAuth, (req, res) => {
     Fees.findById(req.params.id).exec()
         .then(docs => {
@@ -35,6 +39,9 @@ router.get("/:id", checkAuth, (req, res) => {
         });
 });
 
+/* The `router.post("/", checkAuth, (req, res) => { ... })` code block is defining a POST route for the
+root URL ("/") of the server. It is using the `checkAuth` middleware function to authenticate the
+request. */
 router.post("/", checkAuth, (req, res) => {
     var fee = new Fees({
         _id: new mongoose.Types.ObjectId(),
@@ -88,6 +95,9 @@ router.post("/", checkAuth, (req, res) => {
         });
 });
 
+/* The `router.patch("/:id", checkAuth, (req, res) => { ... })` code block is defining a PATCH route
+for the URL "/:id" of the server. It is using the `checkAuth` middleware function to authenticate
+the request. */
 router.patch("/:id", checkAuth, (req, res) => {
     var id = req.params.id;
     var updateOps = {};
@@ -108,6 +118,9 @@ router.patch("/:id", checkAuth, (req, res) => {
         });
 });
 
+/* The `router.delete("/:id", checkAuth, (req, res) => { ... })` code block is defining a DELETE route
+for the URL "/:id" of the server. It is using the `checkAuth` middleware function to authenticate
+the request. */
 router.delete("/:id", checkAuth, (req, res) => {
     Fees.findByIdAndDelete(req.params.id).exec()
         .then(docs => {

@@ -4,6 +4,14 @@ var router = express.Router();
 var StudentAttendance = require('../models/StudentAttendance');
 var checkAuth = require('../middleware/checkAuth');
 
+/**
+ * The function `deleteMultipleRecords` deletes multiple records from a database using an array of
+ * updates.
+ * 
+ * :param updatesArray: The `updatesArray` parameter is an array of objects that contain the updates to
+ * be made. Each object in the array represents a record to be deleted and should have a property `_id`
+ * which represents the unique identifier of the record to be deleted
+ */
 async function deleteMultipleRecords(updatesArray) {
     var updatePromises = updatesArray.map(async (update) => {
         try {
@@ -18,6 +26,13 @@ async function deleteMultipleRecords(updatesArray) {
     console.log('Documents deleted successfully:', results);
 }
 
+/**
+ * The function `updateMultipleRecords` updates multiple records in the `StudentAttendance` collection
+ * based on the provided `updatesArray`.
+ * 
+ * :param updatesArray: An array of objects containing the updates to be made to the records. Each
+ * object should have the following properties:
+ */
 async function updateMultipleRecords(updatesArray) {
     var updatePromises = updatesArray.map(async (update) => {
         try {
@@ -36,6 +51,8 @@ async function updateMultipleRecords(updatesArray) {
     console.log('Documents updated successfully:', results);
 }
 
+/* The code `router.get("/", (req, res) => {...})` is defining a route handler for a GET request to the
+root URL ("/"). */
 router.get("/", (req, res) => {
     StudentAttendance.find().exec()
         .then(docs => {
@@ -50,6 +67,9 @@ router.get("/", (req, res) => {
         });
 });
 
+/* The code `router.get("/:id", (req, res) => {...})` is defining a route handler for a GET request to
+the URL "/:id". This route handler is responsible for retrieving a specific student attendance
+record from the database based on the provided `id` parameter. */
 router.get("/:id", (req, res) => {
     StudentAttendance.findById(req.params.id).exec()
         .then(docs => {
@@ -65,6 +85,10 @@ router.get("/:id", (req, res) => {
         )
 });
 
+/* The code `router.get("/students/:studentID", (req, res) => {...})` is defining a route handler for a
+GET request to the URL "/students/:studentID". This route handler is responsible for retrieving the
+attendance records of a specific student from the database based on the provided `studentID`
+parameter. */
 router.get("/students/:studentID", (req, res) => {
     (async () => {
         try {
@@ -109,6 +133,9 @@ router.get("/students/:studentID", (req, res) => {
     })();
 });
 
+/* The code `router.get("/standard/:standard/section/:section/date/:date/", checkAuth, (req, res) =>
+{...})` is defining a route handler for a GET request to the URL
+"/standard/:standard/section/:section/date/:date/". */
 router.get("/standard/:standard/section/:section/date/:date/", checkAuth, (req, res) => {
     StudentAttendance.find({ date: new Date(req.params.date) }).populate('student').exec()
         .then(docs => {
@@ -126,6 +153,9 @@ router.get("/standard/:standard/section/:section/date/:date/", checkAuth, (req, 
         )
 });
 
+/* The code `router.get("/date/:date", checkAuth, (req, res) => {...})` is defining a route handler for
+a GET request to the URL "/date/:date". This route handler is responsible for retrieving student
+attendance records from the database based on the provided `date` parameter. */
 router.get("/date/:date", checkAuth, (req, res) => {
     StudentAttendance.find({ date: new Date(req.params.date) }).populate('student').exec()
         .then(docs => {
@@ -140,6 +170,8 @@ router.get("/date/:date", checkAuth, (req, res) => {
         });
 });
 
+/* The code `router.post("/", (req, res) => {...})` is defining a route handler for a POST request to
+the root URL ("/"). */
 router.post("/", (req, res) => {
     var studentAttendance = new StudentAttendance({
         _id: new mongoose.Types.ObjectId(),
@@ -162,6 +194,9 @@ router.post("/", (req, res) => {
     )
 });
 
+/* The code `router.post("/postmany", checkAuth, (req, res) => {...})` is defining a route handler for
+a POST request to the URL "/postmany". This route handler is responsible for creating multiple
+student attendance records in the database. */
 router.post("/postmany", checkAuth, (req, res) => {
     var date = req.body.date;
     var time = req.body.time;
@@ -190,6 +225,9 @@ router.post("/postmany", checkAuth, (req, res) => {
     )
 });
 
+/* The code `router.patch('/patchmany', checkAuth, async (req, res) => {...})` is defining a route
+handler for a PATCH request to the URL "/patchmany". This route handler is responsible for updating
+multiple student attendance records in the database. */
 router.patch('/patchmany', checkAuth, async (req, res) => {
     try {
         var results = await updateMultipleRecords(req.body);
@@ -205,6 +243,9 @@ router.patch('/patchmany', checkAuth, async (req, res) => {
     }
 });
 
+/* The code `router.patch("/deletemany", async (req, res) => {...})` is defining a route handler for a
+PATCH request to the URL "/deletemany". This route handler is responsible for deleting multiple
+student attendance records from the database. */
 router.patch("/deletemany", async (req, res) => {
     try {
         console.log(req.body);
@@ -220,6 +261,9 @@ router.patch("/deletemany", async (req, res) => {
     }
 });
 
+/* The code `router.patch("/:id", checkAuth, (req, res) => {...})` is defining a route handler for a
+PATCH request to the URL "/:id". This route handler is responsible for updating a specific student
+attendance record in the database based on the provided `id` parameter. */
 router.patch("/:id", checkAuth, (req, res) => {
     var updateOps = {};
     for (var ops of req.body) {
@@ -239,6 +283,9 @@ router.patch("/:id", checkAuth, (req, res) => {
         });
 });
 
+/* The code `router.delete("/:id", checkAuth, (req, res) => {...})` is defining a route handler for a
+DELETE request to the URL "/:id". This route handler is responsible for deleting a specific student
+attendance record from the database based on the provided `id` parameter. */
 router.delete("/:id", checkAuth, (req, res) => {
     StudentAttendance.findByIdAndDelete(req.params.id).exec()
         .then(docs => {

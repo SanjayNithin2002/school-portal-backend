@@ -9,6 +9,8 @@ var checkAuth = require('../middleware/checkAuth');
 
 
 
+/* The following code is defining a route handler for a GET request to the root URL ("/"). It uses the
+`checkAuth` middleware function to authenticate the request. */
 router.get("/", checkAuth, (req, res, next) => {
     Leave.find().populate("teacher admin").exec()
         .then(docs => {
@@ -35,6 +37,8 @@ router.get("/", checkAuth, (req, res, next) => {
         })
 });
 
+/* The following code is defining a route handler for a GET request with a dynamic parameter ":id". It is
+using the "checkAuth" middleware function to authenticate the request. */
 router.get("/:id", checkAuth, (req, res, next) => {
     Leave.findById(req.params.id).exec()
         .then(doc => {
@@ -57,6 +61,9 @@ router.get("/:id", checkAuth, (req, res, next) => {
         })
 });
 
+/* The following code is defining a route in a JavaScript router. This route is for GET requests to
+"/teachers/:teacherID". It includes a middleware function called "checkAuth" to authenticate the
+request. */
 router.get("/teachers/:teacherID", checkAuth, (req, res) => {
     Leave.find({ teacher: req.params.teacherID }).populate("teacher").exec()
         .then(docs => {
@@ -83,6 +90,8 @@ router.get("/teachers/:teacherID", checkAuth, (req, res) => {
         });
 });
 
+/* The following code is defining a route handler for GET requests to "/admins/:adminID". It uses the
+checkAuth middleware to authenticate the request. */
 router.get("/admins/:adminID", checkAuth, (req, res) => {
     Leave.find({ admin: req.params.adminID }).populate("admin").exec()
         .then(docs => {
@@ -109,6 +118,8 @@ router.get("/admins/:adminID", checkAuth, (req, res) => {
         });
 });
 
+/* The following code is a route handler for a POST request. It is used to create a leave request for
+either a teacher or an admin. */
 router.post("/", checkAuth, (req, res, next) => {
     var currentDate = new Date();
     var startDate = new Date(req.body.startDate);
@@ -233,6 +244,8 @@ router.post("/", checkAuth, (req, res, next) => {
 
 });
 
+/* The following code is a patch route handler for a router in a Node.js application. It is used to handle
+requests to update the status of a leave request. */
 router.patch("/", checkAuth, (req, res, next) => {
     if (req.body.user === "teacher") {
         if (req.body.status === "Approved") {
@@ -312,6 +325,13 @@ router.patch("/", checkAuth, (req, res, next) => {
     }
 
 });
+
+/* The following code is defining a DELETE route for a router. It is checking if the user is authenticated
+using the checkAuth middleware. It then finds a Leave document by its ID and checks if the start
+date of the leave is greater than or equal to the current date. If it is, it checks if the user is a
+teacher or an admin. If the user is a teacher, it removes the leave document and updates the
+corresponding teacher document by decrementing the leave type by the number of days between the
+start and end dates of the leave. If the user is an admin, it does the same */
 
 router.delete("/:user/:id", checkAuth, (req, res, next) => {
     Leave.findById(req.params.id).exec()

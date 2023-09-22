@@ -7,6 +7,8 @@ var timeToString = require('../middleware/timeToString');
 var router = express.Router();
 var checkAuth = require('../middleware/checkAuth');
 
+/* This code is defining a GET route for the root URL ("/") of the server. When a GET request is made
+to this route, it will execute the callback function. */
 router.get("/", checkAuth, (req, res) => {
     Exams.find().populate('class').exec()
         .then(docs => {
@@ -35,6 +37,8 @@ router.get("/", checkAuth, (req, res) => {
         });
 });
 
+/* This code defines a GET route for the "/students/:studentID" URL of the server. When a GET request
+is made to this route, it will execute the callback function. */
 router.get("/students/:studentID", checkAuth, (req, res) => {
     Students.findById(req.params.studentID).exec()
         .then(studDoc => {
@@ -76,6 +80,8 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
 
 });
 
+/* This code defines a GET route for the "/standard/:standard" URL of the server. When a GET request is
+made to this route, it will execute the callback function. */
 router.get("/standard/:standard", checkAuth, (req, res) => {
     Exams.find().populate('class').exec()
         .then(docs => {
@@ -90,6 +96,8 @@ router.get("/standard/:standard", checkAuth, (req, res) => {
         });
 });
 
+/* This code defines a GET route for the "/teachers/:id" URL of the server. When a GET request is made
+to this route, it will execute the callback function. */
 router.get('/teachers/:id', checkAuth, (req, res) => {
     Exams.find().populate('class').exec()
         .then(docs => {
@@ -105,6 +113,8 @@ router.get('/teachers/:id', checkAuth, (req, res) => {
         });
 });
 
+/* The code you provided is defining a POST route for the root URL ("/") of the server. When a POST
+request is made to this route, it will execute the callback function. */
 router.post("/", checkAuth, (req, res) => {
     var exam = new Exams({
         _id: new mongoose.Types.ObjectId(),
@@ -130,6 +140,9 @@ router.post("/", checkAuth, (req, res) => {
         });
 });
 
+/* The `router.post("/postmany", checkAuth, (req, res) => { ... })` code is defining a POST route for
+the "/postmany" URL of the server. When a POST request is made to this route, it will execute the
+callback function. */
 router.post("/postmany", checkAuth, (req, res) => {
     var exams = req.body;
     var exams = exams.map(exam => {
@@ -158,6 +171,9 @@ router.post("/postmany", checkAuth, (req, res) => {
         });
 });
 
+/* The `router.patch("/:id", checkAuth, (req, res) => { ... })` code is defining a PATCH route for the
+"/:id" URL of the server. When a PATCH request is made to this route, it will execute the callback
+function. */
 router.patch("/:id", checkAuth, (req, res) => {
     var updateOps = {};
     for (var ops of req.body) {
@@ -177,6 +193,9 @@ router.patch("/:id", checkAuth, (req, res) => {
         });
 });
 
+/* The `router.delete("/:id", checkAuth, (req, res) => { ... })` code is defining a DELETE route for
+the "/:id" URL of the server. When a DELETE request is made to this route, it will execute the
+callback function. */
 router.delete("/:id", checkAuth, (req, res) => {
     Exams.findByIdAndDelete(req.params.id).exec()
         .then(doc => {

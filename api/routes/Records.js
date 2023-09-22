@@ -7,6 +7,9 @@ var checkAuth = require('../middleware/checkAuth');
 var makeUrlFriendly = require('../middleware/makeUrlFriendly');
 var router = express.Router();
 
+
+/* The code `var storage = multer.diskStorage({ ... })` is creating a storage engine for Multer, a
+middleware for handling file uploads in Node.js. */
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "./records/");
@@ -17,6 +20,8 @@ var storage = multer.diskStorage({
     }
 });
 
+/* The `fileFilter` function is a callback function used by Multer to determine whether to accept or
+reject a file during the file upload process. */
 var fileFilter = (req, file, cb) => {
     //accept
     if (file.mimetype === 'application/pdf') {
@@ -28,6 +33,8 @@ var fileFilter = (req, file, cb) => {
     }
 }
 
+/* The code `var upload = multer({ storage: storage, limits: { fileSize: 1024 * 1024 * 10 },
+fileFilter: fileFilter });` is creating an instance of Multer middleware with the specified options. */
 var upload = multer({
     storage: storage,
     limits: {
@@ -35,6 +42,10 @@ var upload = multer({
     },
     fileFilter: fileFilter
 });
+
+/* The `serviceAccount` object is used to configure the credentials for accessing the Firebase
+services. It contains various properties that are required for authentication and authorization
+purposes. These properties include: */
 var serviceAccount = {
     type: process.env.type,
     project_id: process.env.project_id,
@@ -48,13 +59,22 @@ var serviceAccount = {
     client_x509_cert_url: process.env.client_x509_cert_url,
     universe_domain: "googleapis.com"
 }
+
+/* The `admin.initializeApp()` function is used to initialize the Firebase Admin SDK with the provided
+configuration options. */
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     storageBucket: process.env.BUCKET_URL
 }, 'records');
 
+/* `var bucket = admin.storage().bucket();` is creating a reference to the default storage bucket in
+Firebase Storage. This allows you to perform various operations on the bucket, such as uploading
+files, deleting files, and retrieving file metadata. */
 var bucket = admin.storage().bucket();
 
+/* This code is defining a GET route for the root URL ("/") of the router. When a GET request is made
+to this URL, the `checkAuth` middleware function is first executed to check if the user is
+authenticated. If the user is authenticated, the code inside the route handler function is executed. */
 router.get("/", checkAuth, (req, res) => {
     Records.find().exec()
         .then(docs => {
@@ -78,6 +98,9 @@ router.get("/", checkAuth, (req, res) => {
         });
 });
 
+/* This code is defining a GET route for the URL "/:id" of the router. When a GET request is made to
+this URL, the `checkAuth` middleware function is first executed to check if the user is
+authenticated. If the user is authenticated, the code inside the route handler function is executed. */
 router.get("/:id", checkAuth, (req, res) => {
     Records.findById(req.params.id).exec()
         .then(doc => {
@@ -98,6 +121,9 @@ router.get("/:id", checkAuth, (req, res) => {
         });
 });
 
+/* This code is defining a POST route for the root URL ("/") of the router. When a POST request is made
+to this URL, the `checkAuth` middleware function is first executed to check if the user is
+authenticated. If the user is authenticated, the code inside the route handler function is executed. */
 router.post("/", checkAuth, upload.single('document'), (req, res) => {
     var record = new Records({
         _id: new mongoose.Types.ObjectId(),
@@ -134,6 +160,8 @@ router.post("/", checkAuth, upload.single('document'), (req, res) => {
         });
 });
 
+/* The `router.patch("/document/:id", checkAuth, upload.single('document'), (req, res) => { ... })`
+code is defining a PATCH route for the URL "/document/:id" of the router. */
 router.patch("/document/:id", checkAuth, upload.single('document'), (req, res) => {
     var id = req.params.id;
     Records.findById(id)
@@ -187,6 +215,10 @@ router.patch("/document/:id", checkAuth, upload.single('document'), (req, res) =
 });
 
 
+/* The code `router.patch("/:id", checkAuth, (req, res) => { ... })` is defining a PATCH route for the
+URL "/:id" of the router. When a PATCH request is made to this URL, the `checkAuth` middleware
+function is first executed to check if the user is authenticated. If the user is authenticated, the
+code inside the route handler function is executed. */
 router.patch("/:id", checkAuth, (req, res) => {
     var updateOps = {};
     for (var ops of req.body) {
@@ -206,6 +238,10 @@ router.patch("/:id", checkAuth, (req, res) => {
         });
 });
 
+/* The `router.delete("/:id", checkAuth, (req, res) => { ... })` code is defining a DELETE route for
+the URL "/:id" of the router. When a DELETE request is made to this URL, the `checkAuth` middleware
+function is first executed to check if the user is authenticated. If the user is authenticated, the
+code inside the route handler function is executed. */
 router.delete("/:id", checkAuth, (req, res) => {
     var recordId = req.params.id;
 

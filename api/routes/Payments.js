@@ -5,6 +5,9 @@ var Students = require('../models/Students');
 var checkAuth = require('../middleware/checkAuth');
 var router = express.Router();
 
+/* This code is defining a GET route for the root URL ("/") of the server. When a GET request is made
+to this route, it first checks if the user is authenticated using the `checkAuth` middleware. If the
+user is authenticated, it executes the callback function `(req, res) => {...}`. */
 router.get("/", checkAuth, (req, res) => {
     Payments.find().populate('fees').exec()
         .then(docs => {
@@ -19,6 +22,9 @@ router.get("/", checkAuth, (req, res) => {
         });
 });
 
+/* This code is defining a GET route for the URL pattern "/:id" of the server. When a GET request is
+made to this route, it first checks if the user is authenticated using the `checkAuth` middleware.
+If the user is authenticated, it executes the callback function `(req, res) => {...}`. */
 router.get("/:id", checkAuth, (req, res) => {
     Payments.findById(req.params.id).populate('fees').exec()
         .then(doc => {
@@ -32,6 +38,9 @@ router.get("/:id", checkAuth, (req, res) => {
         });
 });
 
+/* This code defines a GET route for the URL pattern "/students/:studentID" of the server. When a GET
+request is made to this route, it first checks if the user is authenticated using the `checkAuth`
+middleware. If the user is authenticated, it executes the callback function `(req, res) => {...}`. */
 router.get("/students/:studentID", checkAuth, (req, res) => {
     Payments.find({ student: req.params.studentID }).populate('fees').exec()
         .then(docs => {
@@ -46,6 +55,10 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
         });
 });
 
+/* The code `router.post("/", checkAuth, (req, res) => {...})` is defining a POST route for the root
+URL ("/") of the server. When a POST request is made to this route, it first checks if the user is
+authenticated using the `checkAuth` middleware. If the user is authenticated, it executes the
+callback function `(req, res) => {...}`. */
 router.post("/", checkAuth, (req, res) => {
     var payment = new Payments({
         _id: new mongoose.Types.ObjectId(),
@@ -67,6 +80,10 @@ router.post("/", checkAuth, (req, res) => {
 });
 
 
+/* The code `router.patch("/:id", checkAuth, (req, res) => {...})` is defining a PATCH route for the
+URL pattern "/:id" of the server. When a PATCH request is made to this route, it first checks if the
+user is authenticated using the `checkAuth` middleware. If the user is authenticated, it executes
+the callback function `(req, res) => {...}`. */
 router.patch("/:id", checkAuth, (req, res) => {
     var id = req.params.id;
     var updateOps = {};
@@ -88,6 +105,10 @@ router.patch("/:id", checkAuth, (req, res) => {
 
 
 
+/* The code `router.delete("/:id", checkAuth, (req, res) => {...})` is defining a DELETE route for the
+URL pattern "/:id" of the server. When a DELETE request is made to this route, it first checks if
+the user is authenticated using the `checkAuth` middleware. If the user is authenticated, it
+executes the callback function `(req, res) => {...}`. */
 router.delete("/:id", checkAuth, (req, res) => {
     Payments.findByIdAndDelete(req.params.id).exec()
         .then(docs => {

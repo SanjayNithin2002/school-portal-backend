@@ -11,6 +11,9 @@ var makeUrlFriendly = require('../middleware/makeUrlFriendly');
 var timeToString = require('../middleware/timeToString');
 var router = express.Router();
 
+/* The following code is configuring the storage options for file uploads using the multer library in
+JavaScript. It sets the destination folder for uploaded files to "./assessments/" and generates a
+unique filename for each uploaded file using the current timestamp and the original filename. */
 var storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, "./assessments/");
@@ -21,6 +24,8 @@ var storage = multer.diskStorage({
     }
 });
 
+/* The following code is a JavaScript function called `fileFilter` that is used as a filter for accepting
+or rejecting files based on their mimetype. */
 var fileFilter = (req, file, cb) => {
     //accept
     if (file.mimetype === 'application/pdf') {
@@ -32,6 +37,8 @@ var fileFilter = (req, file, cb) => {
     }
 }
 
+/* The following code is configuring the multer middleware in a Node.js application. Multer is a middleware
+used for handling file uploads in Node.js. */
 var upload = multer({
     storage: storage,
     limits: {
@@ -39,6 +46,12 @@ var upload = multer({
     },
     fileFilter: fileFilter
 });
+
+/* The following code is defining a JavaScript object called `serviceAccount`. This object contains various
+properties that are used for authentication and authorization purposes when interacting with Google
+APIs. The values for these properties are being retrieved from environment variables using
+`process.env`. The `private_key` property is being modified by replacing any occurrences of `\n`
+with actual newline characters `\n`. */
 var serviceAccount = {
     type: process.env.type,
     project_id: process.env.project_id,
@@ -52,13 +65,23 @@ var serviceAccount = {
     client_x509_cert_url: process.env.client_x509_cert_url,
     universe_domain: "googleapis.com"
 }
+
+/* The following code is initializing the Firebase Admin SDK in a JavaScript environment. It is using the
+`admin.initializeApp()` method to configure the SDK with the necessary credentials and storage
+bucket URL. The `credential` parameter is used to provide the service account credentials, and the
+`storageBucket` parameter is used to specify the URL of the Firebase Storage bucket. The SDK is
+being initialized with the name "assessments". */
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     storageBucket: process.env.BUCKET_URL
 }, "assessments");
 
+/* The following code is creating a variable named "bucket" and assigning it the value of the storage
+bucket object from the admin module. */
 var bucket = admin.storage().bucket();
 
+/* The following code is defining a route handler for a GET request to the root URL ("/"). It uses the
+`checkAuth` middleware function to authenticate the request. */
 router.get("/", checkAuth, (req, res) => {
     Assessments.find().populate("class").exec()
         .then(docs => {
@@ -86,6 +109,8 @@ router.get("/", checkAuth, (req, res) => {
         });
 });
 
+/* The following code is defining a route in a JavaScript router that handles a GET request to
+"/students/:studentID". It first checks for authentication using the "checkAuth" middleware. */
 router.get("/students/:studentID", checkAuth, (req, res) => {
     Students.findById(req.params.studentID).exec()
         .then(studDoc => {
@@ -122,6 +147,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
             })
         });
 });
+/* The following code is defining a route handler for GET requests to "/teachers/:teacherID". */
 
 router.get("/teachers/:teacherID", (req, res) => {
     Assessments.find().populate('class').exec()
@@ -206,6 +232,8 @@ router.get('/exams/:teacherID', (req, res) => {
         });
 })
 
+/* The following code is a route handler for a POST request. It is used to upload an assessment document to
+a server. */
 
 router.post("/", checkAuth, upload.single('questionPaper'), (req, res) => {
     var assessment = new Assessments({
@@ -247,6 +275,8 @@ router.post("/", checkAuth, upload.single('questionPaper'), (req, res) => {
             })
         });
 });
+/* The following code is a patch route handler for updating the question paper of an assessment. It first
+retrieves the assessment by its ID. If the assessment is not found, it returns a 404 error. */
 
 router.patch("/questionPaper/:id", checkAuth, upload.single('questionPaper'), (req, res) => {
     var assessmentId = req.params.id;
@@ -308,6 +338,10 @@ router.patch("/questionPaper/:id", checkAuth, upload.single('questionPaper'), (r
         });
 });
 
+/* The following code is a patch route handler for updating an assessment in a database. It first creates
+an empty object called `updateOps`. Then, it loops through the `req.body` object, which contains the
+properties and values to be updated. For each property-value pair, it adds it to the `updateOps`
+object. */
 
 router.patch("/:id", checkAuth, (req, res) => {
     var updateOps = {};
@@ -327,6 +361,8 @@ router.patch("/:id", checkAuth, (req, res) => {
             })
         });
 });
+/* The following code is a route handler for a DELETE request to delete an assessment and its associated
+files. */
 
 router.delete("/:id", checkAuth, (req, res) => {
     var assessmentId = req.params.id;
