@@ -72,6 +72,7 @@ router.post("/razorpay", checkAuth, async (req, res) => {
     var paymentID = req.body.payment;
     Payments.findById(paymentID).populate('fees').exec()
         .then(async (docs) => {
+            console.log(docs)
             try {
                 const options = {
                     amount: docs.fees.amount * 100,

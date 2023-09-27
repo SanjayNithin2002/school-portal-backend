@@ -46,7 +46,7 @@ router.post("/", checkAuth, (req, res) => {
     var fee = new Fees({
         _id: new mongoose.Types.ObjectId(),
         amount: req.body.amount,
-        due: req.body.due? req.body.due : null,
+        due: req.body.due ? req.body.due : null,
         description: req.body.description,
         standard: req.body.standard
     });
@@ -124,10 +124,18 @@ the request. */
 router.delete("/:id", checkAuth, (req, res) => {
     Fees.findByIdAndDelete(req.params.id).exec()
         .then(docs => {
-            res.status(200).json({
-                message: "Fees Record Deleted Successfully",
-                docs: docs
-            });
+            Payments.deletemany({ fees: docs._id })
+                .then(docs => {
+                    res.status(200).json({
+                        message: "Fees Record Deleted Successfully",
+                        docs: docs
+                    });
+                })
+                .catch(err => {
+                    res.status(500).json({
+                        error: err
+                    })
+                });
         }).catch(err => {
             res.status(500).json({
                 error: err
