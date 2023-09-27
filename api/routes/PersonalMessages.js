@@ -89,7 +89,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
 route with a dynamic parameter `:teacherID`. This means that when a GET request is made to a URL
 that matches this route pattern (e.g., "/teachers/123"), the callback function will be executed. */
 router.get("/teachers/:teacherID", checkAuth, (req, res) => {
-    PersonalMessages.find({ teacher: req.params.teacherID }).populate([{ path: "postedBy" }, { path: "student" }]).exec()
+    PersonalMessages.find({ postedBy: req.params.teacherID }).populate([{ path: "postedBy" }, { path: "student" }]).exec()
         .then(docs => {
             var personalMessages = docs.map(doc => {
                 return {
