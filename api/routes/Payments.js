@@ -55,12 +55,14 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
         });
 });
 
+/* This code is defining a GET route for the URL pattern "/standard/:standard" of the server. When a
+GET request is made to this route, it first checks if the user is authenticated using the
+`checkAuth` middleware. If the user is authenticated, it executes the callback function `(req, res)
+=> {...}`. */
 router.get("/standard/:standard", checkAuth, (req, res) => {
     Payments.find().populate([{ path: "fees" }, { path: "student" }]).exec()
         .then(docs => {
-            console.log(docs)
             var docs = docs.filter(doc => doc.fees.due != null && doc.student.standard == req.params.standard);
-            console.log(docs);
             res.status(200).json({
                 docs: docs
             });
@@ -69,7 +71,8 @@ router.get("/standard/:standard", checkAuth, (req, res) => {
                 error: err
             });
         });
-})
+});
+
 /* The code `router.post("/", checkAuth, (req, res) => {...})` is defining a POST route for the root
 URL ("/") of the server. When a POST request is made to this route, it first checks if the user is
 authenticated using the `checkAuth` middleware. If the user is authenticated, it executes the
