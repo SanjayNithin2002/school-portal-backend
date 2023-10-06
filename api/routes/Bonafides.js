@@ -180,7 +180,7 @@ router.post("/", checkAuth, (req, res) => {
             description: (req.body.NCCBonafide) ? req.body.NCCBonafide.description : "NA"
         },
         tc: {
-            description: (req.body.tc) ? req.body.TC.description : "NA"
+            description: (req.body.tc) ? req.body.tc.description : "NA"
         },
         requestedFile: null,
         postedOn: new Date().toJSON()
