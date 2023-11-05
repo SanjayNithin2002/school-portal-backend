@@ -37,7 +37,7 @@ var app = express();
 
 //Schedule a job to clear directories at regular intervals (every 5 minutes)
 var clearDirectory = require('./api/middleware/clearDirectory');
-var job = schedule.scheduleJob('*/1 * * * *', () => {
+var job = schedule.scheduleJob('*/5 * * * *', () => {
     clearDirectory('./assessments/');
     clearDirectory('./bonafides/');
     clearDirectory('./marks/');
