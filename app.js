@@ -74,10 +74,7 @@ app.use((req, res, next) => {
 app.use('/public', express.static('public'));
 
 //Connect to MongoDB Atlas
-mongoose.connect(process.env.MONGODB_URL,
-{
-    dbName: process.env.school || "test"
-});
+mongoose.connect(process.env.MONGODB_URL);
 console.log("Connected to MongoDB Atlas");
 
 //Define routes for different API endpoints

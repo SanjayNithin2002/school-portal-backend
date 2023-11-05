@@ -9,6 +9,7 @@ var path = require('path');
 var multer = require('multer');
 var admin = require("firebase-admin");
 var jwt = require("jsonwebtoken");
+var createCsvWriter = require('csv-writer').createObjectCsvWriter;
 var checkAuth = require('../middleware/checkAuth');
 var makeUrlFriendly = require('../middleware/makeUrlFriendly');
 
@@ -368,7 +369,6 @@ router.get("/", checkAuth, (req, res, next) => {
 handle a GET request to the "/generatecsv" endpoint. */
 
 router.get("/generatecsv", checkAuth, (req, res, next) => {
-    console.log("hi");
     Admins.find().exec()
         .then(docs => {
             if (docs.length < 1) {
@@ -376,8 +376,9 @@ router.get("/generatecsv", checkAuth, (req, res, next) => {
                     message: "No Admins Found"
                 })
             } else {
+
                 var csvWriter = createCsvWriter({
-                    path: `public/csv/admins.csv`,
+                    path: "public/csv/admins.csv",
                     header: [
                         { id: '_id', title: 'id' },
                         { id: 'name', title: 'Name' },
@@ -396,7 +397,7 @@ router.get("/generatecsv", checkAuth, (req, res, next) => {
                 })
                 csvWriter
                     .writeRecords(adminArray)
-                    .then(() => res.sendFile(path.join(__dirname, `public/csv/admins.csv`)))
+                    .then(() => res.download(path.join(__dirname, "../../public/csv/admins.csv")))
                     .catch((error) => console.error(error));
             }
         })

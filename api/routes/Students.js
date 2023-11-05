@@ -507,7 +507,7 @@ router.get("/class/:classID", checkAuth, (req, res, next) => {
 /* The above code is defining a route in a Node.js Express router. This route is accessed via a GET
 request to "/marks/generatecsv/:standard/:section". */
 router.get("/marks/generatecsv/:standard/:section", checkAuth, (req, res, next) => {
-    Students.find({ standard: req.params.standard, section: req.params.section }).exec()
+    Students.find({ standard: req.params.standard, section: req.params.section.toUpperCase() }).exec()
         .then(docs => {
             if (docs.length < 1) {
                 res.status(404).json({
