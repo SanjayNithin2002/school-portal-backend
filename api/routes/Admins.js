@@ -96,7 +96,7 @@ router.post("/forgotpassword", (req, res, next) => {
                             error: err
                         });
                     } else {
-                        Admins.findByIdAndUpdate(docs[0]._id, { $set: { password: hash} }).exec()
+                        Admins.findByIdAndUpdate(docs[0]._id, { $set: { password: hash } }).exec()
                             .then(docs => {
                                 res.status(201).json({
                                     message: "Password Updated Successfully"
@@ -157,7 +157,7 @@ router.post("/signup", checkAuth, upload.single("profile"), (req, res, next) => 
                 bloodGroup: req.body.bloodGroup,
                 aadharNumber: req.body.aadharNumber,
                 motherTongue: req.body.motherTongue,
-                qualification : req.body.qualification,
+                qualification: req.body.qualification,
                 experience: req.body.experience,
                 address: {
                     line1: req.body.address ? req.body.address.line1 : "NA",
@@ -170,7 +170,7 @@ router.post("/signup", checkAuth, upload.single("profile"), (req, res, next) => 
                 salaryDetails: {
                     basic: req.body.salaryDetails ? req.body.salaryDetails.basic : 0,
                     hra: req.body.salaryDetails ? req.body.salaryDetails.hra : 0,
-                    conveyance: req.body.salaryDetails ? req.body.salaryDetails.conveyance: 0,
+                    conveyance: req.body.salaryDetails ? req.body.salaryDetails.conveyance : 0,
                     pa: req.body.salaryDetails ? req.body.salaryDetails.pa : 0,
                     pf: req.body.salaryDetails ? req.body.salaryDetails.pf : 0,
                     pt: req.body.salaryDetails ? req.body.salaryDetails.pt : 0,
@@ -193,7 +193,7 @@ router.post("/signup", checkAuth, upload.single("profile"), (req, res, next) => 
                             }
                             else {
                                 var transporter = nodemailer.createTransport({
-                                    service: 'gmail',
+                                    service: process.env.MAIL_SERVER || 'gmail',
                                     auth: {
                                         user: process.env.NODEMAIL,
                                         pass: process.env.NODEMAIL_PASSWORD
@@ -212,7 +212,7 @@ router.post("/signup", checkAuth, upload.single("profile"), (req, res, next) => 
                         )
                     } else {
                         var transporter = nodemailer.createTransport({
-                            service: 'gmail',
+                            service: process.env.MAIL_SERVER || 'gmail',
                             auth: {
                                 user: process.env.NODEMAIL,
                                 pass: process.env.NODEMAIL_PASSWORD
@@ -244,7 +244,7 @@ matches the provided userID. If a matching document is found, it then compares t
 with the hashed password stored in the document using bcrypt. If the passwords match, it generates a
 JSON Web Token (JWT) containing the userID and _id of the admin, and signs it using a secret key. */
 router.post("/login", (req, res, next) => {
-    Admins.find({ userID : req.body.userID}).exec()
+    Admins.find({ userID: req.body.userID }).exec()
         .then(docs => {
             if (docs.length < 1) {
                 res.status(401).json({
@@ -335,7 +335,7 @@ router.post("/profile/:id", checkAuth, upload.single("profile"), (req, res) => {
                 }
                 )
             }
-            else{
+            else {
                 res.status(400).json({
                     "message": "Profile Picture Not Uploaded!"
                 })
@@ -406,49 +406,43 @@ router.get("/:id", checkAuth, (req, res, next) => {
 handle a GET request to the "/generatecsv" endpoint. */
 
 router.get("/generatecsv", checkAuth, (req, res, next) => {
-    var filePath = "public/csv/admins.csv";
-    fs.access(filePath, fs.varants.F_OK, (error) => {
-        if (error) {
-            Admins.find().exec()
-                .then(docs => {
-                    if (docs.length < 1) {
-                        res.status(404).json({
-                            message: "No Admins Found"
-                        })
-                    } else {
-                        var csvWriter = createCsvWriter({
-                            path: "public/csv/admins.csv",
-                            header: [
-                                { id: '_id', title: 'id' },
-                                { id: 'name', title: 'Name' },
-                                { id : 'empid', title: 'EmployeeID'},
-                                { id: 'status', title: 'Status' }
-                            ]
-                        });
-                        var adminArray = docs.map(doc => {
-                            return {
-                                _id : doc._id,
-                                name: doc.firstName + " " + doc.lastName,
-                                empid : doc.empid,
-                                status: null
+    console.log("hi");
+    Admins.find().exec()
+        .then(docs => {
+            if (docs.length < 1) {
+                res.status(404).json({
+                    message: "No Admins Found"
+                })
+            } else {
+                var csvWriter = createCsvWriter({
+                    path: `public/csv/${process.env.school}_admins.csv`,
+                    header: [
+                        { id: '_id', title: 'id' },
+                        { id: 'name', title: 'Name' },
+                        { id: 'empid', title: 'EmployeeID' },
+                        { id: 'status', title: 'Status' }
+                    ]
+                });
+                var adminArray = docs.map(doc => {
+                    return {
+                        _id: doc._id,
+                        name: doc.firstName + " " + doc.lastName,
+                        empid: doc.empid,
+                        status: null
 
-                            }
-                        })
-                        csvWriter
-                            .writeRecords(adminArray)
-                            .then(() => res.sendFile(path.join(__dirname, "../../public/csv/admins.csv")))
-                            .catch((error) => console.error(error));
                     }
                 })
-                .catch(err => {
-                    res.status(500).json({
-                        error: err
-                    })
-                });
-        } else {
-            res.sendFile(path.join(__dirname, "../../public/csv/admins.csv"));
-        }
-    });
+                csvWriter
+                    .writeRecords(adminArray)
+                    .then(() => res.sendFile(path.join(__dirname, `public/csv/${process.env.school}_admins.csv`)))
+                    .catch((error) => console.error(error));
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
 
 });
 

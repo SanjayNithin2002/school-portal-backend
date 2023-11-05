@@ -13,7 +13,7 @@ router.post("/", checkAuth, (req, res, next) => {
         text: "Name : " + req.body.name + "\nEmail : " + req.body.email + "\nSubject : " + req.body.subject + "\nMessage : " + req.body.message
     };
     var transporter = nodemailer.createTransport({
-        service: 'gmail',
+        service: process.env.MAIL_SERVER || 'gmail',
         auth: {
             user: process.env.NODEMAIL,
             pass: process.env.NODEMAIL_PASSWORD

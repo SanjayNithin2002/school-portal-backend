@@ -271,7 +271,7 @@ router.post("/signup", checkAuth, upload.single("profile"), async (req, res, nex
                                     }
                                     else {
                                         var transporter = nodemailer.createTransport({
-                                            service: 'gmail',
+                                            service: process.env.MAIL_SERVER || 'gmail',
                                             auth: {
                                                 user: process.env.NODEMAIL,
                                                 pass: process.env.NODEMAIL_PASSWORD
@@ -290,7 +290,7 @@ router.post("/signup", checkAuth, upload.single("profile"), async (req, res, nex
                                 )
                             } else {
                                 var transporter = nodemailer.createTransport({
-                                    service: 'gmail',
+                                    service: process.env.MAIL_SERVER || 'gmail',
                                     auth: {
                                         user: process.env.NODEMAIL,
                                         pass: process.env.NODEMAIL_PASSWORD
@@ -413,7 +413,7 @@ router.post("/profile/:id", checkAuth, upload.single("profile"), (req, res) => {
                 }
                 )
             }
-            else{
+            else {
                 res.status(400).json({
                     "message": "Profile Picture Not Uploaded!"
                 })
@@ -507,95 +507,81 @@ router.get("/class/:classID", checkAuth, (req, res, next) => {
 /* The above code is defining a route in a Node.js Express router. This route is accessed via a GET
 request to "/marks/generatecsv/:standard/:section". */
 router.get("/marks/generatecsv/:standard/:section", checkAuth, (req, res, next) => {
-    var filePath = "public/marks/" + req.params.standard + req.params.section + ".csv";
-    fs.access(filePath, fs.constants.F_OK, (error) => {
-        if (error) {
-            Students.find({ standard: req.params.standard, section: req.params.section }).exec()
-                .then(docs => {
-                    if (docs.length < 1) {
-                        res.status(404).json({
-                            message: "No Students Found"
-                        })
-                    } else {
-                        var csvWriter = createCsvWriter({
-                            path: "public/marks/" + req.params.standard + req.params.section + ".csv",
-                            header: [
-                                { id: '_id', title: 'id' },
-                                { id: 'name', title: 'Name' },
-                                { id: "scoredMarks", title: "scoredMarks" },
-                                { id: "remarks", title: "Remarks" }
-                            ]
-                        });
-                        var studentArray = docs.map((student) => {
-                            return {
-                                _id: student._id,
-                                name: student.firstName + " " + student.lastName,
-                                scoredMarks: null,
-                                remarks: null
-                            }
-                        });
-                        csvWriter
-                            .writeRecords(studentArray)
-                            .then(() => res.download(path.join(__dirname, "../../public/marks/" + req.params.standard + req.params.section + ".csv")))
-                            .catch((error) => console.error(error));
-                    }
+    Students.find({ standard: req.params.standard, section: req.params.section }).exec()
+        .then(docs => {
+            if (docs.length < 1) {
+                res.status(404).json({
+                    message: "No Students Found"
                 })
-                .catch(err => {
-                    res.status(500).json({
-                        error: err
-                    })
+            } else {
+                var csvWriter = createCsvWriter({
+                    path: "public/marks/" + process.env.school + req.params.standard + req.params.section + ".csv",
+                    header: [
+                        { id: '_id', title: 'id' },
+                        { id: 'name', title: 'Name' },
+                        { id: "scoredMarks", title: "scoredMarks" },
+                        { id: "remarks", title: "Remarks" }
+                    ]
                 });
-        } else {
-            res.download(path.join(__dirname, "../../public/marks/" + req.params.standard + req.params.section + ".csv"));
-        }
-    });
+                var studentArray = docs.map((student) => {
+                    return {
+                        _id: student._id,
+                        name: student.firstName + " " + student.lastName,
+                        scoredMarks: null,
+                        remarks: null
+                    }
+                });
+                csvWriter
+                    .writeRecords(studentArray)
+                    .then(() => res.download(path.join(__dirname, "../../public/marks/" + process.env.school + req.params.standard + req.params.section + ".csv")))
+                    .catch((error) => console.error(error));
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
 });
 
 /* The above code is defining a route in a Node.js Express router. The route is for generating and
 downloading a CSV file based on a given standard. */
 router.get("/generatecsv/:standard", checkAuth, (req, res, next) => {
-    var filePath = "public/students/" + req.params.standard + ".csv";
-    fs.access(filePath, fs.varants.F_OK, (error) => {
-        if (error) {
-            Students.find({ standard: req.params.standard }).exec()
-                .then(docs => {
-                    if (docs.length < 1) {
-                        res.status(404).json({
-                            message: "No Students Found"
-                        })
-                    } else {
-                        var csvWriter = createCsvWriter({
-                            path: "public/students/" + req.params.standard + ".csv",
-                            header: [
-                                { id: '_id', title: 'id' },
-                                { id: 'name', title: 'Name' },
-                                { id: 'gender', title: 'Gender' },
-                                { id: 'section', title: 'Section' }
-                            ]
-                        });
-                        var studentArray = docs.map((student) => {
-                            return {
-                                _id: student._id,
-                                name: student.firstName + " " + student.lastName,
-                                gender: student.gender,
-                                section: null
-                            }
-                        });
-                        csvWriter
-                            .writeRecords(studentArray)
-                            .then(() => res.download(path.join(__dirname, "../../public/students/" + req.params.standard + ".csv")))
-                            .catch((error) => console.error(error));
-                    }
+    Students.find({ standard: req.params.standard }).exec()
+        .then(docs => {
+            if (docs.length < 1) {
+                res.status(404).json({
+                    message: "No Students Found"
                 })
-                .catch(err => {
-                    res.status(500).json({
-                        error: err
-                    })
+            } else {
+                var csvWriter = createCsvWriter({
+                    path: "public/students/" + process.env.school+ req.params.standard + ".csv",
+                    header: [
+                        { id: '_id', title: 'id' },
+                        { id: 'name', title: 'Name' },
+                        { id: 'gender', title: 'Gender' },
+                        { id: 'section', title: 'Section' }
+                    ]
                 });
-        } else {
-            res.download(path.join(__dirname, "../../public/students/" + req.params.standard + req.params.section + ".csv"));
-        }
-    });
+                var studentArray = docs.map((student) => {
+                    return {
+                        _id: student._id,
+                        name: student.firstName + " " + student.lastName,
+                        gender: student.gender,
+                        section: null
+                    }
+                });
+                csvWriter
+                    .writeRecords(studentArray)
+                    .then(() => res.download(path.join(__dirname, "../../public/students/" + process.env.school + req.params.standard + ".csv")))
+                    .catch((error) => console.error(error));
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
 });
 
 /* The above code is implementing a PATCH route in a router for changing a user's ID. It first checks

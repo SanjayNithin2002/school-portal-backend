@@ -193,7 +193,7 @@ router.post("/signup", checkAuth, upload.single("profile"), (req, res, next) => 
                             }
                             else {
                                 var transporter = nodemailer.createTransport({
-                                    service: 'gmail',
+                                    service: process.env.MAIL_SERVER || 'gmail',
                                     auth: {
                                         user: process.env.NODEMAIL,
                                         pass: process.env.NODEMAIL_PASSWORD
@@ -212,7 +212,7 @@ router.post("/signup", checkAuth, upload.single("profile"), (req, res, next) => 
                         )
                     } else {
                         var transporter = nodemailer.createTransport({
-                            service: 'gmail',
+                            service: process.env.MAIL_SERVER || 'gmail',
                             auth: {
                                 user: process.env.NODEMAIL,
                                 pass: process.env.NODEMAIL_PASSWORD
@@ -368,9 +368,6 @@ router.get("/", checkAuth, (req, res, next) => {
 /* The above code is defining a route in a JavaScript router that generates a CSV file containing
 information about teachers. */
 router.get("/generatecsv", (req, res, next) => {
-    var filePath = "public/teachers/teachers.csv";
-    fs.access(filePath, fs.constants.F_OK, (error) => {
-        if (error) {
             Teachers.find().exec()
                 .then(docs => {
                     if (docs.length < 1) {
@@ -379,7 +376,7 @@ router.get("/generatecsv", (req, res, next) => {
                         })
                     } else {
                         var csvWriter = createCsvWriter({
-                            path: "public/teachers/teachers.csv",
+                            path: `public/teachers/${process.env.school}_teachers.csv`,
                             header: [
                                 { id: '_id', title: 'id' },
                                 { id: 'name', title: 'Name' },
@@ -397,7 +394,7 @@ router.get("/generatecsv", (req, res, next) => {
                         });
                         csvWriter
                             .writeRecords(teacherArray)
-                            .then(() => res.download(path.join(__dirname, "../../public/teachers/teachers.csv")))
+                            .then(() => res.download(path.join(__dirname, `public/teachers/${process.env.school}_teachers.csv`)))
                             .catch((error) => console.error(error));
                     }
                 })
@@ -406,10 +403,6 @@ router.get("/generatecsv", (req, res, next) => {
                         error: err
                     })
                 });
-        } else {
-            res.download(path.join(__dirname, "../../public/teachers/teachers.csv"));
-        }
-    });
 });
 
 /* The above code is defining a route handler for a GET request with a dynamic parameter ":id". It

@@ -24,7 +24,6 @@ var studentAttendanceRoutes = require('./api/routes/StudentAttendance');
 var downloadFileRoutes = require('./api/routes/DownloadFile');
 var answerRoutes = require('./api/routes/Answers');
 var personalMessagesRoutes = require('./api/routes/PersonalMessages');
-var timetableRoutes = require('./api/routes/Timetable');
 var paymentRoutes = require('./api/routes/Payments');
 var recordRoutes = require('./api/routes/Records');
 var workerRoutes = require('./api/routes/Workers');
@@ -98,8 +97,7 @@ app.use('/teacherattendances', teacherAttendanceRoutes);
 app.use('/studentattendances', studentAttendanceRoutes);
 app.use('/downloadfile', downloadFileRoutes);
 app.use('/answers', answerRoutes);
-app.use('/personalmessages', personalMessagesRoutes);
-app.use('/timetables', timetableRoutes);
+app.use('/personalmessages', personalMessagesRoutes);``
 app.use('/payments', paymentRoutes);
 app.use('/records', recordRoutes);
 app.use('/workers', workerRoutes);
