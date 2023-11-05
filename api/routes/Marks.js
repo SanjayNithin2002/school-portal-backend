@@ -9,7 +9,7 @@ var router = express.Router();
 var checkAuth = require('../middleware/checkAuth');
 var Exams = require('../models/Exams');
 
-/* The above code is configuring the storage options for handling file uploads using the multer library
+/* the following code is configuring the storage options for handling file uploads using the multer library
 in JavaScript. It sets the destination folder for storing the uploaded files to "./marks/" and
 generates a unique filename for each uploaded file using the current timestamp and the original
 filename. */
@@ -23,7 +23,7 @@ var storage = multer.diskStorage({
     }
 });
 
-/* The above code is a JavaScript function called `fileFilter` that is used as a filter for accepting
+/* the following code is a JavaScript function called `fileFilter` that is used as a filter for accepting
 or rejecting files based on their mimetype. */
 var fileFilter = (req, file, cb) => {
     //accept
@@ -36,7 +36,7 @@ var fileFilter = (req, file, cb) => {
     }
 }
 
-/* The above code is configuring the multer middleware in a Node.js application. Multer is a middleware
+/* the following code is configuring the multer middleware in a Node.js application. Multer is a middleware
 used for handling file uploads in Node.js. */
 var upload = multer({
     storage: storage,
@@ -70,7 +70,7 @@ async function updateMultipleRecords(updatesArray) {
     console.log('Documents updated successfully:', results);
 }
 
-/* The above code is defining a route handler for a GET request to the root URL ("/"). It uses the
+/* the following code is defining a route handler for a GET request to the root URL ("/"). It uses the
 `checkAuth` middleware function to authenticate the request. */
 router.get("/", checkAuth, (req, res) => {
     Marks.find().populate([{ path: "assessment", populate: { path: "class" } }, { path: "exam", populate: { path: "class" } }, { path: "student" }]).exec()
@@ -91,7 +91,7 @@ router.get("/", checkAuth, (req, res) => {
         });
 });
 
-/* The above code is defining a route handler for a GET request with a dynamic parameter ":id". It is
+/* the following code is defining a route handler for a GET request with a dynamic parameter ":id". It is
 using the "checkAuth" middleware function to authenticate the request. */
 router.get("/:id", checkAuth, (req, res) => {
     Marks.findById(req.params.id).populate([{ path: "assessment", populate: { path: "class" } }, { path: "exam", populate: { path: "class" } }, { path: "student" }]).exec()
@@ -107,7 +107,7 @@ router.get("/:id", checkAuth, (req, res) => {
         });
 });
 
-/* The above code is defining a route handler for GET requests to "/students/:studentID". It first
+/* the following code is defining a route handler for GET requests to "/students/:studentID". It first
 checks for authentication using the "checkAuth" middleware. */
 router.get("/students/:studentID", checkAuth, (req, res) => {
     Marks.find({ student: req.params.studentID }).populate([{ path: "assessment", populate: { path: "class" } }, { path: "exam", populate: { path: "class" } }, { path: "student" }]).exec()
@@ -130,7 +130,7 @@ router.get("/students/:studentID", checkAuth, (req, res) => {
         );
 });
 
-/* The above code is defining a route in a JavaScript router that handles a GET request to
+/* the following code is defining a route in a JavaScript router that handles a GET request to
 "/teachers/:teacherID". It first checks if the user is authenticated using the "checkAuth"
 middleware. */
 router.get("/teachers/:teacherID", checkAuth, (req, res) => {
@@ -155,7 +155,7 @@ router.get("/teachers/:teacherID", checkAuth, (req, res) => {
         );
 });
 
-/* The above code is defining a route for retrieving marks for a specific assessment. It is using the
+/* the following code is defining a route for retrieving marks for a specific assessment. It is using the
 GET method and the route is "/assessments/:assessmentID", where ":assessmentID" is a parameter that
 represents the ID of the assessment. */
 router.get("/assessments/:assessmentID", checkAuth, (req, res) => {
@@ -174,7 +174,7 @@ router.get("/assessments/:assessmentID", checkAuth, (req, res) => {
         );
 });
 
-/* The above code is defining a route for GET requests to "/exams/:examID". It uses the checkAuth
+/* the following code is defining a route for GET requests to "/exams/:examID". It uses the checkAuth
 middleware to authenticate the request. */
 router.get("/exams/:examID", checkAuth, (req, res) => {
     Marks.find({ exam: req.params.examID }).populate([{ path: "exam", populate: { path: "class" } }, { path: "student" }]).exec()
@@ -192,7 +192,7 @@ router.get("/exams/:examID", checkAuth, (req, res) => {
         );
 });
 
-/* The above code is defining a route handler for a GET request to "/classes/:id". When this route is
+/* the following code is defining a route handler for a GET request to "/classes/:id". When this route is
 accessed, it will query the database for all documents in the "Marks" collection and populate the
 "assessment", "exam", and "student" fields. It then filters the documents to find assessment marks
 and exam marks that belong to the specified class ID. Finally, it sends a JSON response with the
@@ -222,7 +222,7 @@ router.get("/classes/:id", (req, res) => {
         );
 });
 
-/* The above code is a route handler for a POST request. It is checking the authentication of the user
+/* the following code is a route handler for a POST request. It is checking the authentication of the user
 before proceeding with the code execution. */
 router.post("/", checkAuth, (req, res) => {
     if (req.body.type === "assessment") {
@@ -289,7 +289,7 @@ router.post("/", checkAuth, (req, res) => {
     }
 });
 
-/* The above code is a route handler for a POST request to upload a CSV file and save marks for
+/* the following code is a route handler for a POST request to upload a CSV file and save marks for
 multiple students. It first checks if the type of assessment is "assessment" or "exam" based on the
 request body. */
 router.post("/postmany/fileupload", checkAuth, upload.single("marks"), (req, res) => {
@@ -382,7 +382,7 @@ router.post("/postmany/fileupload", checkAuth, upload.single("marks"), (req, res
     }
 });
 
-/* The above code is defining a route handler for a POST request to "/postmany". It first checks if the
+/* the following code is defining a route handler for a POST request to "/postmany". It first checks if the
 request body has a property "type" with the value "assessment". If it does, it finds an assessment
 document in the database based on the assessment ID provided in the request body. It then filters
 the "marks" array in the request body to remove any marks with an empty "scoredMarks" property. It
@@ -449,7 +449,7 @@ router.post("/postmany", checkAuth, (req, res) => {
     }
 });
 
-/* The above code is defining a PATCH route handler for the '/patchmany' endpoint. When a PATCH request
+/* the following code is defining a PATCH route handler for the '/patchmany' endpoint. When a PATCH request
 is made to this endpoint, it will execute the `updateMultipleRecords` function with the request body
 as an argument. The function is expected to update multiple records based on the provided data. */
 router.patch('/patchmany', async (req, res) => {
@@ -467,7 +467,7 @@ router.patch('/patchmany', async (req, res) => {
     }
 });
 
-/* The above code is defining a PATCH route for updating a document in a MongoDB collection called
+/* the following code is defining a PATCH route for updating a document in a MongoDB collection called
 "Marks". It is using the Express router to handle the route. The route expects an ID parameter in
 the URL and requires authentication using the "checkAuth" middleware. */
 router.patch("/:id", checkAuth, (req, res) => {
@@ -489,7 +489,7 @@ router.patch("/:id", checkAuth, (req, res) => {
         });
 });
 
-/* The above code is defining a DELETE route for a router. The route is specified as "/:id", which
+/* the following code is defining a DELETE route for a router. The route is specified as "/:id", which
 means it expects an id parameter in the URL. The code also includes a middleware function called
 "checkAuth" which is used to authenticate the request. */
 router.delete("/:id", checkAuth, (req, res) => {

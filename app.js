@@ -30,13 +30,14 @@ var workerRoutes = require('./api/routes/Workers');
 var spotlightRoutes = require('./api/routes/Spotlight');
 var transactionRoutes = require('./api/routes/Transactions');
 var feesRoutes = require('./api/routes/Fees');
+var flushRoute = require('./api/routes/Flush');
 
 //Create an Express application
 var app = express();
 
 //Schedule a job to clear directories at regular intervals (every 5 minutes)
 var clearDirectory = require('./api/middleware/clearDirectory');
-var job = schedule.scheduleJob('*/5 * * * *', () => {
+var job = schedule.scheduleJob('*/1 * * * *', () => {
     clearDirectory('./assessments/');
     clearDirectory('./bonafides/');
     clearDirectory('./marks/');
@@ -44,7 +45,10 @@ var job = schedule.scheduleJob('*/5 * * * *', () => {
     clearDirectory('./records/');
     clearDirectory('./attendances/');
     clearDirectory('./profiles/');
-    console.log("Cleared Assessment, Bonafide, Marks, Attendances, Answers, and Profiles Directories");
+    clearDirectory('./public/csv/');
+    clearDirectory('./public/marks/');
+    clearDirectory('./public/students/');
+    console.log("Cleared Assessment, Bonafide, Marks, Attendances, Answers, Profiles and Public Directories");
 });
 
 //Middleware configuration
@@ -74,7 +78,9 @@ app.use((req, res, next) => {
 app.use('/public', express.static('public'));
 
 //Connect to MongoDB Atlas
-mongoose.connect(process.env.MONGODB_URL);
+mongoose.connect(process.env.MONGODB_URL, {
+    dbName: process.env.school || 'test'
+});
 console.log("Connected to MongoDB Atlas");
 
 //Define routes for different API endpoints
@@ -101,6 +107,7 @@ app.use('/workers', workerRoutes);
 app.use('/spotlight', spotlightRoutes);
 app.use('/transactions', transactionRoutes);
 app.use('/fees', feesRoutes);
+app.use('/flush', flushRoute);
 
 //Define a root route that returns a welcome message
 app.get('/', (req, res) => {

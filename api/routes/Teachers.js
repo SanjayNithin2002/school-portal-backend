@@ -13,7 +13,7 @@ var jwt = require("jsonwebtoken");
 var checkAuth = require('../middleware/checkAuth');
 var makeUrlFriendly = require('../middleware/makeUrlFriendly');
 
-/* The above code is configuring the storage options for file uploads using the multer library in
+/* the following code is configuring the storage options for file uploads using the multer library in
 JavaScript. It sets the destination folder for uploaded files to "./profiles/" and generates a
 unique filename for each uploaded file using the current timestamp and the original filename. */
 var storage = multer.diskStorage({
@@ -26,7 +26,7 @@ var storage = multer.diskStorage({
     }
 });
 
-/* The above code is a JavaScript function called `fileFilter` that is used as a filter for accepting
+/* the following code is a JavaScript function called `fileFilter` that is used as a filter for accepting
 or rejecting files based on their mimetype. */
 var fileFilter = (req, file, cb) => {
     //accept
@@ -39,7 +39,7 @@ var fileFilter = (req, file, cb) => {
     }
 }
 
-/* The above code is configuring the multer middleware in a Node.js application. Multer is a middleware
+/* the following code is configuring the multer middleware in a Node.js application. Multer is a middleware
 used for handling file uploads in Node.js. */
 var upload = multer({
     storage: storage,
@@ -49,7 +49,7 @@ var upload = multer({
     fileFilter: fileFilter
 });
 
-/* The above code is defining a JavaScript object called `serviceAccount`. This object contains various
+/* the following code is defining a JavaScript object called `serviceAccount`. This object contains various
 properties that are used for authentication and authorization purposes when interacting with Google
 APIs. The values for these properties are being retrieved from environment variables using
 `process.env`. The `private_key` property is being modified by replacing any occurrences of `\n`
@@ -68,7 +68,7 @@ var serviceAccount = {
     universe_domain: "googleapis.com"
 }
 
-/* The above code is initializing the Firebase Admin SDK in a JavaScript application. It is using the
+/* the following code is initializing the Firebase Admin SDK in a JavaScript application. It is using the
 `admin.initializeApp()` method to configure the SDK with the necessary credentials and storage
 bucket URL. The `credential` parameter is being set with the `admin.credential.cert()` method, which
 takes a service account object as an argument. The `storageBucket` parameter is being set with the
@@ -79,11 +79,11 @@ admin.initializeApp({
     storageBucket: process.env.BUCKET_URL
 }, "teachers");
 
-/* The above code is creating a variable named "bucket" and assigning it the value of the storage
+/* the following code is creating a variable named "bucket" and assigning it the value of the storage
 bucket object from the admin module. */
 var bucket = admin.storage().bucket();
 
-/* The above code is a route handler for the "/forgotpassword" endpoint. It is used to handle a POST
+/* the following code is a route handler for the "/forgotpassword" endpoint. It is used to handle a POST
 request to reset a teacher's password. */
 router.post("/forgotpassword", (req, res, next) => {
     Teachers.find({ email: req.body.email }).exec()
@@ -120,7 +120,7 @@ router.post("/forgotpassword", (req, res, next) => {
         });
 });
 
-/* The above code is a route handler for the "/signup" endpoint. It is used to handle the signup
+/* the following code is a route handler for the "/signup" endpoint. It is used to handle the signup
 process for a user. */
 router.post("/signup", checkAuth, upload.single("profile"), (req, res, next) => {
     var email = req.body.email;
@@ -237,7 +237,7 @@ router.post("/signup", checkAuth, upload.single("profile"), (req, res, next) => 
     });
 });
 
-/* The above code is implementing a login functionality for a router in a Node.js application. When a
+/* the following code is implementing a login functionality for a router in a Node.js application. When a
 POST request is made to the "/login" endpoint, it searches for a teacher with the provided userID in
 the database. If a teacher is found, it compares the provided password with the stored password
 using bcrypt. If the passwords match, it generates a JSON Web Token (JWT) with the teacher's userID
@@ -308,7 +308,7 @@ router.post("/login", (req, res, next) => {
         });
 });
 
-/* The above code is a route handler for a POST request to update a teacher's profile picture. It uses
+/* the following code is a route handler for a POST request to update a teacher's profile picture. It uses
 the Express router to handle the request. */
 router.post("/profile/:id", checkAuth, upload.single("profile"), (req, res) => {
     Teachers.findByIdAndUpdate(req.params.id, { profile: req.file ? 'profiles/' + makeUrlFriendly(req.file.filename) : null }).exec()
@@ -346,7 +346,7 @@ router.post("/profile/:id", checkAuth, upload.single("profile"), (req, res) => {
         });
 });
 
-/* The above code is defining a route handler for a GET request to the root URL ("/"). It uses the
+/* the following code is defining a route handler for a GET request to the root URL ("/"). It uses the
 `checkAuth` middleware function to authenticate the request. If the authentication is successful, it
 executes a database query to find all documents in the "Teachers" collection. If the query is
 successful, it sends a JSON response with a status code of 200 and the found documents. If there is
@@ -365,7 +365,7 @@ router.get("/", checkAuth, (req, res, next) => {
         })
 });
 
-/* The above code is defining a route in a JavaScript router that generates a CSV file containing
+/* the following code is defining a route in a JavaScript router that generates a CSV file containing
 information about teachers. */
 router.get("/generatecsv", (req, res, next) => {
             Teachers.find().exec()
@@ -405,7 +405,7 @@ router.get("/generatecsv", (req, res, next) => {
                 });
 });
 
-/* The above code is defining a route handler for a GET request with a dynamic parameter ":id". It
+/* the following code is defining a route handler for a GET request with a dynamic parameter ":id". It
 first checks for authentication using the "checkAuth" middleware. Then, it uses the "Teachers" model
 to find a document with the specified id. */
 router.get("/:id", checkAuth, (req, res, next) => {
@@ -445,7 +445,7 @@ router.get("/:id", checkAuth, (req, res, next) => {
         })
 });
 
-/* The above code is defining a PATCH route for changing the user ID of a teacher. It first checks if
+/* the following code is defining a PATCH route for changing the user ID of a teacher. It first checks if
 the authenticated user's ID matches the provided ID. If not, it returns an error message. If the IDs
 match, it then checks if the new user ID already exists in the database. If it does, it returns an
 error message. If the new user ID doesn't exist, it finds the teacher with the provided ID and
@@ -523,7 +523,7 @@ router.patch("/changeuserid", checkAuth, (req, res) => {
     }
 });
 
-/* The above code is implementing a route handler for a PATCH request to change a user's password. It
+/* the following code is implementing a route handler for a PATCH request to change a user's password. It
 first checks if the user is authenticated using the checkAuth middleware. Then, it compares the
 provided current password with the stored password of the user in the database. If the passwords
 match, it hashes the new password and updates the user's password in the database. Finally, it sends
@@ -574,7 +574,7 @@ router.patch("/changepassword", checkAuth, (req, res) => {
     }
 });
 
-/* The above code is a patch route handler for updating a teacher's information in a database. It
+/* the following code is a patch route handler for updating a teacher's information in a database. It
 requires authentication (checkAuth middleware) before allowing the update operation. */
 router.patch("/:id", checkAuth, (req, res, next) => {
     var id = req.params.id;
@@ -596,7 +596,7 @@ router.patch("/:id", checkAuth, (req, res, next) => {
         });
 });
 
-/* The above code is defining a DELETE route for a router in a Node.js application. The route is
+/* the following code is defining a DELETE route for a router in a Node.js application. The route is
 defined with the path "/:id", which means it expects an id parameter in the URL. The code also
 includes a middleware function called "checkAuth" that is executed before the route handler. */
 router.delete("/:id", checkAuth, (req, res, next) => {
