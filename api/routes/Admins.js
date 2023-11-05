@@ -363,6 +363,51 @@ router.get("/", checkAuth, (req, res, next) => {
             })
         })
 });
+
+/* The following code is a route handler for generating a CSV file. It is using the Express router to
+handle a GET request to the "/generatecsv" endpoint. */
+
+router.get("/generatecsv", checkAuth, (req, res, next) => {
+    console.log("hi");
+    Admins.find().exec()
+        .then(docs => {
+            if (docs.length < 1) {
+                res.status(404).json({
+                    message: "No Admins Found"
+                })
+            } else {
+                var csvWriter = createCsvWriter({
+                    path: `public/csv/admins.csv`,
+                    header: [
+                        { id: '_id', title: 'id' },
+                        { id: 'name', title: 'Name' },
+                        { id: 'empid', title: 'EmployeeID' },
+                        { id: 'status', title: 'Status' }
+                    ]
+                });
+                var adminArray = docs.map(doc => {
+                    return {
+                        _id: doc._id,
+                        name: doc.firstName + " " + doc.lastName,
+                        empid: doc.empid,
+                        status: null
+
+                    }
+                })
+                csvWriter
+                    .writeRecords(adminArray)
+                    .then(() => res.sendFile(path.join(__dirname, `public/csv/admins.csv`)))
+                    .catch((error) => console.error(error));
+            }
+        })
+        .catch(err => {
+            res.status(500).json({
+                error: err
+            })
+        });
+
+});
+
 /* The following code is defining a route handler for a GET request with a dynamic parameter ":id". It
 first checks for authentication using the "checkAuth" middleware. */
 
@@ -402,49 +447,7 @@ router.get("/:id", checkAuth, (req, res, next) => {
             })
         })
 });
-/* The following code is a route handler for generating a CSV file. It is using the Express router to
-handle a GET request to the "/generatecsv" endpoint. */
 
-router.get("/generatecsv", checkAuth, (req, res, next) => {
-    console.log("hi");
-    Admins.find().exec()
-        .then(docs => {
-            if (docs.length < 1) {
-                res.status(404).json({
-                    message: "No Admins Found"
-                })
-            } else {
-                var csvWriter = createCsvWriter({
-                    path: `public/csv/${process.env.school}_admins.csv`,
-                    header: [
-                        { id: '_id', title: 'id' },
-                        { id: 'name', title: 'Name' },
-                        { id: 'empid', title: 'EmployeeID' },
-                        { id: 'status', title: 'Status' }
-                    ]
-                });
-                var adminArray = docs.map(doc => {
-                    return {
-                        _id: doc._id,
-                        name: doc.firstName + " " + doc.lastName,
-                        empid: doc.empid,
-                        status: null
-
-                    }
-                })
-                csvWriter
-                    .writeRecords(adminArray)
-                    .then(() => res.sendFile(path.join(__dirname, `public/csv/${process.env.school}_admins.csv`)))
-                    .catch((error) => console.error(error));
-            }
-        })
-        .catch(err => {
-            res.status(500).json({
-                error: err
-            })
-        });
-
-});
 
 /* The following code is defining a PATCH route for changing a user ID in a router. It first checks if the
 user is authenticated using the checkAuth middleware. Then, it retrieves the current user ID, new

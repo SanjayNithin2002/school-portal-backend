@@ -376,7 +376,7 @@ router.get("/generatecsv", (req, res, next) => {
                         })
                     } else {
                         var csvWriter = createCsvWriter({
-                            path: `public/teachers/${process.env.school}_teachers.csv`,
+                            path: `public/teachers/teachers.csv`,
                             header: [
                                 { id: '_id', title: 'id' },
                                 { id: 'name', title: 'Name' },
@@ -394,7 +394,7 @@ router.get("/generatecsv", (req, res, next) => {
                         });
                         csvWriter
                             .writeRecords(teacherArray)
-                            .then(() => res.download(path.join(__dirname, `public/teachers/${process.env.school}_teachers.csv`)))
+                            .then(() => res.download(path.join(__dirname, `public/teachers/teachers.csv`)))
                             .catch((error) => console.error(error));
                     }
                 })
