@@ -31,6 +31,7 @@ var spotlightRoutes = require('./api/routes/Spotlight');
 var transactionRoutes = require('./api/routes/Transactions');
 var feesRoutes = require('./api/routes/Fees');
 var flushRoute = require('./api/routes/Flush');
+var timetableRoutes = require('./api/routes/Timetable');
 
 //Create an Express application
 var app = express();
@@ -108,6 +109,7 @@ app.use('/spotlight', spotlightRoutes);
 app.use('/transactions', transactionRoutes);
 app.use('/fees', feesRoutes);
 app.use('/flush', flushRoute);
+app.use('/timetables', timetableRoutes);
 
 //Define a root route that returns a welcome message
 app.get('/', (req, res) => {
